@@ -1,0 +1,85 @@
+import os
+import urllib.request
+from app import app
+from flask import Flask, flash, request, redirect, render_template
+from werkzeug.utils import secure_filename
+
+import spacy
+
+nlp = spacy.load("es_core_news_sm")
+print("model load")
+
+version = "alpha 1.0"
+ALLOWED_EXTENSIONS = set(['docx', 'pdf', 'xlsx', 'xlsm', 'xls', 'html'])
+def allowedFile(filename:str) -> bool:
+	return giveTypeOfFile(filename) in ALLOWED_EXTENSIONS
+
+def giveTypeOfFile(filename:str) -> str:
+    return '.' in filename and filename.rsplit('.', 1)[1].lower()
+
+def uploadFile() -> dict:
+    result = {
+        "filename":None,
+        "succesful":False,
+        "error": "do not send with POST"
+    }
+    if request.method == 'POST':
+        # check if the post request has the file part
+        print(request.files)
+        if 'file' not in request.files:
+            result['error'] = "No file part"
+            return result
+        file = request.files['file']
+        if file.filename == '':
+            result['error'] = "No file selected for uploading"
+            return result
+        if file and allowedFile(file.filename):
+            filename = secure_filename(file.filename)
+            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+            result['filename'] = filename
+            result['succesful'] = True
+            result['error'] = None
+        else:
+            result['error'] = "Allowed file types are docx, pdf, xlsx, xlsm, xls, html"
+            return result
+    return result
+
+
+@app.route('/')
+def main():
+    return "hello, version aplha 1.0"
+
+@app.route('/version')
+def getVersion():
+    return {
+        "version":version
+    }
+
+@app.route('/file')
+def getOperations():
+    return {
+        "operations":"encode,target,give list of names and give csv of names"
+    }
+
+@app.route('/file/encode', methods=['POST'])
+def getFileEncode():
+    jsonResult = uploadFile()
+    return jsonResult
+
+@app.route('/file/listNames', methods=['POST'])
+def getListOfNames():
+    jsonResult = uploadFile()
+    return jsonResult
+
+@app.route('/file/target/htmlFile', methods=['POST'])
+def getHtmlFilesWithNameMarked():
+    jsonResult = uploadFile()
+    return jsonResult
+
+@app.route('/file/giveCsvFile', methods=['POST'])
+def giveCsvFile():
+    jsonResult = uploadFile()
+    return jsonResult
+
+if __name__ == "__main__":
+    app.run(debug = True)

@@ -9,12 +9,9 @@ def normalizeUnicode(string:str) -> str:
 
 class SearcherNamesTexts():
     
-    def __init__(self, quick_model:bool = True,errorRange:float=0.0):
+    def __init__(self, nlp,errorRange:float=0.0):
         #spacy.prefer_gpu()
-        if quick_model:
-            self.nlp = spacy.load("es_core_news_sm")
-        else:
-            self.nlp = spacy.load("es_core_news_md")
+        self.nlp = nlp
         self.errorRange = errorRange
         self.conection = spanishNamesDB()
         pattern = [
@@ -80,10 +77,3 @@ class spanishNamesDB():
 
     def __del__(self):
         self._db_connection.close()
-
-if __name__ == '__main__':
-    s = SearcherNamesTexts(quick_model=True)
-    print(s.searchNames(" Medina Ramírez, Miguel Angel"))
-    print(
-        s.isName("Miguel")
-    )

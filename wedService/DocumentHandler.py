@@ -22,9 +22,9 @@ from SearcherNamesTexts import SearcherNamesTexts
 
 class DocumentHandler():
 
-    def __init__(self, path:str, quick_model:bool=True):
+    def __init__(self, path:str, nlp):
         self.document = path
-        self.searcherNamesTexts = SearcherNamesTexts(quick_model=quick_model)
+        self.searcherNamesTexts = SearcherNamesTexts(nlp)
 
     def read(self):
         pass

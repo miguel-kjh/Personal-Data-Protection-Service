@@ -114,9 +114,6 @@ class DocumentHandlerPDF(DocumentHandler):
                     )
                 ]
                 pdf_redactor.redactor(self.options, self.destiny, self.destiny)
-    
-    def createFileOfName(self):
-        self.createCsv(self.giveListNames())
         
 
 

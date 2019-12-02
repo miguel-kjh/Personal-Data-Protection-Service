@@ -106,6 +106,7 @@ def giveCsvFile():
     if jsonResult['succes']:
         dh = giveDocumentHandler(jsonResult["filename"],"_data.csv")
         path = dh.createFileOfName()
+        print(path)
         return send_file(path, as_attachment=True)
     return jsonResult
 

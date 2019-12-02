@@ -1,10 +1,12 @@
 import os
 import urllib.request
 from app import app
-from flask import Flask, flash, request, redirect, render_template
+from flask import Flask, flash, request, redirect, render_template,send_file
 from werkzeug.utils import secure_filename
 
 import spacy
+import re
+from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
 
 nlp = spacy.load("es_core_news_sm")
 print("model load")
@@ -17,15 +19,29 @@ def allowedFile(filename:str) -> bool:
 def giveTypeOfFile(filename:str) -> str:
     return '.' in filename and filename.rsplit('.', 1)[1].lower()
 
+def giveDocumentHandler(filename:str,toReplace:str="") -> DocumentHandler:
+    typeFile = giveTypeOfFile(filename)
+    filename = "files_to_processing/" + filename
+    destiny = filename.replace("." + typeFile,toReplace)
+    print(destiny)
+    if typeFile == "docx":
+        dh = DocumentHandlerDocx(filename,nlp,destiny=destiny)
+    elif typeFile == "pdf":
+        dh = DocumentHandlerPDF(filename,nlp,destiny=destiny)
+    elif typeFile in ['xlsx', 'xlsm', 'xls']:
+        dh = DocumentHandlerExe(filename,nlp,destiny=destiny)
+    elif typeFile == "html":
+        dh = DocumentHandlerHTML(filename,nlp,destiny=destiny)
+    return dh
+
 def uploadFile() -> dict:
     result = {
         "filename":None,
-        "succesful":False,
+        "succes":False,
         "error": "do not send with POST"
     }
     if request.method == 'POST':
         # check if the post request has the file part
-        print(request.files)
         if 'file' not in request.files:
             result['error'] = "No file part"
             return result
@@ -37,7 +53,7 @@ def uploadFile() -> dict:
             filename = secure_filename(file.filename)
             file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
             result['filename'] = filename
-            result['succesful'] = True
+            result['succes'] = True
             result['error'] = None
         else:
             result['error'] = "Allowed file types are docx, pdf, xlsx, xlsm, xls, html"
@@ -69,6 +85,14 @@ def getFileEncode():
 @app.route('/file/listNames', methods=['POST'])
 def getListOfNames():
     jsonResult = uploadFile()
+    if jsonResult["succes"]:
+        dh = giveDocumentHandler(jsonResult["filename"])
+        result = {
+            "error":None,
+            "succes": True,
+            "Names": dh.giveListNames()
+        }
+        return result
     return jsonResult
 
 @app.route('/file/target/htmlFile', methods=['POST'])
@@ -79,6 +103,10 @@ def getHtmlFilesWithNameMarked():
 @app.route('/file/giveCsvFile', methods=['POST'])
 def giveCsvFile():
     jsonResult = uploadFile()
+    if jsonResult['succes']:
+        dh = giveDocumentHandler(jsonResult["filename"],"_data.csv")
+        path = dh.createFileOfName()
+        return send_file(path, as_attachment=True)
     return jsonResult
 
 if __name__ == "__main__":

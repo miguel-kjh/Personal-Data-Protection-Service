@@ -22,8 +22,9 @@ from SearcherNamesTexts import SearcherNamesTexts
 
 class DocumentHandler():
 
-    def __init__(self, path:str, nlp):
+    def __init__(self, path:str, nlp, destiny:str = ""):
         self.document = path
+        self.destiny = destiny
         self.searcherNamesTexts = SearcherNamesTexts(nlp)
 
     def read(self):
@@ -36,21 +37,22 @@ class DocumentHandler():
         #pass
 
     def createFileOfName(self):
-        self.createCsv(self.giveListNames(),"data.csv")
+        self.createCsv(self.giveListNames())
+        return self.destiny
 
     def giveListNames(self):
         pass
 
-    def createCsv(self, listNames:list, fileName:str):
+    def createCsv(self, listNames:list):
         dataFrame = pd.DataFrame(listNames, columns=['Names'])
-        export_csv = dataFrame.to_csv('resultados/' + fileName, index = None, header=True)
+        export_csv = dataFrame.to_csv(self.destiny, index = None, header=True)
         print(export_csv)
 
 #TODO? optimize
 class DocumentHandlerPDF(DocumentHandler):
 
-    def __init__(self, path:str, quick_model:bool = True):
-        super().__init__(path,quick_model)
+    def __init__(self, path:str, nlp,destiny:str = ""):
+        super().__init__(path,nlp,destiny=destiny)
         self.options = pdf_redactor.RedactorOptions()
         self.options.metadata_filters = {
             "Title": [lambda value: value],
@@ -103,7 +105,7 @@ class DocumentHandlerPDF(DocumentHandler):
                     lambda m: encode(listNames[0]).upper()
                 )
             ]
-            pdf_redactor.redactor(self.options, self.document, "resultados/res.pdf")
+            pdf_redactor.redactor(self.options, self.document, self.destiny)
             for name in listNames[1:]:
                 self.options.content_filters = [
                     (
@@ -111,10 +113,10 @@ class DocumentHandlerPDF(DocumentHandler):
                         lambda m: encode(name).upper()
                     )
                 ]
-                pdf_redactor.redactor(self.options, "resultados/res.pdf", "resultados/res.pdf")
+                pdf_redactor.redactor(self.options, self.destiny, self.destiny)
     
     def createFileOfName(self):
-        self.createCsv(self.giveListNames(),"data.csv")
+        self.createCsv(self.giveListNames())
         
 
 
@@ -141,7 +143,7 @@ class DocumentHandlerDocx(DocumentHandler):
                             self.localizeNames(paragraph,paragraph_table)
             else:
                 continue
-        document.save("resultados/res.docx")
+        document.save(self.destiny)
 
     def localizeNames(self,block,paragraph):
         for r in block.runs:
@@ -169,8 +171,8 @@ class DocumentHandlerDocx(DocumentHandler):
             elif isinstance(block, Table):
                 table = document.add_table(rows=len(block.rows), cols=len(block.columns))
                 table.style = block.style
-                for row in enumerate(block.rows):
-                    for cell in enumerate(row.cells):
+                for row in block.rows:
+                    for cell in row.cells:
                         for paragraph in cell.paragraphs:
                             listOfMarks = self.searcherNamesTexts.searchNames(paragraph.text)
                             if listOfMarks != []:
@@ -182,8 +184,8 @@ class DocumentHandlerDocx(DocumentHandler):
 
 class DocumentHandlerExe(DocumentHandler):
 
-    def __init__(self,path:str,quick_model:bool=True):
-        super().__init__(path,quick_model)
+    def __init__(self,path:str,nlp,destiny:str = ""):
+        super().__init__(path,nlp,destiny=destiny)
         self.df = pd.read_excel(path)
 
     def read(self):
@@ -195,7 +197,7 @@ class DocumentHandlerExe(DocumentHandler):
             for index,ele in enumerate(self.df[key]):
                 if self.searcherNamesTexts.isName(str(ele)):
                     self.df.at[index,key] = encode(self.df.at[index,key])
-        self.df.to_excel("resultados/res.xls")
+        self.df.to_excel(self.destiny)
 
     def giveListNames(self):
         listNames = []
@@ -207,8 +209,8 @@ class DocumentHandlerExe(DocumentHandler):
 
 class DocumentHandlerHTML(DocumentHandler):
 
-    def __init__(self,path:str,quick_model:bool=True):
-        super().__init__(path,quick_model)
+    def __init__(self,path:str,nlp,destiny:str = ""):
+        super().__init__(path,nlp,destiny=destiny)
         with open(self.document,"r") as f:
             self.soup = BeautifulSoup(f.read(), "lxml")
 
@@ -243,12 +245,12 @@ class DocumentHandlerHTML(DocumentHandler):
 
     def documentsProcessing(self):
         formatter = HTMLFormatter(self.encodeNames)
-        with open("resultados/res.html","w") as f:
+        with open(self.destiny,"w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
     def documentTagger(self):
         formatter = HTMLFormatter(self.locateNames)
-        with open("resultados/res.html","w") as f:
+        with open(self.destiny,"w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
     def giveListNames(self):

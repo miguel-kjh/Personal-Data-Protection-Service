@@ -94,6 +94,7 @@ class DocumentHandlerPDF(DocumentHandler):
 
     def documentsProcessing(self):
         listNames = self.giveListNames()
+        print(listNames[:])
         if listNames is not []:
             listNames.sort(
                 key=lambda value: len(value),

@@ -8,7 +8,7 @@ import spacy
 import re
 from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
 
-nlp = spacy.load("es_core_news_sm")
+nlp = spacy.load("es_core_news_md")
 print("model load")
 
 version = "alpha 1.0"
@@ -19,10 +19,10 @@ def allowedFile(filename:str) -> bool:
 def giveTypeOfFile(filename:str) -> str:
     return '.' in filename and filename.rsplit('.', 1)[1].lower()
 
-def giveDocumentHandler(filename:str,toReplace:str="") -> DocumentHandler:
+def giveDocumentHandler(filename:str,destiny:str="") -> DocumentHandler:
     typeFile = giveTypeOfFile(filename)
     filename = "files_to_processing/" + filename
-    destiny = filename.replace("." + typeFile,toReplace)
+    destiny = destiny
     print(destiny)
     if typeFile == "docx":
         dh = DocumentHandlerDocx(filename,nlp,destiny=destiny)
@@ -80,6 +80,11 @@ def getOperations():
 @app.route('/file/encode', methods=['POST'])
 def getFileEncode():
     jsonResult = uploadFile()
+    if jsonResult['succes']:
+        path = "files_to_delete/encode_" + jsonResult["filename"]
+        dh = giveDocumentHandler(jsonResult["filename"], path)
+        dh.documentsProcessing()
+        return send_file(path, as_attachment=True)
     return jsonResult
 
 @app.route('/file/listNames', methods=['POST'])
@@ -98,13 +103,26 @@ def getListOfNames():
 @app.route('/file/target/htmlFile', methods=['POST'])
 def getHtmlFilesWithNameMarked():
     jsonResult = uploadFile()
+    if jsonResult['succes']:
+        if giveTypeOfFile(jsonResult["filename"]) == "html":
+            path = "files_to_delete/mark_" + jsonResult["filename"]
+            dh = DocumentHandlerHTML("files_to_processing/" + jsonResult["filename"],nlp,destiny=path) 
+            dh.documentTagger()
+            return send_file(path, as_attachment=True)
+        else:
+            jsonResult['succes'] = False
+            jsonResult['error'] = "This operation can only exist for html files"
     return jsonResult
 
 @app.route('/file/giveCsvFile', methods=['POST'])
 def giveCsvFile():
     jsonResult = uploadFile()
     if jsonResult['succes']:
-        dh = giveDocumentHandler(jsonResult["filename"],"_data.csv")
+        dh = giveDocumentHandler(
+            jsonResult["filename"],
+            "files_to_delete/" + jsonResult["filename"].replace(
+                "."+giveTypeOfFile(jsonResult["filename"]),
+                "_data.csv"))
         path = dh.createFileOfName()
         print(path)
         return send_file(path, as_attachment=True)

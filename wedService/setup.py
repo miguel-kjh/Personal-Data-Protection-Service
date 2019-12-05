@@ -1,23 +1,16 @@
 import os
 import urllib.request
-from app import app
+from app import app,version
 from flask import Flask, flash, request, redirect, render_template,send_file
 from werkzeug.utils import secure_filename
 
 import spacy
 import re
 from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
+from utils import giveTypeOfFile,allowedFile
 
-nlp = spacy.load("es_core_news_md")
+nlp = spacy.load("es_core_news_sm")
 print("model load")
-
-version = "alpha 1.0"
-ALLOWED_EXTENSIONS = set(['docx', 'pdf', 'xlsx', 'xlsm', 'xls', 'html'])
-def allowedFile(filename:str) -> bool:
-	return giveTypeOfFile(filename) in ALLOWED_EXTENSIONS
-
-def giveTypeOfFile(filename:str) -> str:
-    return '.' in filename and filename.rsplit('.', 1)[1].lower()
 
 def giveDocumentHandler(filename:str,destiny:str="") -> DocumentHandler:
     typeFile = giveTypeOfFile(filename)
@@ -42,6 +35,7 @@ def uploadFile() -> dict:
     }
     if request.method == 'POST':
         # check if the post request has the file part
+        print(request.files)
         if 'file' not in request.files:
             result['error'] = "No file part"
             return result
@@ -63,18 +57,12 @@ def uploadFile() -> dict:
 
 @app.route('/')
 def main():
-    return "hello, version aplha 1.0"
+    return "hello, version " + version
 
 @app.route('/version')
 def getVersion():
     return {
         "version":version
-    }
-
-@app.route('/file')
-def getOperations():
-    return {
-        "operations":"encode,target,give list of names and give csv of names"
     }
 
 @app.route('/file/encode', methods=['POST'])
@@ -87,7 +75,7 @@ def getFileEncode():
         return send_file(path, as_attachment=True)
     return jsonResult
 
-@app.route('/file/listNames', methods=['POST'])
+@app.route('/file/list-names', methods=['POST'])
 def getListOfNames():
     jsonResult = uploadFile()
     if jsonResult["succes"]:
@@ -100,7 +88,7 @@ def getListOfNames():
         return result
     return jsonResult
 
-@app.route('/file/target/htmlFile', methods=['POST'])
+@app.route('/file/tagger-html', methods=['POST'])
 def getHtmlFilesWithNameMarked():
     jsonResult = uploadFile()
     if jsonResult['succes']:
@@ -114,7 +102,7 @@ def getHtmlFilesWithNameMarked():
             jsonResult['error'] = "This operation can only exist for html files"
     return jsonResult
 
-@app.route('/file/giveCsvFile', methods=['POST'])
+@app.route('/file/csv-file', methods=['POST'])
 def giveCsvFile():
     jsonResult = uploadFile()
     if jsonResult['succes']:

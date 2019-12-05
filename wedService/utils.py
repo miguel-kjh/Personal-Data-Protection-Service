@@ -8,6 +8,7 @@ from docx.oxml.text.paragraph import CT_P
 from docx.oxml.table import CT_Tbl
 from docx.table import _Cell, Table, _Row
 from docx.text.paragraph import Paragraph
+from app import ALLOWED_EXTENSIONS
 
 def proc_pdf3k(document):
     fp = open(document, 'rb')
@@ -90,3 +91,9 @@ def proc_docx(document):
                     for paragraph in cell.paragraphs:
                         row_data.append(paragraph.text)
                 print("\t".join(row_data))
+
+def allowedFile(filename:str) -> bool:
+	return giveTypeOfFile(filename) in ALLOWED_EXTENSIONS
+
+def giveTypeOfFile(filename:str) -> str:
+    return '.' in filename and filename.rsplit('.', 1)[1].lower()

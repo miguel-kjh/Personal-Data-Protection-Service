@@ -77,3 +77,9 @@ class spanishNamesDB():
 
     def __del__(self):
         self._db_connection.close()
+
+
+import spacy
+if __name__ == "__main__":
+    s = SearcherNamesTexts(spacy.load("es_core_news_sm"))
+    print(s.searchNames("DELETE FROM SURNAME;"))

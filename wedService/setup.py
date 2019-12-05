@@ -1,6 +1,6 @@
 import os
 import urllib.request
-from app import app,version
+from app import app,version,UPLOAD_FOLDER
 from flask import Flask, flash, request, redirect, render_template,send_file
 from werkzeug.utils import secure_filename
 
@@ -8,15 +8,15 @@ import spacy
 import re
 from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
 from utils import giveTypeOfFile,allowedFile
+from ConnectionFilesInformationDB import ConnectionFilesInformation
 
 nlp = spacy.load("es_core_news_sm")
 print("model load")
 
 def giveDocumentHandler(filename:str,destiny:str="") -> DocumentHandler:
     typeFile = giveTypeOfFile(filename)
-    filename = "files_to_processing/" + filename
+    filename =  UPLOAD_FOLDER + "/" + filename
     destiny = destiny
-    print(destiny)
     if typeFile == "docx":
         dh = DocumentHandlerDocx(filename,nlp,destiny=destiny)
     elif typeFile == "pdf":
@@ -35,7 +35,6 @@ def uploadFile() -> dict:
     }
     if request.method == 'POST':
         # check if the post request has the file part
-        print(request.files)
         if 'file' not in request.files:
             result['error'] = "No file part"
             return result
@@ -44,11 +43,21 @@ def uploadFile() -> dict:
             result['error'] = "No file selected for uploading"
             return result
         if file and allowedFile(file.filename):
-            filename = secure_filename(file.filename)
-            file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-            result['filename'] = filename
-            result['succes'] = True
-            result['error'] = None
+            typeOfFile = giveTypeOfFile(file.filename)
+            con = ConnectionFilesInformation()
+            identifie = con.insertDataFiles(file.filename,UPLOAD_FOLDER,False,typeOfFile)
+            print(identifie)
+            if type(identifie) != bool:
+                filename = secure_filename(file.filename)
+                file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                result['filename'] = filename
+                result['succes'] = True
+                result['error'] = None
+                result['type'] = typeOfFile
+                result['id'] = identifie
+            else:
+                result['succes'] = False
+                result['error'] = "Error in serve storage"
         else:
             result['error'] = "Allowed file types are docx, pdf, xlsx, xlsm, xls, html"
             return result
@@ -69,9 +78,12 @@ def getVersion():
 def getFileEncode():
     jsonResult = uploadFile()
     if jsonResult['succes']:
-        path = "files_to_delete/encode_" + jsonResult["filename"]
+        path =  UPLOAD_FOLDER + "/encode_" + jsonResult["filename"]
         dh = giveDocumentHandler(jsonResult["filename"], path)
         dh.documentsProcessing()
+        con = ConnectionFilesInformation()
+        identifie = con.insertDataFiles("encode_" + jsonResult["filename"],UPLOAD_FOLDER,False,jsonResult['type'])
+        print(identifie)
         return send_file(path, as_attachment=True)
     return jsonResult
 
@@ -93,7 +105,7 @@ def getHtmlFilesWithNameMarked():
     jsonResult = uploadFile()
     if jsonResult['succes']:
         if giveTypeOfFile(jsonResult["filename"]) == "html":
-            path = "files_to_delete/mark_" + jsonResult["filename"]
+            path = UPLOAD_FOLDER + "/mark_" + jsonResult["filename"]
             dh = DocumentHandlerHTML("files_to_processing/" + jsonResult["filename"],nlp,destiny=path) 
             dh.documentTagger()
             return send_file(path, as_attachment=True)

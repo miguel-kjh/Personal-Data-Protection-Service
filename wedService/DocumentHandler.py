@@ -38,7 +38,6 @@ class DocumentHandler():
 
     def createFileOfName(self):
         self.createCsv(self.giveListNames())
-        return self.destiny
 
     def giveListNames(self):
         pass

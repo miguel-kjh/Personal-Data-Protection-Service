@@ -1,1 +1,0 @@
-rm -r files_to_processing/*

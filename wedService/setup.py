@@ -7,8 +7,8 @@ from werkzeug.utils import secure_filename
 import spacy
 import re
 from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
-from utils import giveTypeOfFile,allowedFile
-from ConnectionFilesInformationDB import ConnectionFilesInformation
+from utils import giveTypeOfFile,allowedFile,giveFileNameUnique
+from ConnectionFileLog import ConnectionFileLog
 
 nlp = spacy.load("es_core_news_sm")
 print("model load")
@@ -44,17 +44,15 @@ def uploadFile() -> dict:
             return result
         if file and allowedFile(file.filename):
             typeOfFile = giveTypeOfFile(file.filename)
-            con = ConnectionFilesInformation()
-            identifie = con.insertDataFiles(file.filename,UPLOAD_FOLDER,False,typeOfFile)
-            print(identifie)
-            if type(identifie) != bool:
-                filename = secure_filename(file.filename)
+            con = ConnectionFileLog()
+            filename = giveFileNameUnique(secure_filename(file.filename),typeOfFile)
+            identifie = con.insertFileLog(filename,UPLOAD_FOLDER,False,typeOfFile)
+            if identifie:
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 result['filename'] = filename
                 result['succes'] = True
                 result['error'] = None
                 result['type'] = typeOfFile
-                result['id'] = identifie
             else:
                 result['succes'] = False
                 result['error'] = "Error in serve storage"
@@ -81,10 +79,13 @@ def getFileEncode():
         path =  UPLOAD_FOLDER + "/encode_" + jsonResult["filename"]
         dh = giveDocumentHandler(jsonResult["filename"], path)
         dh.documentsProcessing()
-        con = ConnectionFilesInformation()
-        identifie = con.insertDataFiles("encode_" + jsonResult["filename"],UPLOAD_FOLDER,False,jsonResult['type'])
-        print(identifie)
-        return send_file(path, as_attachment=True)
+        con = ConnectionFileLog()
+        con.updateDelete(jsonResult["filename"])
+        #TODO HACER ALGO CON LOS FICHEROS GENERADOS
+        con.insertFileLog("encode_" + jsonResult["filename"],UPLOAD_FOLDER,False,jsonResult['type']) 
+        fileSend = send_file(path, as_attachment=True)
+        con.updateDelete("encode_" + jsonResult["filename"])
+        return fileSend
     return jsonResult
 
 @app.route('/file/list-names', methods=['POST'])
@@ -92,12 +93,13 @@ def getListOfNames():
     jsonResult = uploadFile()
     if jsonResult["succes"]:
         dh = giveDocumentHandler(jsonResult["filename"])
-        result = {
+        con = ConnectionFileLog()
+        con.updateDelete(jsonResult["filename"])
+        return {
             "error":None,
             "succes": True,
             "Names": dh.giveListNames()
         }
-        return result
     return jsonResult
 
 @app.route('/file/tagger-html', methods=['POST'])
@@ -108,7 +110,13 @@ def getHtmlFilesWithNameMarked():
             path = UPLOAD_FOLDER + "/mark_" + jsonResult["filename"]
             dh = DocumentHandlerHTML("files_to_processing/" + jsonResult["filename"],nlp,destiny=path) 
             dh.documentTagger()
-            return send_file(path, as_attachment=True)
+            con = ConnectionFileLog()
+            con.updateDelete(jsonResult["filename"])
+            #TODO HACER ALGO CON LOS FICHEROS GENERADOS
+            con.insertFileLog("mark_" + jsonResult["filename"],UPLOAD_FOLDER,False,jsonResult['type']) 
+            fileSend = send_file(path, as_attachment=True)
+            con.updateDelete("mark_" + jsonResult["filename"])
+            return fileSend
         else:
             jsonResult['succes'] = False
             jsonResult['error'] = "This operation can only exist for html files"
@@ -118,14 +126,16 @@ def getHtmlFilesWithNameMarked():
 def giveCsvFile():
     jsonResult = uploadFile()
     if jsonResult['succes']:
-        dh = giveDocumentHandler(
-            jsonResult["filename"],
-            "files_to_delete/" + jsonResult["filename"].replace(
-                "."+giveTypeOfFile(jsonResult["filename"]),
-                "_data.csv"))
-        path = dh.createFileOfName()
-        print(path)
-        return send_file(path, as_attachment=True)
+        destiny = jsonResult["filename"].replace("."+jsonResult["type"],"_data.csv")
+        path = UPLOAD_FOLDER + "/" + destiny
+        dh = giveDocumentHandler(jsonResult["filename"],path)
+        dh.createFileOfName()
+        con = ConnectionFileLog()
+        con.updateDelete(jsonResult["filename"])
+        con.insertFileLog(destiny,UPLOAD_FOLDER,False,jsonResult['type']) 
+        fileResult = send_file(path, as_attachment=True)
+        con.updateDelete(destiny)
+        return fileResult
     return jsonResult
 
 if __name__ == "__main__":

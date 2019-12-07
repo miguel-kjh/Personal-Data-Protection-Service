@@ -9,6 +9,7 @@ import re
 from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
 from utils import giveTypeOfFile,allowedFile,giveFileNameUnique
 from ConnectionFileLog import ConnectionFileLog
+from SearcherNamesTexts import SearcherNamesTexts
 
 nlp = spacy.load("es_core_news_sm")
 print("model load")
@@ -42,14 +43,17 @@ def uploadFile() -> dict:
         if file.filename == '':
             result['error'] = "No file selected for uploading"
             return result
+        RealFilename = secure_filename(file.filename)
+        result['filename'] = RealFilename
         if file and allowedFile(file.filename):
             typeOfFile = giveTypeOfFile(file.filename)
             con = ConnectionFileLog()
-            filename = giveFileNameUnique(secure_filename(file.filename),typeOfFile)
+            filename = giveFileNameUnique(RealFilename,typeOfFile)
             identifie = con.insertFileLog(filename,UPLOAD_FOLDER,False,typeOfFile)
             if identifie:
                 file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
                 result['filename'] = filename
+                result['realFilename'] = RealFilename
                 result['succes'] = True
                 result['error'] = None
                 result['type'] = typeOfFile
@@ -106,7 +110,7 @@ def getListOfNames():
 def getHtmlFilesWithNameMarked():
     jsonResult = uploadFile()
     if jsonResult['succes']:
-        if giveTypeOfFile(jsonResult["filename"]) == "html":
+        if jsonResult['type'] == "html":
             path = UPLOAD_FOLDER + "/mark_" + jsonResult["filename"]
             dh = DocumentHandlerHTML("files_to_processing/" + jsonResult["filename"],nlp,destiny=path) 
             dh.documentTagger()
@@ -118,8 +122,14 @@ def getHtmlFilesWithNameMarked():
             con.updateDelete("mark_" + jsonResult["filename"])
             return fileSend
         else:
-            jsonResult['succes'] = False
-            jsonResult['error'] = "This operation can only exist for html files"
+            con = ConnectionFileLog()
+            con.updateDelete(jsonResult["filename"])
+            return {
+                'succes':False,
+                'error':"This operation can only exist for html files",
+                'filename':jsonResult['realFilename'],
+                'type':jsonResult['type']
+            }
     return jsonResult
 
 @app.route('/file/csv-file', methods=['POST'])
@@ -137,6 +147,29 @@ def giveCsvFile():
         con.updateDelete(destiny)
         return fileResult
     return jsonResult
+
+@app.route('/name-search', methods=['GET'])
+def nameSearch():
+    try:
+        sentence = request.args.get('sentence')     
+    except:
+        return {
+            'succes':False,
+            'error': "this URI use get"
+        }
+    if sentence != None:
+        sn = SearcherNamesTexts(nlp)
+        listName = sn.searchNames(str(sentence)) 
+        return{
+            'succes':True,
+            'error':None,
+            'names':[name['name'] for name in listName]
+        }
+    else:
+        return {
+            'succes':False,
+            'error':"The parameter are not valid",
+        }
 
 if __name__ == "__main__":
     app.run(debug = True)

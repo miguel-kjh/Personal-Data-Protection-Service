@@ -21,18 +21,14 @@
                 switch ($("#sel").val()) {
                     case "1":
                         $('#formId').attr('action', 'http://127.0.0.1:5000/file/list-names'); 
-                        console.log(1)      
                         break;
                     case "2":
                         $('#formId').attr('action', 'http://127.0.0.1:5000/file/encode');
-                        console.log(2)         
                         break;
                     case "3":
                         $('#formId').attr('action', 'http://127.0.0.1:5000/file/csv-file');       
-                        console.log(3)
                         break;
                     default:
-                        console.log(4)  
                         $('#formId').attr('action', 'http://127.0.0.1:5000/file/tagger-html');    
                 }
             }

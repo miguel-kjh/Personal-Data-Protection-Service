@@ -9,6 +9,9 @@ from docx.oxml.table import CT_Tbl
 from docx.table import _Cell, Table, _Row
 from docx.text.paragraph import Paragraph
 from app import ALLOWED_EXTENSIONS
+import random
+from datetime import datetime
+import hashlib
 
 def proc_pdf3k(document):
     fp = open(document, 'rb')
@@ -97,3 +100,8 @@ def allowedFile(filename:str) -> bool:
 
 def giveTypeOfFile(filename:str) -> str:
     return '.' in filename and filename.rsplit('.', 1)[1].lower()
+
+def giveFileNameUnique(filename:str, fileType:str) -> str:
+    filename = filename + str(datetime.now().timestamp())
+    sha = hashlib.sha256(filename.encode())
+    return sha.hexdigest() + "." + fileType

@@ -1,11 +1,38 @@
 <html>  
 <head>  
     <title>upload</title>  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
 </head>  
 <body>  
-    <form action = "http://127.0.0.1:5000/file/encode" method = "post" enctype="multipart/form-data">  
+    <form id="formId" action = "" method = "post" enctype="multipart/form-data">  
         <input type="file" name="file" />  
         <input type = "submit" value="Upload">  
-    </form>  
+    </form>
+    <select id="sel">
+        <option value="1" selected>lista de Nombres</option>
+        <option value="2">Codificación de Nombres</option>
+        <option value="3">csv</option>
+        <option value="4">Etiquetar html</option>
+    </select>
+    <script>
+        $(document).ready(function () {
+            setInterval(setTime, 5);
+            function setTime() {
+                switch ($("#sel").val()) {
+                    case "1":
+                        $('#formId').attr('action', 'http://127.0.0.1:5000/file/list-names'); 
+                        break;
+                    case "2":
+                        $('#formId').attr('action', 'http://127.0.0.1:5000/file/encode');
+                        break;
+                    case "3":
+                        $('#formId').attr('action', 'http://127.0.0.1:5000/file/csv-file');       
+                        break;
+                    default:
+                        $('#formId').attr('action', 'http://127.0.0.1:5000/file/tagger-html');    
+                }
+            }
+        });
+    </script>  
 </body>  
 </html>  

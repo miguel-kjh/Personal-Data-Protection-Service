@@ -38,7 +38,6 @@ class DocumentHandler():
 
     def createFileOfName(self):
         self.createCsv(self.giveListNames())
-        return self.destiny
 
     def giveListNames(self):
         pass
@@ -95,7 +94,7 @@ class DocumentHandlerPDF(DocumentHandler):
     def documentsProcessing(self):
         listNames = self.giveListNames()
         print(listNames[:])
-        if listNames is not []:
+        if len(listNames) > 0:
             listNames.sort(
                 key=lambda value: len(value),
                 reverse=True

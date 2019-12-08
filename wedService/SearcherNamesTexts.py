@@ -82,4 +82,4 @@ class spanishNamesDB():
 import spacy
 if __name__ == "__main__":
     s = SearcherNamesTexts(spacy.load("es_core_news_sm"))
-    print(s.searchNames("DELETE FROM SURNAME;"))
+    print(s.searchNames("Miguel angel"))

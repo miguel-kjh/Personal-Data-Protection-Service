@@ -2,7 +2,7 @@ from flask import Flask
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER = 'files_to_processing'
+UPLOAD_FOLDER = 'files_to_process'
 version = "alpha 2.0"
 ALLOWED_EXTENSIONS = set(['docx', 'pdf', 'xlsx', 'xlsm', 'xls', 'html'])
 

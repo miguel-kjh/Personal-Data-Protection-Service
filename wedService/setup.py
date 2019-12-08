@@ -112,7 +112,7 @@ def getHtmlFilesWithNameMarked():
     if jsonResult['succes']:
         if jsonResult['type'] == "html":
             path = UPLOAD_FOLDER + "/mark_" + jsonResult["filename"]
-            dh = DocumentHandlerHTML("files_to_processing/" + jsonResult["filename"],nlp,destiny=path) 
+            dh = DocumentHandlerHTML(UPLOAD_FOLDER + "/" + jsonResult["filename"],nlp,destiny=path) 
             dh.documentTagger()
             con = ConnectionFileLog()
             con.updateDelete(jsonResult["filename"])

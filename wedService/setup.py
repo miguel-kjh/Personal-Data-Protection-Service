@@ -5,6 +5,8 @@ from flask import Flask, flash, request, redirect, render_template,send_file
 from werkzeug.utils import secure_filename
 
 import spacy
+from spacy.pipeline import EntityRuler
+
 import re
 from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
 from utils import giveTypeOfFile,allowedFile,giveFileNameUnique
@@ -12,6 +14,15 @@ from ConnectionFileLog import ConnectionFileLog
 from SearcherNamesTexts import SearcherNamesTexts
 
 nlp = spacy.load("es_core_news_sm")
+pattern = [
+            {'POS': 'PROPN', 'OP': '+'},
+            {'TEXT': {'REGEX': 'de|el|del|-'}, 'OP': '?'},
+            {'POS': 'PROPN', 'OP': '?'}
+        ]
+ruler = EntityRuler(nlp)
+patterns = [{"label": "PER", "pattern": pattern}]
+ruler.add_patterns(patterns)
+nlp.add_pipe(ruler)
 print("model load")
 
 def giveDocumentHandler(filename:str,destiny:str="") -> DocumentHandler:

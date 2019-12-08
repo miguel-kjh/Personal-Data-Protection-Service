@@ -16,20 +16,21 @@
     </select>
     <script>
         $(document).ready(function () {
+            let server = "http://127.0.0.1:5000"
             setInterval(setTime, 5);
             function setTime() {
                 switch ($("#sel").val()) {
                     case "1":
-                        $('#formId').attr('action', 'http://127.0.0.1:5000/file/list-names'); 
+                        $('#formId').attr('action', server+'/file/list-names'); 
                         break;
                     case "2":
-                        $('#formId').attr('action', 'http://127.0.0.1:5000/file/encode');
+                        $('#formId').attr('action', server+'/file/encode');
                         break;
                     case "3":
-                        $('#formId').attr('action', 'http://127.0.0.1:5000/file/csv-file');       
+                        $('#formId').attr('action', server+'/file/csv-file');       
                         break;
                     default:
-                        $('#formId').attr('action', 'http://127.0.0.1:5000/file/tagger-html');    
+                        $('#formId').attr('action', server+'/file/tagger-html');    
                 }
             }
         });

@@ -93,7 +93,7 @@ class DocumentHandlerPDF(DocumentHandler):
 
     def documentsProcessing(self):
         listNames = self.giveListNames()
-        print(listNames[:])
+        #print(listNames[:])
         if len(listNames) > 0:
             listNames.sort(
                 key=lambda value: len(value),

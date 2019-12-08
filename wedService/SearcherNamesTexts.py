@@ -14,14 +14,6 @@ class SearcherNamesTexts():
         self.nlp = nlp
         self.errorRange = errorRange
         self.conection = spanishNamesDB()
-        pattern = [
-            {'POS': 'PROPN', 'OP': '+'},
-            {'TEXT': {'REGEX': 'de|el|del|-'}, 'OP': '?'},
-            {'POS': 'PROPN', 'OP': '?'}
-        ]
-        ruler = EntityRuler(self.nlp)
-        patterns = [{"label": "PER", "pattern": pattern}]
-        ruler.add_patterns(patterns)
 
     def checkNameInDB(self,fullName:str) -> bool:
         countWordsInName = 0
@@ -50,6 +42,7 @@ class SearcherNamesTexts():
         listNames = [
             (ent.text,ent.start_char,ent.end_char) for ent in doc.ents if ent.label_ == "PER"
             ]
+        print([(token.text, token.pos_, token.dep_) for token in doc])
         listOfDictWithName = []
         for name_complete in listNames:
             if self.checkNameInDB(name_complete[0]):
@@ -79,7 +72,7 @@ class spanishNamesDB():
         self._db_connection.close()
 
 
-import spacy
 if __name__ == "__main__":
     s = SearcherNamesTexts(spacy.load("es_core_news_sm"))
-    print(s.searchNames("Miguel angel"))
+    print(s.searchNames("CAROLINA BENITEZ ROSARIO"))
+    print(s.searchNames("Noelia Real Giménez"))

@@ -208,7 +208,7 @@ class DocumentHandlerHTML(DocumentHandler):
 
     def __init__(self,path:str,nlp,destiny:str = ""):
         super().__init__(path,nlp,destiny=destiny)
-        with open(self.document,"r") as f:
+        with open(self.document,"r", encoding="utf8") as f:
             self.soup = BeautifulSoup(f.read(), "lxml")
 
     def read(self):

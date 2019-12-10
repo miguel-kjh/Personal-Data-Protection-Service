@@ -2,9 +2,22 @@ import unittest
 from SearcherNamesTexts import SearcherNamesTexts
 from time import time
 import numpy as np
+import spacy
+from spacy.pipeline import EntityRuler
 
+nlp = spacy.load("es_core_news_md")
+pattern = [
+            {'POS': 'PROPN', 'OP': '+'},
+            {'TEXT': {'REGEX': 'de|el|del|-'}, 'OP': '?'},
+            {'POS': 'PROPN', 'OP': '?'}
+        ]
+ruler = EntityRuler(nlp)
+patterns = [{"label": "PER", "pattern": pattern}]
+ruler.add_patterns(patterns)
+nlp.add_pipe(ruler)
+print("model load")
 #Variable Test
-searchNamesText = SearcherNamesTexts(quick_model=False)
+searchNamesText = SearcherNamesTexts(nlp)
 textForTest = {
         "simple":"Miguel estuvo aquí hace dos minutos",
         "normal":"El calendario Gregoriano es debido a el papa Gregorio XIII y el juliano por Julio Cesar",
@@ -76,7 +89,7 @@ class TestPerformance(unittest.TestCase):
     def test_performance(self):
         LIMIT = 0.1  # 0.1 S
         sampleTime = []
-        with open("textos/el_quijote.txt",'r', encoding="utf8") as f:
+        with open("file_test/el_quijote.txt",'r', encoding="utf8") as f:
             for line in f:
                 st = time()
                 searchNamesText.searchNames(line)

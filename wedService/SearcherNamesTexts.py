@@ -43,6 +43,7 @@ class SearcherNamesTexts():
             (ent.text,ent.start_char,ent.end_char) for ent in doc.ents if ent.label_ == "PER"
             ]
         #print([(token.text, token.pos_, token.dep_) for token in doc])
+        #print(listNames)
         listOfDictWithName = []
         for name_complete in listNames:
             if self.checkNameInDB(name_complete[0]):
@@ -73,6 +74,18 @@ class spanishNamesDB():
 
 
 if __name__ == "__main__":
-    s = SearcherNamesTexts(spacy.load("es_core_news_sm"))
-    print(s.searchNames("CAROLINA BENITEZ ROSARIO"))
-    print(s.searchNames("Noelia Real Giménez"))
+    nlp = spacy.load("es_core_news_md")
+    pattern = [
+                {'POS': 'PROPN', 'OP': '+'},
+                {'TEXT': {'REGEX': 'de|el|del|-'}, 'OP': '?'},
+                {'POS': 'PROPN', 'OP': '?'}
+            ]
+    lable = "PER"
+    ruler = EntityRuler(nlp)
+    patterns = [{"label": lable, "pattern": pattern}]
+    ruler.add_patterns(patterns)
+    nlp.add_pipe(ruler)
+    s = SearcherNamesTexts(nlp)
+    print("Nombres finales", s.searchNames("CAROLINA BENITEZ ROSARIO"))
+    print("Nombres finales", s.searchNames("Noelia Real Giménez"))
+    print("Nombres finales", s.searchNames("Carolina Benitez Rosario"))

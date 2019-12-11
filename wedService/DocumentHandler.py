@@ -86,9 +86,12 @@ class DocumentHandlerPDF(DocumentHandler):
             layout = device.get_result()
             for lt_obj in layout:
                 if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
-                    doc = self.searcherNamesTexts.searchNames(lt_obj.get_text())
-                    for e in doc:
-                        listNames.append(e['name'].strip("\n"))
+                    for text in lt_obj.get_text().split("\n"):
+                        if text != '':
+                            print(text.split("\n"))
+                            doc = self.searcherNamesTexts.searchNames(text)
+                            for e in doc:
+                                listNames.append(e['name'].strip("\n"))
         return list(set(listNames))
 
     def documentsProcessing(self):

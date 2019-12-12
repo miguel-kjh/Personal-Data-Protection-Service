@@ -1,5 +1,6 @@
 ![Version](https://img.shields.io/badge/version-1.0-brightgreen.svg?style=flat-square)
 ![Version](https://img.shields.io/badge/release-beta-green.svg?style=flat-square)
+[![Supported Python Versions](https://img.shields.io/pypi/pyversions/rasa.svg)](https://pypi.python.org/pypi/rasa)
 
 
 # NameSearcher-WedService
@@ -17,3 +18,6 @@ Name Searcher is a web service dedicated to the handling of formatted files (pdf
      - /file/list-names -> send a JSON with a list of the names found in the file
      - /file/tagger-html -> tag names in html files
      - /file/csv-file -> find names and send the list in a CSV file
+ 
+ ## License
+ Licensed under the Apache License, Version 2.0. Copyright 2019 Miguel Ángel Medina Ramírez.

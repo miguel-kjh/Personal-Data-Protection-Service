@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 
 from utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
-from SearcherNamesTexts import SearcherNamesTexts
+from SearcherNamesTexts import SearcherNamesLikeEntities,SearcherNamesProcedure
 
 
 class DocumentHandler():
@@ -25,7 +25,7 @@ class DocumentHandler():
     def __init__(self, path:str, nlp, destiny:str = ""):
         self.document = path
         self.destiny = destiny
-        self.searcherNamesTexts = SearcherNamesTexts(nlp)
+        self.searcherNamesTexts = SearcherNamesProcedure(nlp)
 
     def read(self):
         pass
@@ -88,7 +88,6 @@ class DocumentHandlerPDF(DocumentHandler):
                 if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
                     for text in lt_obj.get_text().split("\n"):
                         if text != '':
-                            print(text.split("\n"))
                             doc = self.searcherNamesTexts.searchNames(text)
                             for e in doc:
                                 listNames.append(e['name'].strip("\n"))

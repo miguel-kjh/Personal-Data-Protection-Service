@@ -1,14 +1,8 @@
-import spacy
-from spacy.pipeline import EntityRuler
 import sqlite3 as lite
-from unidecode import unidecode
 from typing import Text
-
-def normalizeUnicode(string:str) -> str: 
-    return unidecode(string)
+from utils import normalizeUnicode,generatorNames
 
 class SearcherNamesTexts():
-    
     def __init__(self, nlp,errorRange:float=0.0):
         #spacy.prefer_gpu()
         self.nlp = nlp
@@ -20,7 +14,7 @@ class SearcherNamesTexts():
         countWordsInDB = 0
         normalizeName = normalizeUnicode(fullName).upper()
         for name in normalizeName.replace("-", " ").split():
-            if name not in ["DE", "DEL", "EL", "LA"]:
+            if name not in ["DE", "DEL"]:
                 countWordsInName += 1
                 try:
                     sentence = "select (select count(*) from surnames where surnames= '"+ name +"') OR" \
@@ -31,11 +25,20 @@ class SearcherNamesTexts():
                     print(identifier)
         return countWordsInName > 0 and countWordsInDB * 100 / countWordsInName > self.errorRange
 
+    def isName(self,fullName:str) -> bool:
+        pass
 
+    def searchNames(self,text:Text) -> list:
+        pass
+
+    def setErrorRange(self):
+        return self.errorRange
+    
+
+class SearcherNamesLikeEntities(SearcherNamesTexts):
     def isName(self,fullName:str) -> bool:
         doc = self.nlp(fullName)
         return True if len(doc.ents) == 1 and doc.ents[0].text == fullName and self.checkNameInDB(fullName) else False
-
 
     def searchNames(self,text:Text) -> list:
         doc = self.nlp(text)
@@ -48,17 +51,31 @@ class SearcherNamesTexts():
         for name_complete in listNames:
             if self.checkNameInDB(name_complete[0]):
                 listOfDictWithName.append({
-                    "name":name_complete[0],
-                    "star_char":name_complete[1],
-                    "end_char":name_complete[2]
+                        "name":name_complete[0],
+                        "star_char":name_complete[1],
+                        "end_char":name_complete[2]
                     })
         return listOfDictWithName
 
-    def getErrorRange(self) -> float:
-        return self.errorRange
+class SearcherNamesProcedure(SearcherNamesTexts):
 
-    def setErrorRange(self, error_range:float):
-        self.errorRange = error_range
+    def isName(self,fullName:str) -> bool:
+        return True if len(self.searchNames(fullName)) > 0 and self.searchNames(fullName)[0]['name'] == fullName else False
+    
+    def searchNames(self, text:Text)-> list:
+        listOfDictWithName = []
+        for token in generatorNames(self.nlp,text):
+            wordsName = [i[1].text for i in token]
+            nameComplete = " ".join(wordsName)
+            if self.checkNameInDB(nameComplete):
+                listOfDictWithName.append({
+                        "name":nameComplete,
+                        "star_char":text.find(wordsName[0]),
+                        "end_char":text.find(wordsName[-1]) + len(wordsName[-1])
+                    })
+        return listOfDictWithName
+
+    
 
 class spanishNamesDB():
 
@@ -72,20 +89,13 @@ class spanishNamesDB():
     def __del__(self):
         self._db_connection.close()
 
-
+from languageBuilder import languageBuilder
 if __name__ == "__main__":
-    nlp = spacy.load("es_core_news_md")
-    pattern = [
-                {'POS': 'PROPN', 'OP': '+'},
-                {'TEXT': {'REGEX': 'de|el|del|-'}, 'OP': '?'},
-                {'POS': 'PROPN', 'OP': '?'}
-            ]
-    lable = "PER"
-    ruler = EntityRuler(nlp)
-    patterns = [{"label": lable, "pattern": pattern}]
-    ruler.add_patterns(patterns)
-    nlp.add_pipe(ruler)
-    s = SearcherNamesTexts(nlp)
-    print("Nombres finales", s.searchNames("CAROLINA BENITEZ ROSARIO"))
-    print("Nombres finales", s.searchNames("Noelia Real Giménez"))
-    print("Nombres finales", s.searchNames("Carolina Benitez Rosario"))
+    nlp = languageBuilder().getlanguage()
+    s = SearcherNamesProcedure(nlp)
+    print("Nombres finales 1", s.searchNames("CAROLINA BENITEZ del ROSARIO y juez Daniel Rosas"))
+    print("Nombres finales 2", s.searchNames("Noelia Real Giménez"))
+    print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
+    print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
+    print("Nombres finales 4", s.searchNames("Miguel de Montes de Oca estuvo aquí hace dos minutos"))
+    print("Nombres finales 5", s.isName("Teclado"))

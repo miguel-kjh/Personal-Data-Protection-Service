@@ -1,23 +1,13 @@
 import unittest
-from SearcherNamesTexts import SearcherNamesTexts
+from SearcherNamesTexts import SearcherNamesLikeEntities,SearcherNamesProcedure
 from time import time
 import numpy as np
-import spacy
-from spacy.pipeline import EntityRuler
+from languageBuilder import languageBuilder
 
-nlp = spacy.load("es_core_news_md")
-pattern = [
-            {'POS': 'PROPN', 'OP': '+'},
-            {'TEXT': {'REGEX': 'de|el|del|-'}, 'OP': '?'},
-            {'POS': 'PROPN', 'OP': '?'}
-        ]
-ruler = EntityRuler(nlp)
-patterns = [{"label": "PER", "pattern": pattern}]
-ruler.add_patterns(patterns)
-nlp.add_pipe(ruler)
-print("model load")
+
+nlp = languageBuilder().getlanguage()
 #Variable Test
-searchNamesText = SearcherNamesTexts(nlp)
+searchNamesText = SearcherNamesProcedure(nlp)
 textForTest = {
         "simple":"Miguel estuvo aquí hace dos minutos",
         "normal":"El calendario Gregoriano es debido a el papa Gregorio XIII y el juliano por Julio Cesar",
@@ -37,6 +27,11 @@ class TestSearchText(unittest.TestCase):
     def test_start_end_char_name(self):
         dictionatyOfNames = searchNamesText.searchNames(textForTest["simple"])
         try:
+            self.assertNotEqual(dictionatyOfNames, [])
+        except AssertionError as e:
+            self.verificationErrors.append(str(e))
+            return
+        try:
             self.assertEqual(dictionatyOfNames[0]["star_char"], textForTest["simple"].find("Miguel"))
         except AssertionError as e:
             self.verificationErrors.append(str(e))
@@ -48,6 +43,11 @@ class TestSearchText(unittest.TestCase):
     def test_simple_look_for_names_by_searchNamesText(self):
         dictionatyOfNames = searchNamesText.searchNames(textForTest["simple"])
         try:
+            self.assertNotEqual(dictionatyOfNames, [])
+        except AssertionError as e:
+            self.verificationErrors.append(str(e))
+            return
+        try:
             self.assertEqual(len(dictionatyOfNames), 1)
         except AssertionError as e:
             self.verificationErrors.append(str(e))
@@ -58,6 +58,11 @@ class TestSearchText(unittest.TestCase):
 
     def test_normal_look_for_names_by_searchNamesText(self):
         dictionatyOfNames = searchNamesText.searchNames(textForTest["normal"])
+        try:
+            self.assertNotEqual(dictionatyOfNames, [])
+        except AssertionError as e:
+            self.verificationErrors.append(str(e))
+            return
         try:
             self.assertEqual(len(dictionatyOfNames), 2)
         except AssertionError as e:
@@ -85,17 +90,22 @@ class TestSearchText(unittest.TestCase):
                 self.assertEqual(dictionatyOfNames[index]["name"], names[index])
             except AssertionError as e:
                 self.verificationErrors.append(str(e))
-class TestPerformance(unittest.TestCase):
-    def test_performance(self):
+
+class TestPerformanceComparator(unittest.TestCase):
+    def test_performance_comparator(self):
         LIMIT = 0.1  # 0.1 S
         sampleTime = []
+        countNormalSearch = 0
         with open("file_test/el_quijote.txt",'r', encoding="utf8") as f:
             for line in f:
                 st = time()
-                searchNamesText.searchNames(line)
+                listdict = searchNamesText.searchNames(line)
                 sampleTime.append(time()-st)
+                countNormalSearch += len(listdict)
+                st = time()
         res = np.mean(sampleTime)
-        print(res)
+        print("Time NameSearch %f s" %(res))
+        print("Count Names: %d" %(countNormalSearch))
         self.assertTrue(res < LIMIT)
 
 

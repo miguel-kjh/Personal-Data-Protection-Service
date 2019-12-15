@@ -255,7 +255,7 @@ class DocumentHandlerHTML(DocumentHandler):
     def giveListNames(self):
         listNames = []
         blacklist = [ '[document]' , 'noscript' , 'header' , 
-        'html' , 'meta' , 'head' , 'input' , 'script', 'link'] # convertir esto en regex
+        'html' , 'meta' , 'head' , 'input' , 'script', 'link', 'lang']
         for lable in self.soup.find_all(text=True):
             if lable not in blacklist:
                 #print(lable)

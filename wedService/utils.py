@@ -114,10 +114,20 @@ def giveFileNameUnique(filename:str, fileType:str) -> str:
 def normalizeUnicode(string:str) -> str: 
     return unidecode(string)
 
+def cleanHeadAndTailOfList(listTokens:list):
+    for token in reversed(listTokens):
+        if token[1].pos_ == "PROPN": break
+        listTokens.remove(token)
+    for token in listTokens:
+        if token[1].pos_ == "PROPN": break
+        listTokens.remove(token)
+
 def generatorNames(nlp, text:Text):
     with nlp.disable_pipes('parser','ner'):
         doc = nlp(text)
-        listTokens = [(index,token) for index,token in enumerate(doc) if token.pos_ == 'PROPN' or token.text.lower() in ["de", "del", ","]]
+        articules = ["de", "del","-","el"]
+        listTokens = [(index,token) for index,token in enumerate(doc) if token.pos_ == 'PROPN' or token.text.lower() in articules]
+        cleanHeadAndTailOfList(listTokens)
         if listTokens == []: return listTokens
         names = [listTokens[0]]
         if len(listTokens) == 1 and names[0][1].pos_ == 'PROPN':

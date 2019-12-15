@@ -93,9 +93,12 @@ from languageBuilder import languageBuilder
 if __name__ == "__main__":
     nlp = languageBuilder().getlanguage()
     s = SearcherNamesProcedure(nlp)
-    print("Nombres finales 1", s.searchNames("CAROLINA BENITEZ del ROSARIO y juez Daniel Rosas"))
-    print("Nombres finales 2", s.searchNames("Noelia Real Giménez"))
-    print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
-    print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
-    print("Nombres finales 4", s.searchNames("Miguel de Montes de Oca estuvo aquí hace dos minutos"))
-    print("Nombres finales 5", s.isName("Teclado"))
+    #print("Nombres finales 1", s.searchNames("CAROLINA BENITEZ del ROSARIO y juez Daniel Rosas"))
+    #print("Nombres finales 2", s.searchNames("Noelia Real Giménez"))
+    #print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
+    #print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
+    #print("Nombres finales 4", s.searchNames("Miguel de Montes de Oca estuvo aquí hace dos minutos"))
+    print("Nombres finales 5", s.searchNames("Bien, soy el juez Cayo Medina de Lara, voy a nombrar a los representantes de la Asamblea: "
+                + "Laura Vega, "
+                + "Juan Sebastian Ramírez y "
+                + "Joseph Stetter."))

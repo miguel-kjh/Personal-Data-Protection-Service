@@ -8,7 +8,7 @@ import re
 from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
 from utils import giveTypeOfFile,allowedFile,giveFileNameUnique
 from ConnectionFileLog import ConnectionFileLog
-from SearcherNamesTexts import SearcherNamesTexts
+from SearcherNamesTexts import SearcherNamesProcedure,SearcherNamesLikeEntities
 
 from languageBuilder import languageBuilder
 
@@ -157,7 +157,7 @@ def nameSearch():
             'error': "this URI use get"
         }
     if sentence != None:
-        sn = SearcherNamesTexts(nlp)
+        sn = SearcherNamesProcedure(nlp)
         listName = sn.searchNames(str(sentence)) 
         return{
             'succes':True,

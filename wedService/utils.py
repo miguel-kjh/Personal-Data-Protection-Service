@@ -125,7 +125,7 @@ def cleanHeadAndTailOfList(listTokens:list):
 def generatorNames(nlp, text:Text):
     with nlp.disable_pipes('parser','ner'):
         doc = nlp(text)
-        articules = ["de", "del","-","el"]
+        articules = ["de", "del","-","el","los","todos"]
         listTokens = [(index,token) for index,token in enumerate(doc) if token.pos_ == 'PROPN' or token.text.lower() in articules]
         cleanHeadAndTailOfList(listTokens)
         if listTokens == []: return listTokens

@@ -8,13 +8,14 @@ class SearcherNamesTexts():
         self.nlp = nlp
         self.errorRange = errorRange
         self.conection = spanishNamesDB()
+        self.articules = ["DE", "DEL", "EL", "LOS", "TODOS"]
 
     def checkNameInDB(self,fullName:str) -> bool:
         countWordsInName = 0
         countWordsInDB = 0
         normalizeName = normalizeUnicode(fullName).upper()
         for name in normalizeName.replace("-", " ").split():
-            if name not in ["DE", "DEL"]:
+            if name not in self.articules:
                 countWordsInName += 1
                 try:
                     sentence = "select (select count(*) from surnames where surnames= '"+ name +"') OR" \

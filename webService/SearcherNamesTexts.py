@@ -77,6 +77,45 @@ class SearcherNamesProcedure(SearcherNamesTexts):
                     })
         return listOfDictWithName
 
+def lookForNames(doc) -> list:
+    c = []
+    articules = ["de", "del","-","el","los","todos"]
+    for index,token in enumerate(doc):
+        if index == 0 or index == len(doc)-1:
+            if token.pos_ == "PROPN":
+                c.append(True)
+            else:
+                c.append(False)
+        else:
+            if token.pos_ == "PROPN":
+                c.append(True)
+            else:
+                if token.text in articules and len(c) > 0 and c[len(c)-1] == True:
+                    c.append(True)
+                else:
+                    c.append(False)
+    return list(filter(lambda token: c[list(doc).index(token)] == True, list(doc)))
+
+
+class SearchNamesDeepSearch(SearcherNamesTexts):
+    def isName(self,fullName:str) -> bool:
+        return True
+    
+    def searchNames(self, text:Text)-> list:
+        listOfDictWithName = []
+        doc = self.nlp(text)
+        ln = lookForNames(doc)
+        print(ln)
+        """for names in ln:
+            if self.checkNameInDB(nameComplete):
+                localitation = text.find(nameComplete)
+                listOfDictWithName.append({
+                        "name":nameComplete,
+                        "star_char":text.find(nameComplete),
+                        "end_char":localitation + len(nameComplete)
+                    })"""
+        return listOfDictWithName
+
     
 
 class spanishNamesDB():
@@ -96,12 +135,12 @@ if __name__ == "__main__":
     lb = languageBuilder()
     lb.defineNameEntity()
     nlp = lb.getlanguage()
-    s = SearcherNamesProcedure(nlp)
-    #print("Nombres finales 1", s.searchNames("CAROLINA BENITEZ del ROSARIO y juez Daniel Rosas"))
-    #print("Nombres finales 2", s.searchNames("Noelia Real Giménez"))
-    #print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
-    #print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
-    #print("Nombres finales 4", s.searchNames("Miguel de Montes de Oca estuvo aquí hace dos minutos"))
+    s = SearchNamesDeepSearch(nlp)
+    print("Nombres finales 1", s.searchNames("CAROLINA BENITEZ del ROSARIO y juez Daniel Rosas"))
+    print("Nombres finales 2", s.searchNames("Noelia Real Giménez"))
+    print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
+    print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
+    print("Nombres finales 4", s.searchNames("Miguel de Montes de Oca estuvo aquí hace dos minutos"))
     print("Nombres finales 5", s.searchNames("Bien, soy el juez Cayo Medina de Lara, voy a nombrar a los representantes de la Asamblea: "
                 + "Laura Vega, "
                 + "Laura Sebastian Ramírez y "

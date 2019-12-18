@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 
 from utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
-from SearcherNamesTexts import SearcherNamesLikeEntities,SearcherNamesProcedure
+from SearcherNamesTexts import SearcherNamesLikeEntities,SearcherNamesProcedure,SearchNamesDeepSearch
 
 
 class DocumentHandler():
@@ -25,7 +25,7 @@ class DocumentHandler():
     def __init__(self, path:str, nlp, destiny:str = ""):
         self.document = path
         self.destiny = destiny
-        self.searcherNamesTexts = SearcherNamesProcedure(nlp)
+        self.searcherNamesTexts = SearchNamesDeepSearch(nlp)
 
     def read(self):
         pass
@@ -195,7 +195,7 @@ class DocumentHandlerExe(DocumentHandler):
         for key in self.df.keys():
             for index,ele in enumerate(self.df[key]):
                 if self.searcherNamesTexts.isName(str(ele)):
-                    self.df.at[index,key] = encode(self.df.at[index,key])
+                    self.df.at[index,key] = encode(str(ele))
         self.df.to_excel(self.destiny)
 
     def giveListNames(self):
@@ -203,7 +203,7 @@ class DocumentHandlerExe(DocumentHandler):
         for key in self.df.keys():
             for ele in self.df[key]:
                 if self.searcherNamesTexts.isName(str(ele)):
-                    listNames.append(ele)
+                    listNames.append(str(ele))
         return listNames
 
 class DocumentHandlerHTML(DocumentHandler):

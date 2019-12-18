@@ -94,26 +94,39 @@ def lookForNames(doc) -> list:
                     c.append(True)
                 else:
                     c.append(False)
-    return list(filter(lambda token: c[list(doc).index(token)] == True, list(doc)))
+    #print(c)
+    listNames = []
+    name = ""
+    for index,i in enumerate(c):
+        #print(name)
+        if i:
+            name += doc[index].text + " "
+            if index == len(c)-1:
+                listNames.append(name[:len(name)-1])
+        else:
+            if index >= 1 and c[index-1]:
+                listNames.append(name[:len(name)-1])
+            name = ""
+    return listNames
 
 
 class SearchNamesDeepSearch(SearcherNamesTexts):
     def isName(self,fullName:str) -> bool:
-        return True
+        return True if len(self.searchNames(fullName)) > 0 and self.searchNames(fullName)[0]['name'] == fullName else False
     
     def searchNames(self, text:Text)-> list:
         listOfDictWithName = []
-        doc = self.nlp(text)
-        ln = lookForNames(doc)
-        print(ln)
-        """for names in ln:
+        with self.nlp.disable_pipes('parser','ner'):
+            doc = self.nlp(text)
+        listNames = lookForNames(doc)
+        for nameComplete in listNames:
             if self.checkNameInDB(nameComplete):
                 localitation = text.find(nameComplete)
                 listOfDictWithName.append({
                         "name":nameComplete,
                         "star_char":text.find(nameComplete),
                         "end_char":localitation + len(nameComplete)
-                    })"""
+                    })
         return listOfDictWithName
 
     
@@ -128,6 +141,7 @@ class spanishNamesDB():
         return self._db_cur.execute(query)
 
     def __del__(self):
+        self._db_cur.close()
         self._db_connection.close()
 
 from languageBuilder import languageBuilder
@@ -136,11 +150,12 @@ if __name__ == "__main__":
     lb.defineNameEntity()
     nlp = lb.getlanguage()
     s = SearchNamesDeepSearch(nlp)
+    print("Nombres finales num", s.searchNames("Ángel Javier Eduardo Isidoro de todos los Santos"))
     print("Nombres finales 1", s.searchNames("CAROLINA BENITEZ del ROSARIO y juez Daniel Rosas"))
     print("Nombres finales 2", s.searchNames("Noelia Real Giménez"))
     print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
-    print("Nombres finales 3", s.searchNames("La señorita Maria Baute"))
-    print("Nombres finales 4", s.searchNames("Miguel de Montes de Oca estuvo aquí hace dos minutos"))
+    print("Nombres finales 3", s.searchNames("La señorita Carla Baute Sanchez"))
+    print("Nombres finales 4", s.searchNames("Miguel de Montes de Oca estuvo aquí hace 2 minutos"))
     print("Nombres finales 5", s.searchNames("Bien, soy el juez Cayo Medina de Lara, voy a nombrar a los representantes de la Asamblea: "
                 + "Laura Vega, "
                 + "Laura Sebastian Ramírez y "

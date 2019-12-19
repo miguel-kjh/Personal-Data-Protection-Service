@@ -8,7 +8,7 @@ import re
 from DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
 from utils import giveTypeOfFile,allowedFile,giveFileNameUnique
 from ConnectionFileLog import ConnectionFileLog
-from SearcherNamesTexts import SearcherNamesProcedure,SearcherNamesLikeEntities,SearchNamesDeepSearch
+from NameSearchByGenerator import NameSearchByGenerator
 
 from languageBuilder import languageBuilder
 

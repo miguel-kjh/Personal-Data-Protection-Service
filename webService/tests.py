@@ -1,5 +1,7 @@
 import unittest
-from SearcherNamesTexts import SearcherNamesLikeEntities,SearcherNamesProcedure,SearchNamesDeepSearch
+from NameSearchByEntities import NameSearchByEntities
+from NameSearchByBruteForce import NameSearchByBruteForce
+from NameSearchByGenerator import NameSearchByGenerator
 from time import time
 import numpy as np
 from languageBuilder import languageBuilder
@@ -7,7 +9,7 @@ from languageBuilder import languageBuilder
 
 nlp = languageBuilder().getlanguage()
 #Variable Test
-searchNamesText = SearcherNamesProcedure(nlp)
+searchNamesText = NameSearchByGenerator(nlp)
 textForTest = {
         "simple":"Miguel estuvo aquí hace dos minutos",
         "normal":"El calendario Gregoriano es debido a el papa Gregorio XIII y el juliano por Julio Cesar",

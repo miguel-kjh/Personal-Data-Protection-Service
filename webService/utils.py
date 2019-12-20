@@ -12,7 +12,6 @@ from app import ALLOWED_EXTENSIONS
 import random
 from datetime import datetime
 import hashlib
-from unidecode import unidecode
 from typing import Text
 
 
@@ -111,40 +110,4 @@ def giveFileNameUnique(filename:str, fileType:str) -> str:
     #return sha.hexdigest() + "." + fileType
     return str(datetime.now().timestamp()).replace(".","") + "." + fileType
 
-def normalizeUnicode(string:str) -> str: 
-    return unidecode(string)
 
-def cleanHeadAndTailOfList(listTokens:list):
-    for token in reversed(listTokens):
-        if token[1].pos_ == "PROPN": break
-        listTokens.remove(token)
-    for token in listTokens:
-        if token[1].pos_ == "PROPN": break
-        listTokens.remove(token)
-
-def generatorNames(nlp, text:Text):
-    with nlp.disable_pipes('parser','ner'):
-        doc = nlp(text)
-        articules = ["de", "del","-","el","los","todos"]
-        listTokens = [(index,token) for index,token in enumerate(doc) if token.pos_ == 'PROPN' or token.text.lower() in articules]
-        cleanHeadAndTailOfList(listTokens)
-        if listTokens == []: return listTokens
-        names = [listTokens[0]]
-        if len(listTokens) == 1 and names[0][1].pos_ == 'PROPN':
-            yield names
-        else:
-            countNames = 0
-            for token in listTokens[1:]:
-                if token[0] == names[countNames][0] + 1:
-                    names.append(token)
-                    if listTokens[-1] == token:
-                        if names[0][1].pos_ == 'PROPN' and names[-1][1].pos_ == names[0][1].pos_:
-                            yield names
-                        break    
-                    countNames += 1
-                else:
-                    if names[0][1].pos_ == 'PROPN' and names[-1][1].pos_ == names[0][1].pos_:
-                        yield names
-                    names = []
-                    names.append(token)
-                    countNames = 0

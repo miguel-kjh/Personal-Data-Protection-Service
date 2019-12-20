@@ -1,5 +1,7 @@
 import unittest
-from SearcherNamesTexts import SearcherNamesLikeEntities,SearcherNamesProcedure
+from NameSearchByEntities import NameSearchByEntities
+from NameSearchByBruteForce import NameSearchByBruteForce
+from NameSearchByGenerator import NameSearchByGenerator
 from time import time
 import numpy as np
 from languageBuilder import languageBuilder
@@ -7,7 +9,7 @@ from languageBuilder import languageBuilder
 
 nlp = languageBuilder().getlanguage()
 #Variable Test
-searchNamesText = SearcherNamesProcedure(nlp)
+searchNamesText = NameSearchByGenerator(nlp)
 textForTest = {
         "simple":"Miguel estuvo aquí hace dos minutos",
         "normal":"El calendario Gregoriano es debido a el papa Gregorio XIII y el juliano por Julio Cesar",
@@ -96,13 +98,15 @@ class TestPerformanceComparator(unittest.TestCase):
         LIMIT = 0.1  # 0.1 S
         sampleTime = []
         countNormalSearch = 0
-        with open("file_test/el_quijote.txt",'r', encoding="utf8") as f:
-            for line in f:
+        with open("file_test/GL_ALBA.SAM",'r', encoding="utf8") as testFile, open("file_test/count.txt", 'w') as nameFile:
+            listNames = []
+            for line in testFile:
                 st = time()
                 listdict = searchNamesText.searchNames(line)
                 sampleTime.append(time()-st)
                 countNormalSearch += len(listdict)
-                st = time()
+                listNames[len(listNames):] = [l['name'] for l in listdict]
+            nameFile.writelines([name + "\n" for name in set(listNames)])
         res = np.mean(sampleTime)
         print("Time NameSearch %f s" %(res))
         print("Count Names: %d" %(countNormalSearch))

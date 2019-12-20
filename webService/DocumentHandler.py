@@ -17,7 +17,7 @@ from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 
 from utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
-from SearcherNamesTexts import SearcherNamesLikeEntities,SearcherNamesProcedure
+from NameSearchByGenerator import NameSearchByGenerator
 
 
 class DocumentHandler():
@@ -25,7 +25,7 @@ class DocumentHandler():
     def __init__(self, path:str, nlp, destiny:str = ""):
         self.document = path
         self.destiny = destiny
-        self.searcherNamesTexts = SearcherNamesProcedure(nlp)
+        self.nameSearch = NameSearchByGenerator(nlp)
 
     def read(self):
         pass
@@ -88,7 +88,7 @@ class DocumentHandlerPDF(DocumentHandler):
                 if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
                     for text in lt_obj.get_text().split("\n"):
                         if text != '':
-                            doc = self.searcherNamesTexts.searchNames(text)
+                            doc = self.nameSearch.searchNames(text)
                             for e in doc:
                                 listNames.append(e['name'].strip("\n"))
         return list(set(listNames))
@@ -146,7 +146,7 @@ class DocumentHandlerDocx(DocumentHandler):
 
     def localizeNames(self,block,paragraph):
         for r in block.runs:
-            listOfMarks = self.searcherNamesTexts.searchNames(r.text)
+            listOfMarks = self.nameSearch.searchNames(r.text)
             if listOfMarks not in []:
                 index = 0
                 for ele in listOfMarks:
@@ -164,7 +164,7 @@ class DocumentHandlerDocx(DocumentHandler):
         listNames = []
         for block in iter_block_items(doc):
             if isinstance(block, Paragraph):
-                listOfMarks = self.searcherNamesTexts.searchNames(block.text)
+                listOfMarks = self.nameSearch.searchNames(block.text)
                 if listOfMarks != []:
                     listNames[len(listNames):] = [name['name'] for name in listOfMarks]
             elif isinstance(block, Table):
@@ -173,7 +173,7 @@ class DocumentHandlerDocx(DocumentHandler):
                 for row in block.rows:
                     for cell in row.cells:
                         for paragraph in cell.paragraphs:
-                            listOfMarks = self.searcherNamesTexts.searchNames(paragraph.text)
+                            listOfMarks = self.nameSearch.searchNames(paragraph.text)
                             if listOfMarks != []:
                                 listNames[len(listNames):] = [name['name'] for name in listOfMarks]
             else:
@@ -194,16 +194,16 @@ class DocumentHandlerExe(DocumentHandler):
     def documentsProcessing(self):
         for key in self.df.keys():
             for index,ele in enumerate(self.df[key]):
-                if self.searcherNamesTexts.isName(str(ele)):
-                    self.df.at[index,key] = encode(self.df.at[index,key])
+                if self.nameSearch.isName(str(ele)):
+                    self.df.at[index,key] = encode(str(ele))
         self.df.to_excel(self.destiny)
 
     def giveListNames(self):
         listNames = []
         for key in self.df.keys():
             for ele in self.df[key]:
-                if self.searcherNamesTexts.isName(str(ele)):
-                    listNames.append(ele)
+                if self.nameSearch.isName(str(ele)):
+                    listNames.append(str(ele))
         return listNames
 
 class DocumentHandlerHTML(DocumentHandler):
@@ -217,7 +217,7 @@ class DocumentHandlerHTML(DocumentHandler):
         print(self.soup)
 
     def locateNames(self,sentence):
-        listNames = self.searcherNamesTexts.searchNames(str(sentence))
+        listNames = self.nameSearch.searchNames(str(sentence))
         if listNames is []:
             return sentence
         newSentence = ""
@@ -230,7 +230,7 @@ class DocumentHandlerHTML(DocumentHandler):
         return newSentence
 
     def encodeNames(self,sentence):
-        listNames = self.searcherNamesTexts.searchNames(str(sentence))
+        listNames = self.nameSearch.searchNames(str(sentence))
         if listNames is []:
             return sentence
         newSentence = ""
@@ -259,7 +259,7 @@ class DocumentHandlerHTML(DocumentHandler):
         for lable in self.soup.find_all(text=True):
             if lable not in blacklist:
                 #print(lable)
-                listOfMarks = self.searcherNamesTexts.searchNames(str(lable))
+                listOfMarks = self.nameSearch.searchNames(str(lable))
                 listNames[len(listNames):] = [name['name'].replace("\n","") for name in listOfMarks]
         return listNames
 

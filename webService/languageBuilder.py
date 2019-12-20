@@ -3,7 +3,7 @@ from spacy.pipeline import EntityRuler
 
 class languageBuilder():
     def __init__(self):
-        self.nlp = spacy.load("es_core_news_md")
+        self.nlp = spacy.load("es_core_news_sm")
         print("model load")
 
     def defineNameEntity(self):

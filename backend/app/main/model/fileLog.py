@@ -8,6 +8,7 @@ class FileLog(db.Model):
     folder = db.Column(db.String(255), nullable=False)
     isDelete = db.Column(db.Boolean, nullable=False)
     filetype = db.Column(db.String(255), nullable=False)
+    publicId = db.Column(db.String(100), unique=True,nullable=False)
 
     def __repr__(self):
         return '<file %r>' % self.name 

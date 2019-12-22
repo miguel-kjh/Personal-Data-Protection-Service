@@ -42,7 +42,6 @@ wasabi==0.2.2
 webexteamssdk==1.2
 websocket-client==0.54.0
 websockets==6.0
-Werkzeug==0.15.1
 widgetsnbextension==3.4.2
 wrapt==1.11.1
 xkit==0.0.0

@@ -21,16 +21,16 @@
             function setTime() {
                 switch ($("#sel").val()) {
                     case "1":
-                        $('#formId').attr('action', server+'/file/list-names'); 
+                        $('#formId').attr('action', server+'/search/file/list-names'); 
                         break;
                     case "2":
-                        $('#formId').attr('action', server+'/file/encode');
+                        $('#formId').attr('action', server+'/search/file/encode');
                         break;
                     case "3":
-                        $('#formId').attr('action', server+'/file/csv-file');       
+                        $('#formId').attr('action', server+'/search/file/csv-file');       
                         break;
                     default:
-                        $('#formId').attr('action', server+'/file/tagger-html');    
+                        $('#formId').attr('action', server+'/search/file/tagger-html');    
                 }
             }
         });

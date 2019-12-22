@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.0-brightgreen.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.1-brightgreen.svg?style=flat-square)
 ![Version](https://img.shields.io/badge/release-beta-green.svg?style=flat-square)
 
 # NameSearcher-WebService
@@ -11,11 +11,11 @@ Name Searcher is a web service dedicated to the handling of formatted files (pdf
   - SQlite: Relational database, lightweight and easy to use.
   
   ## Web service interface
-     - /version -> show api version
-     - /file/encode -> process files
-     - /file/list-names -> send a JSON with a list of the names found in the file
-     - /file/tagger-html -> tag names in html files
-     - /file/csv-file -> find names and send the list in a CSV file
+     - /search/version -> show api version
+     - /search/file/encode -> process files
+     - /search/file/list-names -> send a JSON with a list of the names found in the file
+     - /search/file/tagger-html -> tag names in html files
+     - /search/file/csv-file -> find names and send the list in a CSV file
  
  ## License
  Licensed under the Apache License, Version 2.0. Copyright 2019 Miguel Ángel Medina Ramírez.

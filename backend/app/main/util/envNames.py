@@ -1,5 +1,5 @@
 UPLOAD_FOLDER = 'storageFiles'
-VERSION = "1.0 beta"
+VERSION = "1.1 beta"
 ALLOWED_EXTENSIONS = set(['docx', 'pdf', 'xlsx', 'xlsm', 'xls', 'html'])
 
 import os

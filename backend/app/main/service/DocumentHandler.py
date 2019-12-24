@@ -22,10 +22,10 @@ from app.main.service.NameSearchByGenerator import NameSearchByGenerator
 
 class DocumentHandler():
 
-    def __init__(self, path:str, nlp, destiny:str = ""):
+    def __init__(self, path:str,destiny:str = ""):
         self.document = path
         self.destiny = destiny
-        self.nameSearch = NameSearchByGenerator(nlp)
+        self.nameSearch = NameSearchByGenerator()
 
     def read(self):
         pass
@@ -50,8 +50,8 @@ class DocumentHandler():
 #TODO? optimize
 class DocumentHandlerPDF(DocumentHandler):
 
-    def __init__(self, path:str, nlp,destiny:str = ""):
-        super().__init__(path,nlp,destiny=destiny)
+    def __init__(self, path:str,destiny:str = ""):
+        super().__init__(path,destiny=destiny)
         self.options = pdf_redactor.RedactorOptions()
         self.options.metadata_filters = {
             "Title": [lambda value: value],
@@ -183,8 +183,8 @@ class DocumentHandlerDocx(DocumentHandler):
 
 class DocumentHandlerExe(DocumentHandler):
 
-    def __init__(self,path:str,nlp,destiny:str = ""):
-        super().__init__(path,nlp,destiny=destiny)
+    def __init__(self,path:str,destiny:str = ""):
+        super().__init__(path,destiny=destiny)
         self.df = pd.read_excel(path)
 
     def read(self):
@@ -208,8 +208,8 @@ class DocumentHandlerExe(DocumentHandler):
 
 class DocumentHandlerHTML(DocumentHandler):
 
-    def __init__(self,path:str,nlp,destiny:str = ""):
-        super().__init__(path,nlp,destiny=destiny)
+    def __init__(self,path:str,destiny:str = ""):
+        super().__init__(path,destiny=destiny)
         with open(self.document,"r", encoding="utf8") as f:
             self.soup = BeautifulSoup(f.read(), "lxml")
 

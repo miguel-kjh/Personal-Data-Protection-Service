@@ -1,9 +1,16 @@
 import spacy
 from spacy.pipeline import EntityRuler
 
-class LanguageBuilder():
+class Singleton(type):
+    _instances = {}
+    def __call__(cls, *args, **kwargs):
+        if cls not in cls._instances:
+            cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
+        return cls._instances[cls]
+
+class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
-        self.nlp = spacy.load("es_core_news_sm")
+        self.nlp = spacy.load("es_core_news_md")
         print("model load")
 
     def defineNameEntity(self):

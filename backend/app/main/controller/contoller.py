@@ -13,7 +13,7 @@ import os
 
 api = NameSearchDto.api
 
-nlp = LanguageBuilder().getlanguage()
+LanguageBuilder() #Load model before a conections
 
 def uploadFile() -> dict:
     result = {
@@ -48,13 +48,13 @@ def uploadFile() -> dict:
 def giveDocumentHandler(filename:str,typeFile:str,destiny:str="") -> DocumentHandler:
     destinyPath = os.path.join(path,destiny)
     if typeFile == "docx":
-        dh = DocumentHandlerDocx(filename,nlp,destiny=destinyPath)
+        dh = DocumentHandlerDocx(filename,destiny=destinyPath)
     elif typeFile == "pdf":
-        dh = DocumentHandlerPDF(filename,nlp,destiny=destinyPath)
+        dh = DocumentHandlerPDF(filename,destiny=destinyPath)
     elif typeFile in ['xlsx', 'xlsm', 'xls']:
-        dh = DocumentHandlerExe(filename,nlp,destiny=destinyPath)
+        dh = DocumentHandlerExe(filename,destiny=destinyPath)
     elif typeFile == "html":
-        dh = DocumentHandlerHTML(filename,nlp,destiny=destinyPath)
+        dh = DocumentHandlerHTML(filename,destiny=destinyPath)
     return dh
 
 @api.route("/")
@@ -195,7 +195,6 @@ class targetHtml(Resource):
             nameOfNewDocument = "mark_"+res["filename"]
             dh = DocumentHandlerHTML(
                 os.path.join(path,res["filename"]),
-                nlp,
                 os.path.join(path,nameOfNewDocument)
             )
             dh.documentTagger()

@@ -9,9 +9,7 @@ def cleanHeadAndTailOfList(listTokens:list):
         if token.pos_ == "PROPN": break
         listTokens.remove(token)
 
-def generatorNames(nlp, text:Text):
-    with nlp.disable_pipes('parser','ner'):
-        doc = nlp(text)
+def generatorNames(doc, text:Text):
     articules = ["de", "del","-","el","los","todos"]
     listTokens = [token for token in doc if token.pos_ == 'PROPN' or token.text.lower() in articules]
     cleanHeadAndTailOfList(listTokens)
@@ -54,7 +52,9 @@ class NameSearchByGenerator(NameSearch):
     
     def searchNames(self, text:Text)-> list:
         listOfDictWithName = []
-        for token in generatorNames(self.nlp,text):
+        with self.nlp.disable_pipes('parser','ner'):
+            doc = self.nlp(text)
+        for token in generatorNames(doc,text):
             wordsName = [i.text for i in token[0]]
             nameComplete = " ".join(wordsName)
             if self.checkNameInDB(nameComplete):

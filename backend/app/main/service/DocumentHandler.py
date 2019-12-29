@@ -18,6 +18,7 @@ from bs4.formatter import HTMLFormatter
 
 from app.main.service.utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
 from app.main.service.NameSearchByGenerator import NameSearchByGenerator
+from app.main.service.NameSearchByEntities import NameSearchByEntities
 
 
 class DocumentHandler():
@@ -25,7 +26,7 @@ class DocumentHandler():
     def __init__(self, path:str,destiny:str = ""):
         self.document = path
         self.destiny = destiny
-        self.nameSearch = NameSearchByGenerator()
+        self.nameSearch = NameSearchByEntities()
 
     def read(self):
         pass

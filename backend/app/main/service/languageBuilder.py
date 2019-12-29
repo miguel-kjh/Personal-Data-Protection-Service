@@ -1,5 +1,6 @@
 import spacy
 from spacy.pipeline import EntityRuler
+from spacy.tokens import Token
 
 class Singleton(type):
     _instances = {}
@@ -16,13 +17,13 @@ class LanguageBuilder(metaclass=Singleton):
     def defineNameEntity(self):
         pattern = [
                     {'POS': 'PROPN', 'OP': '+'},
-                    {'TEXT': {'REGEX': 'de|del|-'}, 'OP': '?'},
+                    {'TEXT': {'REGEX': 'de|del|-|el|los|todos'}, 'OP': '?'},
                     {'POS': 'PROPN', 'OP': '?'}
                 ]
         ruler = EntityRuler(self.nlp)
-        patterns = [{"label": "PER", "pattern": pattern}]
+        patterns = [{"label": "NAME", "pattern": pattern}]
         ruler.add_patterns(patterns)
-        self.nlp.add_pipe(ruler)
+        self.nlp.add_pipe(ruler,before='ner')
     
     def getlanguage(self):
         return self.nlp

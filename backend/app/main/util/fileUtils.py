@@ -1,4 +1,4 @@
-from .envNames import ALLOWED_EXTENSIONS
+from app.main.util.envNames import ALLOWED_EXTENSIONS
 from datetime import datetime
 
 def allowedFile(filename:str) -> bool:

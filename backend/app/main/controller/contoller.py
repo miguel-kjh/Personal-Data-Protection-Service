@@ -13,7 +13,7 @@ import os
 
 api = NameSearchDto.api
 
-nlp = LanguageBuilder().getlanguage()
+LanguageBuilder().defineNameEntity() #Load model before a conections
 
 def uploadFile() -> dict:
     result = {
@@ -48,13 +48,13 @@ def uploadFile() -> dict:
 def giveDocumentHandler(filename:str,typeFile:str,destiny:str="") -> DocumentHandler:
     destinyPath = os.path.join(path,destiny)
     if typeFile == "docx":
-        dh = DocumentHandlerDocx(filename,nlp,destiny=destinyPath)
+        dh = DocumentHandlerDocx(filename,destiny=destinyPath)
     elif typeFile == "pdf":
-        dh = DocumentHandlerPDF(filename,nlp,destiny=destinyPath)
+        dh = DocumentHandlerPDF(filename,destiny=destinyPath)
     elif typeFile in ['xlsx', 'xlsm', 'xls']:
-        dh = DocumentHandlerExe(filename,nlp,destiny=destinyPath)
+        dh = DocumentHandlerExe(filename,destiny=destinyPath)
     elif typeFile == "html":
-        dh = DocumentHandlerHTML(filename,nlp,destiny=destinyPath)
+        dh = DocumentHandlerHTML(filename,destiny=destinyPath)
     return dh
 
 @api.route("/")
@@ -71,7 +71,7 @@ class version(Resource):
 
 @api.route("/file/encode")
 class encode(Resource):
-    @api.doc('...')
+    @api.doc('return a file with names encoded')
     def post(self):
         res = uploadFile()
         if res['succes']:
@@ -135,7 +135,7 @@ class listNames(Resource):
 
 @api.route('/file/csv-file')
 class csvFile(Resource):
-    @api.doc('...')
+    @api.doc('return a csv file with names of file sended')
     def post(self):
         res = uploadFile()
         if res['succes']:
@@ -171,13 +171,16 @@ class csvFile(Resource):
 
 @api.route('/file/tagger-html')
 class targetHtml(Resource):
-    @api.doc('...')
+    @api.doc('return a html file with the names trageted with a mark')
     def post(self):
         res = uploadFile()
         if res['succes']:
             if res['type'] != 'html':
+                filename = os.path.join(UPLOAD_FOLDER,res['filename'])
+                if os.path.exists(filename):
+                    os.remove(filename)
                 return {
-                    "filename":res['filename'],
+                    "filename":res['realFilename'],
                     "succes":False,
                     "error": "this operation is aviable only for html file"
                 },401
@@ -192,7 +195,6 @@ class targetHtml(Resource):
             nameOfNewDocument = "mark_"+res["filename"]
             dh = DocumentHandlerHTML(
                 os.path.join(path,res["filename"]),
-                nlp,
                 os.path.join(path,nameOfNewDocument)
             )
             dh.documentTagger()

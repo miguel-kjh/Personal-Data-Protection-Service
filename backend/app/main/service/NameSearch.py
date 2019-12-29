@@ -1,14 +1,15 @@
 import sqlite3 as lite
 from typing import Text
 from unidecode import unidecode
+from app.main.service.languageBuilder import LanguageBuilder
 
 def normalizeUnicode(string:str) -> str: 
     return unidecode(string)
 
 class NameSearch():
-    def __init__(self, nlp,errorRange:float=0.0):
+    def __init__(self, errorRange:float=0.0):
         #spacy.prefer_gpu()
-        self.nlp = nlp
+        self.nlp = LanguageBuilder().getlanguage()
         self.errorRange = errorRange
         self.conection = spanishNamesDB()
         self.articules = ["DE", "DEL", "EL", "LOS", "TODOS"]

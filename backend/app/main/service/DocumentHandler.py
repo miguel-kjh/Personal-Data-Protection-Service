@@ -18,14 +18,15 @@ from bs4.formatter import HTMLFormatter
 
 from app.main.service.utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
 from app.main.service.NameSearchByGenerator import NameSearchByGenerator
+from app.main.service.NameSearchByEntities import NameSearchByEntities
 
 
 class DocumentHandler():
 
-    def __init__(self, path:str, nlp, destiny:str = ""):
+    def __init__(self, path:str,destiny:str = ""):
         self.document = path
         self.destiny = destiny
-        self.nameSearch = NameSearchByGenerator(nlp)
+        self.nameSearch = NameSearchByEntities()
 
     def read(self):
         pass
@@ -50,8 +51,8 @@ class DocumentHandler():
 #TODO? optimize
 class DocumentHandlerPDF(DocumentHandler):
 
-    def __init__(self, path:str, nlp,destiny:str = ""):
-        super().__init__(path,nlp,destiny=destiny)
+    def __init__(self, path:str,destiny:str = ""):
+        super().__init__(path,destiny=destiny)
         self.options = pdf_redactor.RedactorOptions()
         self.options.metadata_filters = {
             "Title": [lambda value: value],
@@ -183,8 +184,8 @@ class DocumentHandlerDocx(DocumentHandler):
 
 class DocumentHandlerExe(DocumentHandler):
 
-    def __init__(self,path:str,nlp,destiny:str = ""):
-        super().__init__(path,nlp,destiny=destiny)
+    def __init__(self,path:str,destiny:str = ""):
+        super().__init__(path,destiny=destiny)
         self.df = pd.read_excel(path)
 
     def read(self):
@@ -208,8 +209,8 @@ class DocumentHandlerExe(DocumentHandler):
 
 class DocumentHandlerHTML(DocumentHandler):
 
-    def __init__(self,path:str,nlp,destiny:str = ""):
-        super().__init__(path,nlp,destiny=destiny)
+    def __init__(self,path:str,destiny:str = ""):
+        super().__init__(path,destiny=destiny)
         with open(self.document,"r", encoding="utf8") as f:
             self.soup = BeautifulSoup(f.read(), "lxml")
 

@@ -4,8 +4,8 @@ from app.main.service.NameSearch import NameSearch
 def lookForNames(doc) -> list:
     c = []
     articules = ["de", "del","-","el","los","todos"]
-    for index,token in enumerate(doc):
-        if index == 0 or index == len(doc)-1:
+    for token in doc:
+        if token.i == 0 or token.i == len(doc)-1:
             if token.pos_ == "PROPN":
                 c.append(True)
             else:
@@ -21,16 +21,33 @@ def lookForNames(doc) -> list:
     #print(c)
     listNames = []
     name = ""
+    count = 0
+    isFirstWordOfName = True
     for index,i in enumerate(c):
-        #print(name)
         if i:
+            if isFirstWordOfName:
+                isFirstWordOfName = False
+                count = doc[index].idx #the first character index    
             name += doc[index].text + " "
             if index == len(c)-1:
-                listNames.append(name[:len(name)-1])
+                listNames.append(
+                    (
+                        name[:len(name)-1],
+                        count,
+                        count+len(name)-1
+                    )
+                )
         else:
             if index >= 1 and c[index-1]:
-                listNames.append(name[:len(name)-1])
+                listNames.append(
+                    (
+                        name[:len(name)-1],
+                        count,
+                        count+len(name)-1
+                    )
+                )
             name = ""
+            isFirstWordOfName = True
     return listNames
 
 
@@ -40,15 +57,15 @@ class NameSearchByBruteForce(NameSearch):
     
     def searchNames(self, text:Text)-> list:
         listOfDictWithName = []
-        with self.nlp.disable_pipes('parser','ner'):
+        with self.nlp.disable_pipes('parser','ner'): 
             doc = self.nlp(text)
+        tabuList = [ ent.text for ent in doc.ents if ent.label_ in ["NORP", "GPE"]]
         listNames = lookForNames(doc)
         for nameComplete in listNames:
-            if self.checkNameInDB(nameComplete):
-                localitation = text.find(nameComplete)
+            if self.checkNameInDB(nameComplete[0]) and nameComplete not in tabuList:
                 listOfDictWithName.append({
-                        "name":nameComplete,
-                        "star_char":text.find(nameComplete),
-                        "end_char":localitation + len(nameComplete)
+                        "name":nameComplete[0],
+                        "star_char":nameComplete[1],
+                        "end_char":nameComplete[2]
                     })
         return listOfDictWithName

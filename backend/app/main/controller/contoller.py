@@ -7,13 +7,14 @@ from ..util.NameSearchDto import NameSearchDto
 from ..util.envNames import VERSION,UPLOAD_FOLDER,path
 from ..service.LogService import getAllLog,updateDelete,saveLog
 from ..service.languageBuilder import LanguageBuilder
-from ..service.DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExe,DocumentHandlerHTML,DocumentHandlerPDF
+from ..service.CreateDocumentHandler import CreatorDocumentHandler,getCreatorDocumentHandler
 from ..util.fileUtils import giveFileNameUnique,giveTypeOfFile,allowedFile
 import os
 
 api = NameSearchDto.api
 
 LanguageBuilder().defineNameEntity() #Load model before a conections
+
 
 def uploadFile() -> dict:
     result = {
@@ -45,18 +46,6 @@ def uploadFile() -> dict:
             return result
     return result
 
-def giveDocumentHandler(filename:str,typeFile:str,destiny:str="") -> DocumentHandler:
-    destinyPath = os.path.join(path,destiny)
-    if typeFile == "docx":
-        dh = DocumentHandlerDocx(filename,destiny=destinyPath)
-    elif typeFile == "pdf":
-        dh = DocumentHandlerPDF(filename,destiny=destinyPath)
-    elif typeFile in ['xlsx', 'xlsm', 'xls']:
-        dh = DocumentHandlerExe(filename,destiny=destinyPath)
-    elif typeFile == "html":
-        dh = DocumentHandlerHTML(filename,destiny=destinyPath)
-    return dh
-
 @api.route("/")
 class index(Resource):
     @api.doc('initial operation')
@@ -84,11 +73,12 @@ class encode(Resource):
                 }
             )
             nameOfNewDocument = "encode_"+res["filename"]
-            dh = giveDocumentHandler(
+            creator = getCreatorDocumentHandler(
                 os.path.join(path,res["filename"]),
                 res['type'],
-                nameOfNewDocument
+                os.path.join(path,nameOfNewDocument)
             )
+            dh = creator.create()
             dh.documentsProcessing()
             updateDelete(publicId,True)
             publicId = saveLog(
@@ -119,10 +109,11 @@ class listNames(Resource):
                     'filetype':res['type']
                 }
             )
-            dh = giveDocumentHandler(
+            creator = getCreatorDocumentHandler(
                 os.path.join(path,res["filename"]),
                 res['type']
             )
+            dh = creator.create()
             names = dh.giveListNames()
             updateDelete(publicId,True)
             return {
@@ -148,11 +139,12 @@ class csvFile(Resource):
                 }
             )
             nameOfNewDocument = res["filename"].replace('.'+res['type'],".csv")
-            dh = giveDocumentHandler(
+            creator = getCreatorDocumentHandler(
                 os.path.join(path,res["filename"]),
                 res['type'],
-                nameOfNewDocument
+                os.path.join(path,nameOfNewDocument)
             )
+            dh = creator.create()
             dh.createFileOfName()
             updateDelete(publicId,True)
             publicId = saveLog(
@@ -193,10 +185,12 @@ class targetHtml(Resource):
                 }
             )
             nameOfNewDocument = "mark_"+res["filename"]
-            dh = DocumentHandlerHTML(
+            creator = getCreatorDocumentHandler(
                 os.path.join(path,res["filename"]),
+                res['type'],
                 os.path.join(path,nameOfNewDocument)
             )
+            dh = creator.create()
             dh.documentTagger()
             updateDelete(publicId,True)
             publicId = saveLog(

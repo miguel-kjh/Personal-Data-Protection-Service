@@ -24,9 +24,9 @@ from app.main.service.NameSearchByEntities import NameSearchByEntities
 class DocumentHandler():
 
     def __init__(self, path:str,destiny:str = ""):
-        self.document = path
+        self.path = path
         self.destiny = destiny
-        self.nameSearch = NameSearchByEntities()
+        self.nameSearch = NameSearchByGenerator()
 
     def read(self):
         pass
@@ -65,10 +65,10 @@ class DocumentHandlerPDF(DocumentHandler):
         self.options.xmp_filters = [lambda xml: None]
 
     def read(self):
-        proc_pdf3k(self.document)
+        proc_pdf3k(self.path)
 
     def giveListNames(self) -> list:
-        fp = open(self.document, 'rb')
+        fp = open(self.path, 'rb')
         parser = PDFParser(fp)
         fp.close()
         doc = PDFDocument()
@@ -108,7 +108,7 @@ class DocumentHandlerPDF(DocumentHandler):
                     lambda m: encode(listNames[0]).upper()
                 )
             ]
-            pdf_redactor.redactor(self.options, self.document, self.destiny)
+            pdf_redactor.redactor(self.options, self.path, self.destiny)
             for name in listNames[1:]:
                 self.options.content_filters = [
                     (
@@ -122,46 +122,44 @@ class DocumentHandlerPDF(DocumentHandler):
 
 class DocumentHandlerDocx(DocumentHandler):
 
+    def __init__(self, path:str,destiny:str = ""):
+        super().__init__(path,destiny=destiny)
+        self.document = docx.Document(self.path)
+
     def read(self):
-        return proc_docx(self.document)
+        return proc_docx(self.path)
 
     #TODO? extend this to other docx's objects like images
     def documentsProcessing(self):
-        doc = docx.Document(self.document)
-        document = docx.Document()
-        for block in iter_block_items(doc):
+        for block in iter_block_items(self.document):
             if isinstance(block, Paragraph):
-                paragraph = document.add_paragraph()
-                self.localizeNames(block,paragraph)
+                inline = block.runs
+                for line in inline:
+                    listNames = self.nameSearch.searchNames(line.text)
+                    for name in listNames:
+                        regexName = re.compile(name['name'])
+                        if regexName.search(line.text):
+                            text = regexName.sub(encode(name['name']), line.text)
+                            line.text = text
             elif isinstance(block, Table):
-                table = document.add_table(rows=len(block.rows), cols=len(block.columns))
-                table.style = block.style
-                for index_row,row in enumerate(block.rows):
-                    for index_cell,cell in enumerate(row.cells):
+                for row in block.rows:
+                    for cell in row.cells:
                         for paragraph in cell.paragraphs:
-                            paragraph_table = table.cell(index_row,index_cell).add_paragraph()
-                            self.localizeNames(paragraph,paragraph_table)
+                            inline = paragraph.runs
+                            for line in inline:
+                                listNames = self.nameSearch.searchNames(line.text)
+                                for name in listNames:
+                                    regexName = re.compile(name['name'])
+                                    if regexName.search(line.text):
+                                        text = regexName.sub(encode(name['name']), line.text)
+                                        line.text = text    
             else:
                 continue
-        document.save(self.destiny)
+        self.document.save(self.destiny)
+         
 
-    def localizeNames(self,block,paragraph):
-        for r in block.runs:
-            listOfMarks = self.nameSearch.searchNames(r.text)
-            if listOfMarks not in []:
-                index = 0
-                for ele in listOfMarks:
-                    run_append(paragraph, r, r.text[index:ele['star_char']])
-                    run_append(paragraph, r, encode(r.text[ele['star_char']:ele['end_char']]), True)
-                    index = ele['end_char']
-                if index <= len(r.text) - 1:
-                    run_append(paragraph, r, r.text[index:])
-            else:
-                run_append(paragraph, r, r.text)
-
-    def giveListNames(self):
-        doc = docx.Document(self.document)
-        document = docx.Document()
+    def giveListNames(self) -> list:
+        doc = docx.Document(self.path)
         listNames = []
         for block in iter_block_items(doc):
             if isinstance(block, Paragraph):
@@ -169,8 +167,6 @@ class DocumentHandlerDocx(DocumentHandler):
                 if listOfMarks != []:
                     listNames[len(listNames):] = [name['name'] for name in listOfMarks]
             elif isinstance(block, Table):
-                table = document.add_table(rows=len(block.rows), cols=len(block.columns))
-                table.style = block.style
                 for row in block.rows:
                     for cell in row.cells:
                         for paragraph in cell.paragraphs:
@@ -182,7 +178,7 @@ class DocumentHandlerDocx(DocumentHandler):
         return listNames
         
 
-class DocumentHandlerExe(DocumentHandler):
+class DocumentHandlerExel(DocumentHandler):
 
     def __init__(self,path:str,destiny:str = ""):
         super().__init__(path,destiny=destiny)
@@ -211,7 +207,7 @@ class DocumentHandlerHTML(DocumentHandler):
 
     def __init__(self,path:str,destiny:str = ""):
         super().__init__(path,destiny=destiny)
-        with open(self.document,"r", encoding="utf8") as f:
+        with open(self.path,"r", encoding="utf8") as f:
             self.soup = BeautifulSoup(f.read(), "lxml")
 
     def read(self):

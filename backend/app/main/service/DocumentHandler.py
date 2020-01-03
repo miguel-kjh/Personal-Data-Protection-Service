@@ -28,9 +28,6 @@ class DocumentHandler():
         self.destiny = destiny
         self.nameSearch = NameSearchByGenerator()
 
-    def read(self):
-        pass
-
     def documentsProcessing(self):
         pass
 
@@ -63,9 +60,6 @@ class DocumentHandlerPDF(DocumentHandler):
             "DEFAULT": [lambda value: None],
         }
         self.options.xmp_filters = [lambda xml: None]
-
-    def read(self):
-        proc_pdf3k(self.path)
 
     def giveListNames(self) -> list:
         fp = open(self.path, 'rb')
@@ -126,10 +120,6 @@ class DocumentHandlerDocx(DocumentHandler):
         super().__init__(path,destiny=destiny)
         self.document = docx.Document(self.path)
 
-    def read(self):
-        return proc_docx(self.path)
-
-    #TODO? extend this to other docx's objects like images
     def documentsProcessing(self):
         for block in iter_block_items(self.document):
             if isinstance(block, Paragraph):
@@ -184,9 +174,6 @@ class DocumentHandlerExel(DocumentHandler):
         super().__init__(path,destiny=destiny)
         self.df = pd.read_excel(path)
 
-    def read(self):
-        print(self.df)
-
     #TODO? save formules.
     def documentsProcessing(self):
         for key in self.df.keys():
@@ -209,9 +196,6 @@ class DocumentHandlerHTML(DocumentHandler):
         super().__init__(path,destiny=destiny)
         with open(self.path,"r", encoding="utf8") as f:
             self.soup = BeautifulSoup(f.read(), "lxml")
-
-    def read(self):
-        print(self.soup)
 
     def locateNames(self,sentence):
         listNames = self.nameSearch.searchNames(str(sentence))

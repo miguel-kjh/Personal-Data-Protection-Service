@@ -125,6 +125,7 @@ class DocumentHandlerDocx(DocumentHandler):
             if isinstance(block, Paragraph):
                 inline = block.runs
                 for line in inline:
+                    print("-->", str(line.text).split("\n"))
                     listNames = self.nameSearch.searchNames(line.text)
                     for name in listNames:
                         regexName = re.compile(name['name'])
@@ -137,6 +138,7 @@ class DocumentHandlerDocx(DocumentHandler):
                         for paragraph in cell.paragraphs:
                             inline = paragraph.runs
                             for line in inline:
+                                print("-->", line.text)
                                 listNames = self.nameSearch.searchNames(line.text)
                                 for name in listNames:
                                     regexName = re.compile(name['name'])

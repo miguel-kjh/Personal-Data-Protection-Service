@@ -1,5 +1,11 @@
 import requests
+import time
 
-with open('demos/lista_alumnos.docx', 'rb') as f:
-    r = requests.post('http://127.0.0.1:5000/file/giveCsvFile', files={'file': f})
-print(r.text)
+nIter = 1
+messure = 0
+for _ in range(nIter):    
+    with open('/home/miguel/Escritorio/Ingeniería informática/cuarto/TFG/utilidades/Diario Público.html', 'rb') as f:
+        st = time.time()
+        r = requests.post('http://127.0.0.1:5000/search/file/encode', files={'file': f})
+        messure += time.time() - st
+print(messure/nIter, "s")

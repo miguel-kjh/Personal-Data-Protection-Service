@@ -2,12 +2,13 @@ import sqlite3 as lite
 from typing import Text
 from unidecode import unidecode
 from app.main.service.languageBuilder import LanguageBuilder
+from app.main.util.heuristicMeasures import ERROR_RANGE_PERCENTAGE_DB
 
 def normalizeUnicode(string:str) -> str: 
     return unidecode(string)
 
 class NameSearch():
-    def __init__(self, errorRange:float=0.0):
+    def __init__(self, errorRange:float=ERROR_RANGE_PERCENTAGE_DB):
         #spacy.prefer_gpu()
         self.nlp = LanguageBuilder().getlanguage()
         self.errorRange = errorRange
@@ -36,7 +37,7 @@ class NameSearch():
     def searchNames(self,text:Text) -> list:
         pass
 
-    def getErrorRange(self):
+    def getErrorRange(self) -> float:
         return self.errorRange
 
 class spanishNamesDB():

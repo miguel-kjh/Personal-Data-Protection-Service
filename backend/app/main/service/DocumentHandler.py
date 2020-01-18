@@ -19,6 +19,7 @@ from bs4.formatter import HTMLFormatter
 from app.main.service.utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
 from app.main.service.NameSearchByGenerator import NameSearchByGenerator
 from app.main.service.NameSearchByEntities import NameSearchByEntities
+from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
 
 
 class DocumentHandler():
@@ -173,8 +174,7 @@ class DocumentHandlerExel(DocumentHandler):
     def __init__(self,path:str,destiny:str = ""):
         super().__init__(path,destiny=destiny)
         self.df = pd.read_excel(path)
-
-    #TODO? save formules.
+    
     def documentsProcessing(self):
         for key in self.df.keys():
             for index,ele in enumerate(self.df[key]):
@@ -184,10 +184,12 @@ class DocumentHandlerExel(DocumentHandler):
 
     def giveListNames(self):
         listNames = []
-        for key in self.df.keys():
-            for ele in self.df[key]:
-                if self.nameSearch.isName(str(ele)):
-                    listNames.append(str(ele))
+        for key,typeColumn in zip(self.df.keys(),self.df.dtypes):
+            if typeColumn == object:
+                dfNotNull = self.df[key][self.df[key].notnull()]
+                countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
+                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                   listNames[len(listNames):] = dfNotNull
         return listNames
 
 class DocumentHandlerHTML(DocumentHandler):

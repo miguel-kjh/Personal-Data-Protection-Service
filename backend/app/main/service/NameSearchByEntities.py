@@ -4,11 +4,7 @@ from deprecated import deprecated
 
 class NameSearchByEntities(NameSearch):
 
-    def isName(self,fullName:str) -> bool:
-        doc = self.nlp(fullName)
-        return True if len(doc.ents) == 1 and doc.ents[0].text == fullName and self.checkNameInDB(fullName) else False
-
-    def searchNames(self,text:Text) -> list:
+    def searchNames(self,text:Text,processedText=None) -> list:
         with self.nlp.disable_pipes('parser','ner'): 
             doc = self.nlp(text)
         listNames = [

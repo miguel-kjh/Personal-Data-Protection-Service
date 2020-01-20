@@ -129,9 +129,8 @@ class DocumentHandlerDocx(DocumentHandler):
                     listNames = self.nameSearch.searchNames(line.text)
                     for name in listNames:
                         regexName = re.compile(name['name'])
-                        if regexName.search(line.text):
-                            text = regexName.sub(encode(name['name']), line.text)
-                            line.text = text
+                        text = regexName.sub(encode(name['name']), line.text)
+                        line.text = text
             elif isinstance(block, Table):
                 for row in block.rows:
                     for cell in row.cells:
@@ -141,9 +140,8 @@ class DocumentHandlerDocx(DocumentHandler):
                                 listNames = self.nameSearch.searchNames(line.text)
                                 for name in listNames:
                                     regexName = re.compile(name['name'])
-                                    if regexName.search(line.text):
-                                        text = regexName.sub(encode(name['name']), line.text)
-                                        line.text = text    
+                                    text = regexName.sub(encode(name['name']), line.text)
+                                    line.text = text    
             else:
                 continue
         self.document.save(self.destiny)
@@ -158,6 +156,7 @@ class DocumentHandlerDocx(DocumentHandler):
                 if listOfMarks != []:
                     listNames[len(listNames):] = [name['name'] for name in listOfMarks]
             elif isinstance(block, Table):
+                print(block.columns)
                 for row in block.rows:
                     for cell in row.cells:
                         for paragraph in cell.paragraphs:
@@ -176,13 +175,15 @@ class DocumentHandlerExel(DocumentHandler):
         self.df = pd.read_excel(path)
     
     def documentsProcessing(self):
-        for key in self.df.keys():
-            for index,ele in enumerate(self.df[key]):
-                if self.nameSearch.isName(str(ele)):
-                    self.df.at[index,key] = encode(str(ele))
+        for key,typeColumn in zip(self.df.keys(),self.df.dtypes):
+            if typeColumn == object:
+                dfNotNull = self.df[key][self.df[key].notnull()]
+                countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
+                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                    self.df[key].replace({str(name):encode(str(name)) for name in dfNotNull},inplace=True)
         self.df.to_excel(self.destiny)
 
-    def giveListNames(self):
+    def giveListNames(self) -> list:
         listNames = []
         for key,typeColumn in zip(self.df.keys(),self.df.dtypes):
             if typeColumn == object:

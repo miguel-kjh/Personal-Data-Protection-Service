@@ -47,13 +47,14 @@ def generatorNames(doc, text:Text):
 
 class NameSearchByGenerator(NameSearch):
 
-    def isName(self,fullName:str) -> bool:
-        return True if len(self.searchNames(fullName)) > 0 and self.searchNames(fullName)[0]['name'] == fullName else False
     
-    def searchNames(self, text:Text)-> list:
+    def searchNames(self, text:Text, processedText=None)-> list:
         listOfDictWithName = []
-        with self.nlp.disable_pipes('parser','ner'):
-            doc = self.nlp(text)
+        if processedText==None:
+            with self.nlp.disable_pipes('parser','ner'):
+                doc = self.nlp(text)
+        else:
+            doc = processedText
         for token in generatorNames(doc,text):
             wordsName = [i.text for i in token[0]]
             nameComplete = " ".join(wordsName)

@@ -19,22 +19,27 @@ class NameSearch():
         countWordsInName = 0
         countWordsInDB = 0
         normalizeName = normalizeUnicode(fullName).upper()
-        for name in normalizeName.replace("-", " ").split():
+        for name in normalizeName.replace('-', ' ').split():
             if name not in self.articules:
                 countWordsInName += 1
                 try:
-                    sentence = "select (select count(*) from surnames where surnames= '"+ name +"') OR" \
-                                            " (select count(*) from names  where names='" + name + "');"
+                    sentence = "select (select count(*) from surnames where surnames= '"+ name.replace('"','') +"') OR" \
+                                            " (select count(*) from names  where names='" + name.replace('"','') + "');"
                     senteceResult = self.conection.query(sentence)
                     countWordsInDB += 1 if senteceResult.fetchone()[0] == 1  else 0
                 except lite.OperationalError as identifier:
                     print(identifier)
-        return countWordsInName > 0 and countWordsInDB * 100 / countWordsInName > self.errorRange
+        return countWordsInName > 0 and countWordsInDB / countWordsInName > self.errorRange
 
     def isName(self,fullName:str) -> bool:
-        pass
+        with self.nlp.disable_pipes('parser','ner'):
+                doc = self.nlp(fullName)
+        if 'VERB' in [token.pos_ for token in doc]:
+            return self.checkNameInDB(fullName)
+        else:
+            return True if len(self.searchNames(fullName,processedText=doc)) > 0 and self.searchNames(fullName,processedText=doc)[0]['name'] == fullName else False
 
-    def searchNames(self,text:Text) -> list:
+    def searchNames(self,text:Text,processedText=None) -> list:
         pass
 
     def getErrorRange(self) -> float:

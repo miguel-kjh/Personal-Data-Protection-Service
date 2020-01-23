@@ -19,7 +19,8 @@ from bs4.formatter import HTMLFormatter
 from app.main.service.utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
 from app.main.service.NameSearchByGenerator import NameSearchByGenerator
 from app.main.service.NameSearchByEntities import NameSearchByEntities
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
+from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+from app.main.service.languageBuilder import LanguageBuilder
 
 
 class DocumentHandler():
@@ -173,24 +174,29 @@ class DocumentHandlerExel(DocumentHandler):
     def __init__(self,path:str,destiny:str = ""):
         super().__init__(path,destiny=destiny)
         self.df = pd.read_excel(path)
+
+    def getPossibleColumnsNames(self):
+        for key,typeColumn in zip(self.df.keys(),self.df.dtypes):
+            if typeColumn == object and LanguageBuilder().semanticSimilarity(key, "Nombres") > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES:
+                yield key
     
     def documentsProcessing(self):
-        for key,typeColumn in zip(self.df.keys(),self.df.dtypes):
-            if typeColumn == object:
-                dfNotNull = self.df[key][self.df[key].notnull()]
-                countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
-                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                    self.df[key].replace({str(name):encode(str(name)) for name in dfNotNull},inplace=True)
+        for key in self.getPossibleColumnsNames():
+            print(key)
+            dfNotNull = self.df[key][self.df[key].notnull()]
+            countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
+            if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                self.df[key].replace({str(name):encode(str(name)) for name in dfNotNull},inplace=True)
         self.df.to_excel(self.destiny)
 
     def giveListNames(self) -> list:
         listNames = []
-        for key,typeColumn in zip(self.df.keys(),self.df.dtypes):
-            if typeColumn == object:
-                dfNotNull = self.df[key][self.df[key].notnull()]
-                countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
-                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                   listNames[len(listNames):] = dfNotNull
+        for key in self.getPossibleColumnsNames():
+            print(key)
+            dfNotNull = self.df[key][self.df[key].notnull()]
+            countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
+            if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                listNames[len(listNames):] = dfNotNull
         return listNames
 
 class DocumentHandlerHTML(DocumentHandler):

@@ -11,7 +11,7 @@ class Singleton(type):
 
 class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
-        self.nlp = spacy.load("es_core_news_sm")
+        self.nlp = spacy.load("es_core_news_md")
         print("model load")
 
     def defineNameEntity(self):
@@ -24,6 +24,16 @@ class LanguageBuilder(metaclass=Singleton):
         patterns = [{"label": "NAME", "pattern": pattern}]
         ruler.add_patterns(patterns)
         self.nlp.add_pipe(ruler,before='ner')
+        print("defined names as entity")
+
+    def semanticSimilarity(self, text:str, textToCompare:str) -> float:
+        """
+        Only use this funtion when used a md or lg models
+        """
+        with self.nlp.disable_pipes("tagger", "parser", "ner"):
+            doc = self.nlp(text)
+            docToCompare = self.nlp(textToCompare)
+        return doc.similarity(docToCompare)
     
     def getlanguage(self):
         return self.nlp

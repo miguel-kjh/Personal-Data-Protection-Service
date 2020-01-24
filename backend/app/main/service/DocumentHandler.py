@@ -21,6 +21,7 @@ from app.main.service.NameSearchByGenerator import NameSearchByGenerator
 from app.main.service.NameSearchByEntities import NameSearchByEntities
 from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 from app.main.service.languageBuilder import LanguageBuilder
+from app.main.service.utils import listOfVectorWords
 
 
 class DocumentHandler():
@@ -177,8 +178,11 @@ class DocumentHandlerExel(DocumentHandler):
 
     def getPossibleColumnsNames(self):
         for key,typeColumn in zip(self.df.keys(),self.df.dtypes):
-            if typeColumn == object and LanguageBuilder().semanticSimilarity(key, "Nombres") > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES:
-                yield key
+            if typeColumn == object: 
+                listOfWordSemantics = list(
+                    filter(lambda x : LanguageBuilder().semanticSimilarity(key, x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, listOfVectorWords))
+                if listOfWordSemantics != []:
+                    yield key
     
     def documentsProcessing(self):
         for key in self.getPossibleColumnsNames():

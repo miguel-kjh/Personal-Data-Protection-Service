@@ -10,6 +10,7 @@ from docx.table import _Cell, Table, _Row
 from docx.text.paragraph import Paragraph
 import random
 from typing import Text
+import numpy as np
 
 
 
@@ -94,5 +95,13 @@ def proc_docx(document):
                     for paragraph in cell.paragraphs:
                         row_data.append(paragraph.text)
                 print("\t".join(row_data))
+
+listOfVectorWords = [
+    'persona',
+    'nombre',
+    'alumno',
+    'personal',
+    'sujeto'
+]
 
 

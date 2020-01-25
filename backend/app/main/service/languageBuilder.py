@@ -30,6 +30,7 @@ class LanguageBuilder(metaclass=Singleton):
         """
         Only use this funtion when used a md or lg models
         """
+        if not text.strip(): return 0.0
         with self.nlp.disable_pipes("tagger", "parser", "ner"):
             doc = self.nlp(text)
             docToCompare = self.nlp(textToCompare)

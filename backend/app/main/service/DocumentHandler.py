@@ -16,12 +16,16 @@ from docx.table import Table
 from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 
+from collections import defaultdict
+from itertools import chain
+
 from app.main.service.utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
 from app.main.service.NameSearchByGenerator import NameSearchByGenerator
 from app.main.service.NameSearchByEntities import NameSearchByEntities
 from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.service.utils import listOfVectorWords
+
 
 
 class DocumentHandler():
@@ -123,27 +127,44 @@ class DocumentHandlerDocx(DocumentHandler):
         super().__init__(path,destiny=destiny)
         self.document = docx.Document(self.path)
 
+    # TODO NameRecolector to object
+    def getNameInformatioOfTable(self, table:Table) -> dict:
+        nameRecolector = defaultdict(dict)
+        isLables = True 
+        for row in table.rows:
+            for index,cell in enumerate(row.cells):
+                for paragraph in cell.paragraphs:
+                    if isLables:
+                        listOfWordSemantics = list(
+                            filter(lambda x : LanguageBuilder().semanticSimilarity(str(paragraph.text), x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, listOfVectorWords))
+                        if listOfWordSemantics != []:
+                            nameRecolector[index] = {
+                                "names": [],
+                                "countOfRealName" : 0
+                            }
+                    else:
+                        if index in nameRecolector.keys() and bool(paragraph.text.strip()):
+                            nameRecolector[index]["names"].append(paragraph.text)
+                            if self.nameSearch.isName(paragraph.text): nameRecolector[index]["countOfRealName"] += 1
+            isLables = False
+        return nameRecolector
+
     def documentsProcessing(self):
         for block in iter_block_items(self.document):
             if isinstance(block, Paragraph):
-                inline = block.runs
-                for line in inline:
-                    listNames = self.nameSearch.searchNames(line.text)
-                    for name in listNames:
-                        regexName = re.compile(name['name'])
-                        text = regexName.sub(encode(name['name']), line.text)
-                        line.text = text
+                listNames = self.nameSearch.searchNames(block.text)
+                for name in listNames:
+                    regexName = re.compile(name['name'])
+                    text = regexName.sub(encode(name['name']), block.text)
+                    block.text = text
             elif isinstance(block, Table):
-                for row in block.rows:
-                    for cell in row.cells:
-                        for paragraph in cell.paragraphs:
-                            inline = paragraph.runs
-                            for line in inline:
-                                listNames = self.nameSearch.searchNames(line.text)
-                                for name in listNames:
-                                    regexName = re.compile(name['name'])
-                                    text = regexName.sub(encode(name['name']), line.text)
-                                    line.text = text    
+                nameRecolector = self.getNameInformatioOfTable(block)
+                if nameRecolector:
+                    for row in block.rows[1:]:
+                        for index,cell in enumerate(row.cells):
+                            if index in nameRecolector.keys() and nameRecolector[index]['countOfRealName'] / len(nameRecolector[index]['names']):
+                                for paragraph in cell.paragraphs:
+                                    paragraph.text = encode(paragraph.text)
             else:
                 continue
         self.document.save(self.destiny)
@@ -158,13 +179,10 @@ class DocumentHandlerDocx(DocumentHandler):
                 if listOfMarks != []:
                     listNames[len(listNames):] = [name['name'] for name in listOfMarks]
             elif isinstance(block, Table):
-                print(block.columns)
-                for row in block.rows:
-                    for cell in row.cells:
-                        for paragraph in cell.paragraphs:
-                            listOfMarks = self.nameSearch.searchNames(paragraph.text)
-                            if listOfMarks != []:
-                                listNames[len(listNames):] = [name['name'] for name in listOfMarks]
+                listNames[len(listNames):] = list(chain.from_iterable([
+                        dataName['names'] for (_,dataName) in self.getNameInformatioOfTable(block).items() if len(dataName['names']) > 0 and dataName["countOfRealName"] / len(dataName['names']) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
+                    ])
+                )
             else:
                 continue
         return listNames
@@ -191,7 +209,7 @@ class DocumentHandlerExel(DocumentHandler):
             countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
             if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                 self.df[key].replace({str(name):encode(str(name)) for name in dfNotNull},inplace=True)
-        self.df.to_excel(self.destiny)
+        self.df.to_excel(self.destiny, index = False)
 
     def giveListNames(self) -> list:
         listNames = []

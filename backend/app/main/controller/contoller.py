@@ -4,7 +4,7 @@ from werkzeug.utils import secure_filename
 
 
 from ..util.NameSearchDto import NameSearchDto
-from ..util.envNames import VERSION,UPLOAD_FOLDER,path
+from ..util.envNames import VERSION,UPLOAD_FOLDER,path,ALLOWED_EXTENSIONS
 from ..service.LogService import getAllLog,updateDelete,saveLog
 from ..service.languageBuilder import LanguageBuilder
 from ..service.CreateDocumentHandler import CreatorDocumentHandler,getCreatorDocumentHandler
@@ -42,7 +42,7 @@ def uploadFile() -> dict:
             result['error'] = None
             result['type'] = typeOfFile
         else:
-            result['error'] = "Allowed file types are docx, pdf, xlsx, xlsm, xls, html"
+            result['error'] = "Allowed file types are %s" % (','.join(ALLOWED_EXTENSIONS))
             return result
     return result
 

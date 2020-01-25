@@ -3,9 +3,13 @@ import time
 
 nIter = 10
 messure = 0
+listaNames = 'http://127.0.0.1:5000/search/file/list-names'
+encode = 'http://127.0.0.1:5000/search/file/encode'
+file = '/home/miguel/Escritorio/Ingeniería informática/cuarto/TFG/NameSearcher-WebService/frontend-test/demos/lista_alumnos.docx'
+
 for _ in range(nIter):    
-    with open('/home/miguel/Escritorio/Ingeniería informática/cuarto/TFG/utilidades/nba.xls', 'rb') as f:
+    with open(file, 'rb') as f:
         st = time.time()
-        r = requests.post('http://127.0.0.1:5000/search/file/encode', files={'file': f})
+        r = requests.post(encode, files={'file': f})
         messure += time.time() - st
 print(messure/nIter, "s")

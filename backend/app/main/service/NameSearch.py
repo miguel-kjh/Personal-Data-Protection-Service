@@ -22,9 +22,10 @@ class NameSearch():
         for name in normalizeName.replace('-', ' ').split():
             if name not in self.articules:
                 countWordsInName += 1
+                name = name.replace('"','')
                 try:
-                    sentence = "select (select count(*) from surnames where surnames= '"+ name.replace('"','') +"') OR" \
-                                            " (select count(*) from names  where names='" + name.replace('"','') + "');"
+                    sentence = "select (select count(*) from surnames where surnames= '%s') OR" \
+                                            " (select count(*) from names  where names='%s');" % (name,name)
                     senteceResult = self.conection.query(sentence)
                     countWordsInDB += 1 if senteceResult.fetchone()[0] == 1  else 0
                 except lite.OperationalError as identifier:
@@ -35,9 +36,9 @@ class NameSearch():
         with self.nlp.disable_pipes('parser','ner'):
                 doc = self.nlp(fullName)
         if 'VERB' in [token.pos_ for token in doc]:
-            return self.checkNameInDB(fullName)
-        else:
             return True if len(self.searchNames(fullName,processedText=doc)) > 0 and self.searchNames(fullName,processedText=doc)[0]['name'] == fullName else False
+        else:
+            return self.checkNameInDB(fullName)
 
     def searchNames(self,text:Text,processedText=None) -> list:
         pass

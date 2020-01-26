@@ -16,15 +16,13 @@ from docx.table import Table
 from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 
-from collections import defaultdict
-from itertools import chain
-
 from app.main.service.utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
 from app.main.service.NameSearchByGenerator import NameSearchByGenerator
 from app.main.service.NameSearchByEntities import NameSearchByEntities
 from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.service.utils import listOfVectorWords
+from app.main.service.NamePickerInTables import NamePickerInTables
 
 
 
@@ -128,8 +126,8 @@ class DocumentHandlerDocx(DocumentHandler):
         self.document = docx.Document(self.path)
 
     # TODO NameRecolector to object
-    def getNameInformatioOfTable(self, table:Table) -> dict:
-        nameRecolector = defaultdict(dict)
+    def getNameOfTable(self, table:Table) -> NamePickerInTables:
+        picker = NamePickerInTables()
         isLables = True 
         for row in table.rows:
             for index,cell in enumerate(row.cells):
@@ -138,16 +136,13 @@ class DocumentHandlerDocx(DocumentHandler):
                         listOfWordSemantics = list(
                             filter(lambda x : LanguageBuilder().semanticSimilarity(str(paragraph.text), x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, listOfVectorWords))
                         if listOfWordSemantics != []:
-                            nameRecolector[index] = {
-                                "names": [],
-                                "countOfRealName" : 0
-                            }
+                            picker.addIndexColumn(index)
                     else:
-                        if index in nameRecolector.keys() and bool(paragraph.text.strip()):
-                            nameRecolector[index]["names"].append(paragraph.text)
-                            if self.nameSearch.isName(paragraph.text): nameRecolector[index]["countOfRealName"] += 1
+                        if picker.isColumnName(index) and bool(paragraph.text.strip()):
+                            picker.addName(index,paragraph.text)
+                            if self.nameSearch.isName(paragraph.text): picker.countRealName(index)
             isLables = False
-        return nameRecolector
+        return picker
 
     def documentsProcessing(self):
         for block in iter_block_items(self.document):
@@ -158,11 +153,11 @@ class DocumentHandlerDocx(DocumentHandler):
                     text = regexName.sub(encode(name['name']), block.text)
                     block.text = text
             elif isinstance(block, Table):
-                nameRecolector = self.getNameInformatioOfTable(block)
-                if nameRecolector:
+                picker = self.getNameOfTable(block)
+                if picker:
                     for row in block.rows[1:]:
                         for index,cell in enumerate(row.cells):
-                            if index in nameRecolector.keys() and nameRecolector[index]['countOfRealName'] / len(nameRecolector[index]['names']):
+                            if picker.isRealColumName(index,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
                                 for paragraph in cell.paragraphs:
                                     paragraph.text = encode(paragraph.text)
             else:
@@ -179,16 +174,13 @@ class DocumentHandlerDocx(DocumentHandler):
                 if listOfMarks != []:
                     listNames[len(listNames):] = [name['name'] for name in listOfMarks]
             elif isinstance(block, Table):
-                listNames[len(listNames):] = list(chain.from_iterable([
-                        dataName['names'] for (_,dataName) in self.getNameInformatioOfTable(block).items() if len(dataName['names']) > 0 and dataName["countOfRealName"] / len(dataName['names']) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
-                    ])
-                )
+                listNames[len(listNames):] = self.getNameOfTable(block).getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
             else:
                 continue
         return listNames
         
 
-class DocumentHandlerExel(DocumentHandler):
+class DocumentHandlerExcel(DocumentHandler):
 
     def __init__(self,path:str,destiny:str = ""):
         super().__init__(path,destiny=destiny)
@@ -242,6 +234,7 @@ class DocumentHandlerHTML(DocumentHandler):
         return newSentence
 
     def encodeNames(self,sentence):
+        print(sentence)
         listNames = self.nameSearch.searchNames(str(sentence))
         if listNames is []:
             return sentence
@@ -268,7 +261,7 @@ class DocumentHandlerHTML(DocumentHandler):
         listNames = []
         blacklist = [ '[document]' , 'noscript' , 'header' , 
         'html' , 'meta' , 'head' , 'input' , 'script', 'link', 'lang']
-        for lable in self.soup.find_all(text=True):
+        for lable in self.soup.stripped_strings:
             if lable not in blacklist:
                 #print(lable)
                 listOfMarks = self.nameSearch.searchNames(str(lable))

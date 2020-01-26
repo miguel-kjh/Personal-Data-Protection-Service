@@ -1,5 +1,5 @@
 from abc import ABC,abstractmethod
-from app.main.service.DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExel,DocumentHandlerHTML,DocumentHandlerPDF
+from app.main.service.DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExcel,DocumentHandlerHTML,DocumentHandlerPDF
 
 def getCreatorDocumentHandler(filename:str,typeFile:str,destiny:str=""):
     if typeFile == "docx":
@@ -7,7 +7,7 @@ def getCreatorDocumentHandler(filename:str,typeFile:str,destiny:str=""):
     elif typeFile == "pdf":
         return CreatorDocumentHandlerPdf(filename,destiny)
     elif typeFile in ['xlsx', 'xlsm', 'xls']:
-        return CreatorDocumentHandlerExel(filename,destiny)
+        return CreatorDocumentHandlerExcel(filename,destiny)
     elif typeFile == "html":
         return CreatorDocumentHandlerHtml(filename,destiny)
     else:
@@ -27,9 +27,9 @@ class CreatorDocumentHandlerDocx(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerDocx(self.path,self.destiny)
 
-class CreatorDocumentHandlerExel(CreatorDocumentHandler):
+class CreatorDocumentHandlerExcel(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
-        return DocumentHandlerExel(self.path,self.destiny)
+        return DocumentHandlerExcel(self.path,self.destiny)
 
 class CreatorDocumentHandlerPdf(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:

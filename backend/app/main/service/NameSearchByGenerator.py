@@ -51,8 +51,7 @@ class NameSearchByGenerator(NameSearch):
     def searchNames(self, text:Text, processedText=None)-> list:
         listOfDictWithName = []
         if processedText==None:
-            with self.nlp.disable_pipes('parser','ner'):
-                doc = self.nlp(text)
+            doc = self.nlp(text)
         else:
             doc = processedText
         for token in generatorNames(doc,text):

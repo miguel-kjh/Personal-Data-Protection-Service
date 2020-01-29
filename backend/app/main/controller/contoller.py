@@ -13,7 +13,7 @@ import os
 
 api = NameSearchDto.api
 
-LanguageBuilder()  #Load model before a conections
+LanguageBuilder().defineNameEntity()  #Load model before a conections
 
 
 def uploadFile() -> dict:

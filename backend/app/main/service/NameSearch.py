@@ -33,8 +33,7 @@ class NameSearch():
         return countWordsInName > 0 and countWordsInDB / countWordsInName > self.errorRange
 
     def isName(self,fullName:str) -> bool:
-        with self.nlp.disable_pipes('parser','ner'):
-                doc = self.nlp(fullName)
+        doc = self.nlp(fullName)
         if 'VERB' in [token.pos_ for token in doc]:
             return True if len(self.searchNames(fullName,processedText=doc)) > 0 and self.searchNames(fullName,processedText=doc)[0]['name'] == fullName else False
         else:
@@ -49,12 +48,12 @@ class NameSearch():
 class spanishNamesDB():
 
     def __init__(self):
-        self._db_connection = lite.connect("spanish_names")
-        self._db_cur = self._db_connection.cursor()
+        self.connection = lite.connect("spanish_names")
+        self.cursor = self.connection.cursor()
 
     def query(self, query:str):
-        return self._db_cur.execute(query)
+        return self.cursor.execute(query)
 
     def __del__(self):
-        self._db_cur.close()
-        self._db_connection.close()
+        self.cursor.close()
+        self.connection.close()

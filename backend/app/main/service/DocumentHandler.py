@@ -31,7 +31,7 @@ class DocumentHandler():
     def __init__(self, path:str,destiny:str = ""):
         self.path = path
         self.destiny = destiny
-        self.nameSearch = NameSearchByGenerator()
+        self.nameSearch = NameSearchByEntities()
 
     def documentsProcessing(self):
         pass

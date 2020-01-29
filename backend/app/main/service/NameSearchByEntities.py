@@ -5,8 +5,7 @@ from deprecated import deprecated
 class NameSearchByEntities(NameSearch):
 
     def searchNames(self,text:Text,processedText=None) -> list:
-        with self.nlp.disable_pipes('parser','ner'): 
-            doc = self.nlp(text)
+        doc = self.nlp(text)
         listNames = [
             (ent.text,ent.start_char,ent.end_char) for ent in doc.ents if ent.label_ == "NAME"
             ]

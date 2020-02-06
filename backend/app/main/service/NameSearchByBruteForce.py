@@ -52,17 +52,13 @@ def lookForNames(doc) -> list:
 
 
 class NameSearchByBruteForce(NameSearch):
-    def isName(self,fullName:str) -> bool:
-        return True if len(self.searchNames(fullName)) > 0 and self.searchNames(fullName)[0]['name'] == fullName else False
     
-    def searchNames(self, text:Text)-> list:
+    def searchNames(self, text:Text, processedText=None)-> list:
         listOfDictWithName = []
-        with self.nlp.disable_pipes('parser','ner'): 
-            doc = self.nlp(text)
-        tabuList = [ ent.text for ent in doc.ents if ent.label_ in ["NORP", "GPE"]]
+        doc = self.nlp(text)
         listNames = lookForNames(doc)
         for nameComplete in listNames:
-            if self.checkNameInDB(nameComplete[0]) and nameComplete not in tabuList:
+            if self.checkNameInDB(nameComplete[0]):
                 listOfDictWithName.append({
                         "name":nameComplete[0],
                         "star_char":nameComplete[1],

@@ -1,7 +1,6 @@
 import uuid
 import os
 
-from app.main.util.envNames import path
 from app.main import db
 from app.main.model.fileLog import FileLog
 from flask_sqlalchemy import SQLAlchemy

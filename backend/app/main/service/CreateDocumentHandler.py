@@ -1,17 +1,19 @@
 from abc import ABC,abstractmethod
-from app.main.service.DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExcel,DocumentHandlerHTML,DocumentHandlerPDF
+from app.main.service.DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExcel,DocumentHandlerHTML,DocumentHandlerPDF,DocumentHandlerTxt
 
 def getCreatorDocumentHandler(filename:str,typeFile:str,destiny:str=""):
-    if typeFile == "docx":
+    if typeFile == 'docx':
         return CreatorDocumentHandlerDocx(filename,destiny)
-    elif typeFile == "pdf":
+    elif typeFile == 'pdf':
         return CreatorDocumentHandlerPdf(filename,destiny)
     elif typeFile in ['xlsx', 'xlsm', 'xls']:
         return CreatorDocumentHandlerExcel(filename,destiny)
-    elif typeFile == "html":
+    elif typeFile == 'html':
         return CreatorDocumentHandlerHtml(filename,destiny)
+    elif typeFile == 'txt':
+        return CreatorDocumentHandlerTxt(filename,destiny)
     else:
-        raise ValueError("type recorder without")
+        raise RuntimeError("Error CreatorDocumentHandler: type %s do not recognize" %(typeFile))
 
 class CreatorDocumentHandler(ABC):
 
@@ -38,3 +40,7 @@ class CreatorDocumentHandlerPdf(CreatorDocumentHandler):
 class CreatorDocumentHandlerHtml(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerHTML(self.path,self.destiny)
+
+class CreatorDocumentHandlerTxt(CreatorDocumentHandler):
+    def create(self) -> DocumentHandler:
+        return DocumentHandlerTxt(self.path,self.destiny)

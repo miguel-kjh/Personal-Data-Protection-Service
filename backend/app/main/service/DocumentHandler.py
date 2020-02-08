@@ -16,18 +16,17 @@ from docx.table import Table
 from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 
-from app.main.service.utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
+from app.main.util.fileUtils import encode, itemIterator, markInHtml
 from app.main.service.NameSearchByEntities import NameSearchByEntities
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 from app.main.service.languageBuilder import LanguageBuilder
-from app.main.service.utils import listOfVectorWords
+from app.main.util.semanticWordLists import listOfVectorWords
 from app.main.service.NamePickerInTables import NamePickerInTables
 
 
+class DocumentHandler:
 
-class DocumentHandler():
-
-    def __init__(self, path:str,destiny:str = ""):
+    def __init__(self, path: str, destiny: str = ""):
         self.path = path
         self.destiny = destiny
         self.nameSearch = NameSearchByEntities()
@@ -35,25 +34,26 @@ class DocumentHandler():
     def documentsProcessing(self):
         pass
 
-    #def documentTagger(self):
-        #pass
+    # def documentTagger(self):
+    # pass
 
     def createFileOfName(self):
         self.createCsv(self.giveListNames())
 
-    def giveListNames(self):
+    def giveListNames(self) -> list:
         pass
 
-    def createCsv(self, listNames:list):
+    def createCsv(self, listNames: list):
         dataFrame = pd.DataFrame(listNames, columns=['Names'])
-        export_csv = dataFrame.to_csv(self.destiny, index = None, header=True)
+        export_csv = dataFrame.to_csv(self.destiny, index=None, header=True)
         print(export_csv)
 
-#TODO? optimize
+
+# TODO? optimize
 class DocumentHandlerPdf(DocumentHandler):
 
-    def __init__(self, path:str,destiny:str = ""):
-        super().__init__(path,destiny=destiny)
+    def __init__(self, path: str, destiny: str = ""):
+        super().__init__(path, destiny=destiny)
         self.options = pdf_redactor.RedactorOptions()
         self.options.metadata_filters = {
             "Title": [lambda value: value],
@@ -94,7 +94,7 @@ class DocumentHandlerPdf(DocumentHandler):
 
     def documentsProcessing(self):
         listNames = self.giveListNames()
-        #print(listNames[:])
+        # print(listNames[:])
         if len(listNames) > 0:
             listNames.sort(
                 key=lambda value: len(value),
@@ -115,36 +115,36 @@ class DocumentHandlerPdf(DocumentHandler):
                     )
                 ]
                 pdf_redactor.redactor(self.options, self.destiny, self.destiny)
-        
 
 
 class DocumentHandlerDocx(DocumentHandler):
 
-    def __init__(self, path:str,destiny:str = ""):
-        super().__init__(path,destiny=destiny)
+    def __init__(self, path: str, destiny: str = ""):
+        super().__init__(path, destiny=destiny)
         self.document = docx.Document(self.path)
 
-    # TODO NameRecolector to object
-    def getNameOfTable(self, table:Table) -> NamePickerInTables:
+    def getNameOfTable(self, table: Table) -> NamePickerInTables:
         picker = NamePickerInTables()
-        isLables = True 
+        isLables = True
         for row in table.rows:
-            for index,cell in enumerate(row.cells):
+            for index, cell in enumerate(row.cells):
                 for paragraph in cell.paragraphs:
                     if isLables:
                         listOfWordSemantics = list(
-                            filter(lambda x : LanguageBuilder().semanticSimilarity(str(paragraph.text), x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, listOfVectorWords))
+                            filter(lambda x: LanguageBuilder().semanticSimilarity(str(paragraph.text),
+                                                                                  x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
+                                   listOfVectorWords))
                         if listOfWordSemantics != []:
                             picker.addIndexColumn(index)
                     else:
                         if picker.isColumnName(index) and bool(paragraph.text.strip()):
-                            picker.addName(index,paragraph.text)
+                            picker.addName(index, paragraph.text)
                             if self.nameSearch.isName(paragraph.text): picker.countRealName(index)
             isLables = False
         return picker
 
     def documentsProcessing(self):
-        for block in iter_block_items(self.document):
+        for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 listNames = self.nameSearch.searchNames(block.text)
                 for name in listNames:
@@ -155,19 +155,18 @@ class DocumentHandlerDocx(DocumentHandler):
                 picker = self.getNameOfTable(block)
                 if picker:
                     for row in block.rows[1:]:
-                        for index,cell in enumerate(row.cells):
-                            if picker.isRealColumName(index,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
+                        for index, cell in enumerate(row.cells):
+                            if picker.isRealColumName(index, MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
                                 for paragraph in cell.paragraphs:
                                     paragraph.text = encode(paragraph.text)
             else:
                 continue
         self.document.save(self.destiny)
-         
 
     def giveListNames(self) -> list:
         doc = docx.Document(self.path)
         listNames = []
-        for block in iter_block_items(doc):
+        for block in itemIterator(doc):
             if isinstance(block, Paragraph):
                 listOfMarks = self.nameSearch.searchNames(block.text)
                 if listOfMarks != []:
@@ -177,49 +176,52 @@ class DocumentHandlerDocx(DocumentHandler):
             else:
                 continue
         return listNames
-        
+
 
 class DocumentHandlerExcel(DocumentHandler):
 
-    def __init__(self,path:str,destiny:str = ""):
-        super().__init__(path,destiny=destiny)
+    def __init__(self, path: str, destiny: str = ""):
+        super().__init__(path, destiny=destiny)
         self.df = pd.read_excel(path)
 
     def getPossibleColumnsNames(self):
-        for key,typeColumn in zip(self.df.keys(),self.df.dtypes):
-            if typeColumn == object: 
+        for key, typeColumn in zip(self.df.keys(), self.df.dtypes):
+            if typeColumn == object:
                 listOfWordSemantics = list(
-                    filter(lambda x : LanguageBuilder().semanticSimilarity(key, x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, listOfVectorWords))
+                    filter(
+                        lambda x: LanguageBuilder().semanticSimilarity(key, x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
+                        listOfVectorWords))
                 if listOfWordSemantics != []:
                     yield key
-    
+
     def documentsProcessing(self):
         for key in self.getPossibleColumnsNames():
-            print(key)
+            #print(key)
             dfNotNull = self.df[key][self.df[key].notnull()]
             countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
             if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                self.df[key].replace({str(name):encode(str(name)) for name in dfNotNull},inplace=True)
-        self.df.to_excel(self.destiny, index = False)
+                self.df[key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
+        self.df.to_excel(self.destiny, index=False)
 
     def giveListNames(self) -> list:
         listNames = []
         for key in self.getPossibleColumnsNames():
-            print(key)
+            #print(key)
             dfNotNull = self.df[key][self.df[key].notnull()]
             countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
             if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                 listNames[len(listNames):] = dfNotNull
         return listNames
 
+
 class DocumentHandlerHtml(DocumentHandler):
 
-    def __init__(self,path:str,destiny:str = ""):
-        super().__init__(path,destiny=destiny)
-        with open(self.path,"r", encoding="utf8") as f:
+    def __init__(self, path: str, destiny: str = ""):
+        super().__init__(path, destiny=destiny)
+        with open(self.path, "r", encoding="utf8") as f:
             self.soup = BeautifulSoup(f.read(), "lxml")
 
-    def locateNames(self,sentence):
+    def locateNames(self, sentence):
         listNames = self.nameSearch.searchNames(str(sentence))
         if listNames is []:
             return sentence
@@ -228,11 +230,11 @@ class DocumentHandlerHtml(DocumentHandler):
         for name in listNames:
             newSentence += sentence[index:name['star_char']] + markInHtml(name['name'])
             index = name['end_char']
-        if index <= len(sentence)-1:
+        if index <= len(sentence) - 1:
             newSentence += sentence[index:]
         return newSentence
 
-    def encodeNames(self,sentence):
+    def encodeNames(self, sentence):
         print(sentence)
         listNames = self.nameSearch.searchNames(str(sentence))
         if listNames is []:
@@ -242,48 +244,49 @@ class DocumentHandlerHtml(DocumentHandler):
         for name in listNames:
             newSentence += sentence[index:name['star_char']] + encode(name['name'])
             index = name['end_char']
-        if index <= len(sentence)-1:
+        if index <= len(sentence) - 1:
             newSentence += sentence[index:]
         return newSentence
 
     def documentsProcessing(self):
         formatter = HTMLFormatter(self.encodeNames)
-        with open(self.destiny,"w") as f:
+        with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
     def documentTagger(self):
         formatter = HTMLFormatter(self.locateNames)
-        with open(self.destiny,"w") as f:
+        with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
     def giveListNames(self):
         listNames = []
-        blacklist = [ '[document]' , 'noscript' , 'header' , 
-        'html' , 'meta' , 'head' , 'input' , 'script', 'link', 'lang']
+        blacklist = ['[document]', 'noscript', 'header',
+                     'html', 'meta', 'head', 'input', 'script', 'link', 'lang']
         for lable in self.soup.stripped_strings:
             if lable not in blacklist:
-                #print(lable)
+                # print(lable)
                 listOfMarks = self.nameSearch.searchNames(str(lable))
-                listNames[len(listNames):] = [name['name'].replace("\n","") for name in listOfMarks]
+                listNames[len(listNames):] = [name['name'].replace("\n", "") for name in listOfMarks]
         return listNames
+
 
 class DocumentHandlerTxt(DocumentHandler):
 
-    def modifyLine(self,line:str,listNames:list) -> str:
+    def modifyLine(self, line: str, listNames: list) -> str:
         newLine = ""
         index = 0
         for name in listNames:
             newLine += line[index:name['star_char']] + encode(name['name'])
             index = name['end_char']
-        if index <= len(line)-1:
+        if index <= len(line) - 1:
             newLine += line[index:]
         return newLine
-    
+
     def documentsProcessing(self):
         with open(self.path, 'r') as file, open(self.destiny, 'w') as destiny:
             for line in file:
                 listNames = self.nameSearch.searchNames(line)
-                destiny.writelines(self.modifyLine(line,listNames))
+                destiny.writelines(self.modifyLine(line, listNames))
 
     def giveListNames(self) -> list:
         listNames = []
@@ -291,6 +294,3 @@ class DocumentHandlerTxt(DocumentHandler):
             for line in file:
                 listNames[len(listNames):] = [name['name'] for name in self.nameSearch.searchNames(line)]
         return listNames
-
-
-

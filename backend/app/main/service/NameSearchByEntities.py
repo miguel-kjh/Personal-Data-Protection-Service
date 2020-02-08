@@ -1,6 +1,5 @@
 from typing import Text
 from app.main.service.NameSearch import NameSearch
-from deprecated import deprecated
 
 class NameSearchByEntities(NameSearch):
 

@@ -1,5 +1,5 @@
 from abc import ABC,abstractmethod
-from app.main.service.DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExcel,DocumentHandlerHTML,DocumentHandlerPDF,DocumentHandlerTxt
+from app.main.service.DocumentHandler import DocumentHandler,DocumentHandlerDocx,DocumentHandlerExcel,DocumentHandlerHtml,DocumentHandlerPdf,DocumentHandlerTxt
 
 def getCreatorDocumentHandler(filename:str,typeFile:str,destiny:str=""):
     if typeFile == 'docx':
@@ -35,11 +35,11 @@ class CreatorDocumentHandlerExcel(CreatorDocumentHandler):
 
 class CreatorDocumentHandlerPdf(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
-        return DocumentHandlerPDF(self.path,self.destiny)
+        return DocumentHandlerPdf(self.path,self.destiny)
 
 class CreatorDocumentHandlerHtml(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
-        return DocumentHandlerHTML(self.path,self.destiny)
+        return DocumentHandlerHtml(self.path,self.destiny)
 
 class CreatorDocumentHandlerTxt(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:

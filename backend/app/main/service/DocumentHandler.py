@@ -17,7 +17,6 @@ from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 
 from app.main.service.utils import proc_pdf3k, proc_docx, run_append, encode, iter_block_items, markInHtml
-from app.main.service.NameSearchByGenerator import NameSearchByGenerator
 from app.main.service.NameSearchByEntities import NameSearchByEntities
 from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 from app.main.service.languageBuilder import LanguageBuilder
@@ -51,7 +50,7 @@ class DocumentHandler():
         print(export_csv)
 
 #TODO? optimize
-class DocumentHandlerPDF(DocumentHandler):
+class DocumentHandlerPdf(DocumentHandler):
 
     def __init__(self, path:str,destiny:str = ""):
         super().__init__(path,destiny=destiny)
@@ -213,7 +212,7 @@ class DocumentHandlerExcel(DocumentHandler):
                 listNames[len(listNames):] = dfNotNull
         return listNames
 
-class DocumentHandlerHTML(DocumentHandler):
+class DocumentHandlerHtml(DocumentHandler):
 
     def __init__(self,path:str,destiny:str = ""):
         super().__init__(path,destiny=destiny)

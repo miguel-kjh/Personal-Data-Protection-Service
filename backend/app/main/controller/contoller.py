@@ -130,7 +130,7 @@ class ListNames(Resource):
 
 @api.route('/file/csv-file')
 class CsvFile(Resource):
-    @api.doc('return a csv file with names of file sended')
+    @api.doc('return a csv file with names of file sent')
     def post(self):
         res = uploadFile()
         if res['success']:

@@ -13,7 +13,7 @@ class NamePickerInTables:
             "countOfRealName": 0
         }
 
-    def getIndexColumn(self) -> list:
+    def getIndexesColumn(self) -> list:
         return list(self.picker.keys())
 
     def addName(self, indexColumn: int, name: str):
@@ -36,3 +36,7 @@ class NamePickerInTables:
             len(dataName['names']) > 0 and dataName["countOfRealName"] / len(dataName['names']) > threshold
         ])
         )
+
+    def addIndexesColumn(self, indexes: list):
+        for index in indexes:
+            self.addIndexColumn(index)

@@ -7,6 +7,7 @@ from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
+import tabula as tb
 import app.main.service.pdf_redactor as pdf_redactor
 
 import docx
@@ -50,6 +51,21 @@ class DocumentHandler:
 
 
 # TODO? optimize
+def haveSemanticRelation(key: tuple) -> bool:
+    return bool(
+        list(
+            filter(
+                lambda word: LanguageBuilder().semanticSimilarity(key[1],word) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
+                ,listOfVectorWords
+            )
+        )
+    )
+
+
+def giveFrameKeys(table: pd.DataFrame) -> list:
+    return [(index, table[index][0]) for index in table.keys() if not pd.isna(table[index][0])]
+
+
 class DocumentHandlerPdf(DocumentHandler):
 
     def __init__(self, path: str, destiny: str = ""):
@@ -65,7 +81,7 @@ class DocumentHandlerPdf(DocumentHandler):
         }
         self.options.xmp_filters = [lambda xml: None]
 
-    def giveListNames(self) -> list:
+    """def giveListNames(self) -> list:
         fp = open(self.path, 'rb')
         parser = PDFParser(fp)
         fp.close()
@@ -90,11 +106,27 @@ class DocumentHandlerPdf(DocumentHandler):
                             doc = self.nameSearch.searchNames(text)
                             for e in doc:
                                 listNames.append(e['name'].strip("\n"))
-        return list(set(listNames))
+        return list(set(listNames))"""
+
+    def giveListNames(self) -> list:
+        listNames = []
+        lastKeys = []
+        for table in tb.read_pdf(self.path, pages="all", multiple_tables=True):
+            keys = giveFrameKeys(table)
+            initialRow = 1
+            if lastKeys:
+                keys = lastKeys
+                initialRow = 0
+            for tupleKey in list(filter(lambda key: haveSemanticRelation(key),keys)):
+                dfNotNull = table[tupleKey[0]][table[tupleKey[0]].notnull()][initialRow:]
+                countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
+                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                    listNames[len(listNames):] = dfNotNull
+            lastKeys = keys
+        return listNames
 
     def documentsProcessing(self):
         listNames = self.giveListNames()
-        # print(listNames[:])
         if len(listNames) > 0:
             listNames.sort(
                 key=lambda value: len(value),
@@ -123,27 +155,37 @@ class DocumentHandlerDocx(DocumentHandler):
         super().__init__(path, destiny=destiny)
         self.document = docx.Document(self.path)
 
-    def getNameOfTable(self, table: Table) -> NamePickerInTables:
+    def getPickerData(self, table: Table) -> NamePickerInTables:
         picker = NamePickerInTables()
-        isLables = True
+        isLabels = True
         for row in table.rows:
             for index, cell in enumerate(row.cells):
                 for paragraph in cell.paragraphs:
-                    if isLables:
-                        listOfWordSemantics = list(
+                    if isLabels:
+                        labels = list(
                             filter(lambda x: LanguageBuilder().semanticSimilarity(str(paragraph.text),
                                                                                   x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
                                    listOfVectorWords))
-                        if listOfWordSemantics != []:
+                        if labels:
                             picker.addIndexColumn(index)
                     else:
                         if picker.isColumnName(index) and bool(paragraph.text.strip()):
                             picker.addName(index, paragraph.text)
-                            if self.nameSearch.isName(paragraph.text): picker.countRealName(index)
-            isLables = False
+                            if self.nameSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
+            isLabels = False
         return picker
 
+    def definePicker(self, table: Table, picker: NamePickerInTables):
+        for row in table.rows:
+            for index, cell in enumerate(row.cells):
+                if picker.isColumnName(index):
+                    for paragraph in cell.paragraphs:
+                        if bool(paragraph.text.strip()):
+                            picker.addName(index, paragraph.text)
+                            if self.nameSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
+
     def documentsProcessing(self):
+        LastIndexesColumn = []
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 listNames = self.nameSearch.searchNames(block.text)
@@ -152,27 +194,42 @@ class DocumentHandlerDocx(DocumentHandler):
                     text = regexName.sub(encode(name['name']), block.text)
                     block.text = text
             elif isinstance(block, Table):
-                picker = self.getNameOfTable(block)
-                if picker:
-                    for row in block.rows[1:]:
-                        for index, cell in enumerate(row.cells):
-                            if picker.isRealColumName(index, MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
-                                for paragraph in cell.paragraphs:
-                                    paragraph.text = encode(paragraph.text)
+                picker = self.getPickerData(block)
+                initialRow = 1
+                if picker.getIndexesColumn():
+                    LastIndexesColumn = picker.getIndexesColumn()
+                elif LastIndexesColumn:
+                    picker.addIndexesColumn(LastIndexesColumn)
+                    self.definePicker(block, picker)
+                    initialRow = 0
+                else:
+                    continue
+                for row in block.rows[initialRow:]:
+                    for index, cell in enumerate(row.cells):
+                        if picker.isRealColumName(index, MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
+                            for paragraph in cell.paragraphs:
+                                paragraph.text = encode(paragraph.text)
             else:
                 continue
         self.document.save(self.destiny)
 
     def giveListNames(self) -> list:
-        doc = docx.Document(self.path)
+        LastIndexesColumn = []
         listNames = []
-        for block in itemIterator(doc):
+        for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 listOfMarks = self.nameSearch.searchNames(block.text)
                 if listOfMarks != []:
                     listNames[len(listNames):] = [name['name'] for name in listOfMarks]
             elif isinstance(block, Table):
-                listNames[len(listNames):] = self.getNameOfTable(block).getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                picker = self.getPickerData(block)
+                if picker.getIndexesColumn():
+                    LastIndexesColumn = picker.getIndexesColumn()
+                elif LastIndexesColumn:
+                    picker.addIndexesColumn(LastIndexesColumn)
+                    self.definePicker(block, picker)
+                listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+
             else:
                 continue
         return listNames
@@ -191,14 +248,14 @@ class DocumentHandlerExcel(DocumentHandler):
                     filter(
                         lambda x: LanguageBuilder().semanticSimilarity(key, x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
                         listOfVectorWords))
-                if listOfWordSemantics != []:
+                if listOfWordSemantics:
                     yield key
 
     def documentsProcessing(self):
         for key in self.getPossibleColumnsNames():
-            #print(key)
+            # print(key)
             dfNotNull = self.df[key][self.df[key].notnull()]
-            countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
+            countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
             if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                 self.df[key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
         self.df.to_excel(self.destiny, index=False)
@@ -206,9 +263,9 @@ class DocumentHandlerExcel(DocumentHandler):
     def giveListNames(self) -> list:
         listNames = []
         for key in self.getPossibleColumnsNames():
-            #print(key)
+            # print(key)
             dfNotNull = self.df[key][self.df[key].notnull()]
-            countOfName = sum(list(map(lambda x: self.nameSearch.isName(str(x)), dfNotNull)))
+            countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
             if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                 listNames[len(listNames):] = dfNotNull
         return listNames

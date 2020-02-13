@@ -25,7 +25,6 @@ class NameSearch(ABC):
         for name in normalizeName.replace('-', ' ').split():
             if name not in self.keywords:
                 countWordsInName += 1
-                name = name.replace('"', '')
                 try:
                     sentence = "select (select count(*) from surnames where surnames= '%s') OR" \
                                " (select count(*) from names  where names='%s');" % (name, name)

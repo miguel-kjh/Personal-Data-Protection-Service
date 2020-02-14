@@ -3,11 +3,11 @@
   <component name="ChangeListManager">
     <list default="true" id="9889e356-a920-4c0c-8aa9-a380f25d6860" name="Default Changelist" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/main/controller/contoller.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main/controller/contoller.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/main/flask_File_main.db" beforeDir="false" afterPath="$PROJECT_DIR$/app/main/flask_File_main.db" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/main/flask_File_test.db" beforeDir="false" afterPath="$PROJECT_DIR$/app/main/flask_File_test.db" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/app/main/service/DocumentHandler.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main/service/DocumentHandler.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/main/service/NamePickerInTables.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main/service/NamePickerInTables.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/app/main/service/NameSearch.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main/service/NameSearch.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/app/main/service/languageBuilder.py" beforeDir="false" afterPath="$PROJECT_DIR$/app/main/service/languageBuilder.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/requirements.txt" beforeDir="false" afterPath="$PROJECT_DIR$/requirements.txt" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -35,6 +35,7 @@
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="RunOnceActivity.ShowReadmeOnStart" value="true" />
     <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="settings.editor.selected.configurable" value="configurable.group.language" />
   </component>
   <component name="RunManager">
     <configuration name="pytest in testNameSearch.py" type="tests" factoryName="py.test" temporary="true" nameIsGenerated="true">
@@ -104,9 +105,13 @@
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
     <state width="1920" height="286" key="GridCell.Tab.0.right/0.27.1920.1053/1920.0.1920.1080@0.27.1920.1053" timestamp="1581179713030" />
-    <state x="623" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1581603222751">
+    <state x="449" y="187" key="SettingsEditor" timestamp="1581690107848">
       <screen x="0" y="27" width="1920" height="1053" />
     </state>
-    <state x="623" y="257" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053/1920.0.1920.1080@0.27.1920.1053" timestamp="1581603222751" />
+    <state x="449" y="187" key="SettingsEditor/0.27.1920.1053/1920.0.1920.1080@0.27.1920.1053" timestamp="1581690107848" />
+    <state x="623" y="257" width="672" height="678" key="search.everywhere.popup" timestamp="1581689743432">
+      <screen x="0" y="27" width="1920" height="1053" />
+    </state>
+    <state x="623" y="257" width="672" height="678" key="search.everywhere.popup/0.27.1920.1053/1920.0.1920.1080@0.27.1920.1053" timestamp="1581689743432" />
   </component>
 </project>

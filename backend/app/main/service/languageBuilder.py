@@ -40,3 +40,7 @@ class LanguageBuilder(metaclass=Singleton):
 
     def getlanguage(self):
         return self.nlp
+
+    def hasContex(self, text: str) -> bool:
+        doc = self.nlp(text)
+        return 'VERB' in [token.pos_ for token in doc]

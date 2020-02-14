@@ -7,7 +7,7 @@ from pdfminer.pdfparser import PDFParser, PDFDocument
 from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
 from pdfminer.converter import PDFPageAggregator
 from pdfminer.layout import LAParams, LTTextBox, LTTextLine
-import tabula as tb
+import tabula
 import app.main.service.pdf_redactor as pdf_redactor
 
 import docx
@@ -51,21 +51,6 @@ class DocumentHandler:
 
 
 # TODO? optimize
-def haveSemanticRelation(key: tuple) -> bool:
-    return bool(
-        list(
-            filter(
-                lambda word: LanguageBuilder().semanticSimilarity(key[1],word) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
-                ,listOfVectorWords
-            )
-        )
-    )
-
-
-def giveFrameKeys(table: pd.DataFrame) -> list:
-    return [(index, table[index][0]) for index in table.keys() if not pd.isna(table[index][0])]
-
-
 class DocumentHandlerPdf(DocumentHandler):
 
     def __init__(self, path: str, destiny: str = ""):
@@ -81,7 +66,39 @@ class DocumentHandlerPdf(DocumentHandler):
         }
         self.options.xmp_filters = [lambda xml: None]
 
-    """def giveListNames(self) -> list:
+    def getPossibleColumnsNames(self, df):
+        for key, typeColumn in zip(df.keys(), df.dtypes):
+            if typeColumn == object:
+                listOfWordSemantics = list(
+                    filter(
+                        lambda x: LanguageBuilder().semanticSimilarity(key, x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
+                        listOfVectorWords))
+                if listOfWordSemantics:
+                    yield key
+
+    def getPersonalDataInTables(self, listNames:list):
+        lastKeys = []
+        for table in tabula.read_pdf(self.path, pages="all", multiple_tables=True):
+            #table = table.loc[:, ~table.columns.str.contains('^Unnamed')]
+            hasNewKeys = False
+            for key in self.getPossibleColumnsNames(table):
+                if(not hasNewKeys): lastKeys.clear()
+                hasNewKeys = True
+                dfNotNull = table[key][table[key].notnull()]
+                countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
+                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                    listNames[len(listNames):] = dfNotNull
+                    lastKeys.append(list(table.keys()).index(key))
+            if lastKeys and not hasNewKeys:
+                for indexKey in lastKeys:
+                    dataKey = list(table.keys())[indexKey]
+                    dfNotNull = table[dataKey][table[dataKey].notnull()]
+                    countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
+                    if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                        listNames.append(dataKey)
+                        listNames[len(listNames):] = dfNotNull
+
+    def getPersonalDataInTexts(self, listNames: list):
         fp = open(self.path, 'rb')
         parser = PDFParser(fp)
         fp.close()
@@ -95,58 +112,50 @@ class DocumentHandlerPdf(DocumentHandler):
         laparams.word_margin = 1.0
         device = PDFPageAggregator(rsrcmgr, laparams=laparams)
         interpreter = PDFPageInterpreter(rsrcmgr, device)
-        listNames = []
         for page in doc.get_pages():
             interpreter.process_page(page)
             layout = device.get_result()
             for lt_obj in layout:
                 if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
                     for text in lt_obj.get_text().split("\n"):
-                        if text != '':
+                        if text and LanguageBuilder().hasContex(text):
                             doc = self.nameSearch.searchNames(text)
-                            for e in doc:
-                                listNames.append(e['name'].strip("\n"))
-        return list(set(listNames))"""
+                            for entity in doc:
+                                listNames.append(entity['name'].strip("\n"))
 
     def giveListNames(self) -> list:
         listNames = []
-        lastKeys = []
-        for table in tb.read_pdf(self.path, pages="all", multiple_tables=True):
-            keys = giveFrameKeys(table)
-            initialRow = 1
-            if lastKeys:
-                keys = lastKeys
-                initialRow = 0
-            for tupleKey in list(filter(lambda key: haveSemanticRelation(key),keys)):
-                dfNotNull = table[tupleKey[0]][table[tupleKey[0]].notnull()][initialRow:]
-                countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
-                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                    listNames[len(listNames):] = dfNotNull
-            lastKeys = keys
+        self.getPersonalDataInTables(listNames)
+        self.getPersonalDataInTexts(listNames)
         return listNames
 
     def documentsProcessing(self):
         listNames = self.giveListNames()
-        if len(listNames) > 0:
-            listNames.sort(
-                key=lambda value: len(value),
-                reverse=True
+        
+        if not listNames:
+            pdf_redactor.redactor(self.options, self.path, self.destiny)
+            return
+        
+        listNames.sort(
+            key=lambda value: len(value),
+            reverse=True
+        )
+        self.options.content_filters = [
+            (
+                re.compile(listNames[0]),
+                lambda m: encode(listNames[0]).upper()
             )
+        ]
+        pdf_redactor.redactor(self.options, self.path, self.destiny)
+        for name in listNames[1:]:
             self.options.content_filters = [
                 (
-                    re.compile(listNames[0]),
-                    lambda m: encode(listNames[0]).upper()
+                    re.compile(name),
+                    lambda m: encode(name).upper()
                 )
             ]
-            pdf_redactor.redactor(self.options, self.path, self.destiny)
-            for name in listNames[1:]:
-                self.options.content_filters = [
-                    (
-                        re.compile(name),
-                        lambda m: encode(name).upper()
-                    )
-                ]
-                pdf_redactor.redactor(self.options, self.destiny, self.destiny)
+            pdf_redactor.redactor(self.options, self.destiny, self.destiny)
+
 
 
 class DocumentHandlerDocx(DocumentHandler):

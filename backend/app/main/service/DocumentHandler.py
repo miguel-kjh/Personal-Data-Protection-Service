@@ -89,9 +89,13 @@ class DocumentHandlerPdf(DocumentHandler):
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     listNames[len(listNames):] = dfNotNull
                     lastKeys.append(list(table.keys()).index(key))
-            if lastKeys and not hasNewKeys:
+            if lastKeys and not hasNewKeys and list(table.keys()):
                 for indexKey in lastKeys:
-                    dataKey = list(table.keys())[indexKey]
+                    try:
+                        dataKey = list(table.keys())[indexKey]
+                    except IndexError as identifier:
+                        print(identifier)
+                        continue
                     dfNotNull = table[dataKey][table[dataKey].notnull()]
                     countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
@@ -130,31 +134,23 @@ class DocumentHandlerPdf(DocumentHandler):
         return listNames
 
     def documentsProcessing(self):
-        listNames = self.giveListNames()
-        
+        listNames = list(set(self.giveListNames()))
         if not listNames:
             pdf_redactor.redactor(self.options, self.path, self.destiny)
             return
-        
         listNames.sort(
-            key=lambda value: len(value),
-            reverse=True
-        )
+                key=lambda value: len(value),
+                reverse=True
+            )
+        regex = '|'.join(listNames)
+        pdf_redactor.redactor(self.options, self.path, self.destiny)
         self.options.content_filters = [
             (
-                re.compile(listNames[0]),
-                lambda m: encode(listNames[0]).upper()
+                re.compile(regex),
+                lambda m: encode(m.group())
             )
         ]
         pdf_redactor.redactor(self.options, self.path, self.destiny)
-        for name in listNames[1:]:
-            self.options.content_filters = [
-                (
-                    re.compile(name),
-                    lambda m: encode(name).upper()
-                )
-            ]
-            pdf_redactor.redactor(self.options, self.destiny, self.destiny)
 
 
 

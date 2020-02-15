@@ -1,6 +1,6 @@
 from abc import ABC, abstractmethod
 from app.main.service.DocumentHandler import DocumentHandler, DocumentHandlerDocx, DocumentHandlerExcel, \
-    DocumentHandlerHtml, DocumentHandlerPdf, DocumentHandlerTxt
+    DocumentHandlerHtml, DocumentHandlerPdf, DocumentHandlerTxt,DocumentHandlerCsv
 
 
 def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = ""):
@@ -10,6 +10,8 @@ def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = ""):
         return CreatorDocumentHandlerPdf(filename, destiny)
     elif typeFile in ['xlsx', 'xlsm', 'xls']:
         return CreatorDocumentHandlerExcel(filename, destiny)
+    elif typeFile == 'csv':
+        return CreatorDocumentHandlerCsv(filename, destiny)
     elif typeFile == 'html':
         return CreatorDocumentHandlerHtml(filename, destiny)
     elif typeFile == 'txt':
@@ -42,6 +44,11 @@ class CreatorDocumentHandlerExcel(CreatorDocumentHandler):
 class CreatorDocumentHandlerPdf(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerPdf(self.path, self.destiny)
+
+
+class CreatorDocumentHandlerCsv(CreatorDocumentHandler):
+    def create(self) -> DocumentHandler:
+        return DocumentHandlerCsv(self.path, self.destiny)
 
 
 class CreatorDocumentHandlerHtml(CreatorDocumentHandler):

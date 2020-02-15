@@ -240,11 +240,10 @@ class DocumentHandlerDocx(DocumentHandler):
         return listNames
 
 
-class DocumentHandlerExcel(DocumentHandler):
-
-    def __init__(self, path: str, destiny: str = ""):
+class DocumentHandlerSpreadsheets(DocumentHandler):
+    def __init__(self, path: str, df:pd.DataFrame, destiny: str = ""):
         super().__init__(path, destiny=destiny)
-        self.df = pd.read_excel(path)
+        self.df = df
 
     def getPossibleColumnsNames(self):
         for key, typeColumn in zip(self.df.keys(), self.df.dtypes):
@@ -256,24 +255,43 @@ class DocumentHandlerExcel(DocumentHandler):
                 if listOfWordSemantics:
                     yield key
 
-    def documentsProcessing(self):
-        for key in self.getPossibleColumnsNames():
-            # print(key)
-            dfNotNull = self.df[key][self.df[key].notnull()]
-            countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
-            if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                self.df[key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
-        self.df.to_excel(self.destiny, index=False)
-
     def giveListNames(self) -> list:
         listNames = []
         for key in self.getPossibleColumnsNames():
-            # print(key)
             dfNotNull = self.df[key][self.df[key].notnull()]
             countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
             if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                 listNames[len(listNames):] = dfNotNull
         return listNames
+
+    def documentsProcessing(self):
+        for key in self.getPossibleColumnsNames():
+            dfNotNull = self.df[key][self.df[key].notnull()]
+            countOfName = sum(list(map(lambda x: self.nameSearch.checkNameInDB(str(x)), dfNotNull)))
+            if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                self.df[key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
+        self.save()
+
+    def save(self):
+        pass
+
+class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
+
+    def __init__(self, path: str, destiny: str = ""):
+        super().__init__(path, pd.read_excel(path), destiny=destiny)
+
+
+    def save(self):
+        self.df.to_excel(self.destiny, index=False)
+
+class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
+
+    def __init__(self, path: str, destiny: str = ""):
+        super().__init__(path, pd.read_csv(path), destiny=destiny)
+
+
+    def save(self):
+        self.df.to_csv(self.destiny, index=False)
 
 
 class DocumentHandlerHtml(DocumentHandler):

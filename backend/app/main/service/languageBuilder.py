@@ -1,13 +1,15 @@
 import spacy
 from spacy.pipeline import EntityRuler
-from spacy.tokens import Token
+
 
 class Singleton(type):
     _instances = {}
+
     def __call__(cls, *args, **kwargs):
         if cls not in cls._instances:
             cls._instances[cls] = super(Singleton, cls).__call__(*args, **kwargs)
         return cls._instances[cls]
+
 
 class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
@@ -16,17 +18,17 @@ class LanguageBuilder(metaclass=Singleton):
 
     def defineNameEntity(self):
         pattern = [
-                    {'POS': 'PROPN', 'OP': '+'},
-                    {'TEXT': {'REGEX': 'de|del|-|el|los|todos'}, 'OP': '?'},
-                    {'POS': 'PROPN', 'OP': '?'}
-                ]
+            {'POS': 'PROPN', 'OP': '+'},
+            {'TEXT': {'REGEX': 'de|del|-|el|los|todos'}, 'OP': '?'},
+            {'POS': 'PROPN', 'OP': '?'}
+        ]
         ruler = EntityRuler(self.nlp)
         patterns = [{"label": "NAME", "pattern": pattern}]
         ruler.add_patterns(patterns)
-        self.nlp.add_pipe(ruler,after='tagger')
+        self.nlp.add_pipe(ruler, after='tagger')
         print("defined names as entity")
 
-    def semanticSimilarity(self, text:str, textToCompare:str) -> float:
+    def semanticSimilarity(self, text: str, textToCompare: str) -> float:
         """
         Only use this funtion when used a md or lg models
         """
@@ -35,6 +37,10 @@ class LanguageBuilder(metaclass=Singleton):
             doc = self.nlp(text)
             docToCompare = self.nlp(textToCompare)
         return doc.similarity(docToCompare)
-    
+
     def getlanguage(self):
         return self.nlp
+
+    def hasContex(self, text: str) -> bool:
+        doc = self.nlp(text)
+        return 'VERB' in [token.pos_ for token in doc]

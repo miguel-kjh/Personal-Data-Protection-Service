@@ -1,6 +1,9 @@
 from abc import ABC, abstractmethod
-from app.main.service.DocumentHandler import DocumentHandler, DocumentHandlerDocx, DocumentHandlerExcel, \
-    DocumentHandlerHtml, DocumentHandlerPdf, DocumentHandlerTxt,DocumentHandlerCsv
+from app.main.service.DocumentHandler import DocumentHandler, DocumentHandlerHtml
+from app.main.service.DocumentHandlerTxt import DocumentHandlerTxt
+from app.main.service.DocumentHandlerSpreadsheets import DocumentHandlerExcel,DocumentHandlerCsv
+from app.main.service.DocumentHandlerPdf import DocumentHandlerPdf
+from app.main.service.DocumentHandlerDocx import DocumentHandlerDocx
 
 
 def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = ""):

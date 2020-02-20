@@ -14,6 +14,11 @@ from datetime import datetime
 import re
 
 
+def deleteInvalidData(data:list) -> list:
+    return list(
+        filter(lambda element: "\n" not in element, data)
+    )
+
 class DocumentHandlerPdf(DocumentHandler):
 
     def __init__(self, path: str, destiny: str = ""):
@@ -42,8 +47,8 @@ class DocumentHandlerPdf(DocumentHandler):
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     listNames[len(listNames):] = dfNotNull
                     lastKeys.append(list(table.keys()).index(key))
-            
             if not lastKeys:
+                if not keyHeap:continue
                 for indexKey in keyHeap[-1]:
                     try:
                         dataKey = list(table.keys())[indexKey]
@@ -79,7 +84,7 @@ class DocumentHandlerPdf(DocumentHandler):
                 if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
                     #for text in lt_obj.get_text().split("\n"):
                     text = lt_obj.get_text()
-                    if text and LanguageBuilder().hasContex(text):
+                    if text:
                         #print(text)
                         #print("--------------------------")
                         doc = self.nameSearch.searchNames(text)

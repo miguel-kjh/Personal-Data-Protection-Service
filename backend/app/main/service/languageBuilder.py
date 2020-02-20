@@ -13,7 +13,7 @@ class Singleton(type):
 
 class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
-        self.nlp = spacy.load("es_core_news_md", disable=["parser", "ner"])
+        self.nlp = spacy.load("es_core_news_md")
         print("model load")
 
     def defineNameEntity(self):
@@ -33,7 +33,7 @@ class LanguageBuilder(metaclass=Singleton):
         Only use this funtion when used a md or lg models
         """
         if not text.strip(): return 0.0
-        with self.nlp.disable_pipes("tagger"):
+        with self.nlp.disable_pipes("tagger","parser","ner"):
             doc = self.nlp(text)
             docToCompare = self.nlp(textToCompare)
         return doc.similarity(docToCompare)
@@ -42,5 +42,6 @@ class LanguageBuilder(metaclass=Singleton):
         return self.nlp
 
     def hasContex(self, text: str) -> bool:
-        doc = self.nlp(text)
+        with self.nlp.disable_pipes("parser","ner"):
+            doc = self.nlp(text)
         return 'VERB' in [token.pos_ for token in doc]

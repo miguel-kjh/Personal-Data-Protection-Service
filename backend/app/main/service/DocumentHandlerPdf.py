@@ -1,17 +1,13 @@
 from app.main.service.DocumentHandler import DocumentHandler
-from pdfminer.pdfparser import PDFParser, PDFDocument
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import PDFPageAggregator
-from pdfminer.layout import LAParams, LTTextBox, LTTextLine
-import tabula
 import app.main.service.pdf_redactor as pdf_redactor
 from app.main.util.ColumnSelectorDataframe import ColumnSelectorDataFrame
-from app.main.util.fileUtils import encode
+from app.main.util.fileUtils import encode,readPdf
 from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 from app.main.service.languageBuilder import LanguageBuilder
 
 from datetime import datetime
 import re
+import tabula
 from typing import Text
 from collections.abc import Iterable, Iterator
 
@@ -90,8 +86,7 @@ class DocumentHandlerPdf(DocumentHandler):
                 for indexKey in keyHeap[-1]:
                     try:
                         dataKey = list(table.keys())[indexKey]
-                    except IndexError as identifier:
-                        print(identifier)
+                    except IndexError:
                         continue
                     dfNotNull = table[dataKey][table[dataKey].notnull()]
                     countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
@@ -102,36 +97,11 @@ class DocumentHandlerPdf(DocumentHandler):
                 keyHeap.append(lastKeys)
 
     def getPersonalDataInTexts(self, listNames: list):
-        fp = open(self.path, 'rb')
-        parser = PDFParser(fp)
-        fp.close()
-        doc = PDFDocument()
-        parser.set_document(doc)
-        doc.set_parser(parser)
-        doc.initialize('')
-        rsrcmgr = PDFResourceManager()
-        laparams = LAParams()
-        laparams.char_margin = 1.0
-        laparams.word_margin = 1.0
-        device = PDFPageAggregator(rsrcmgr, laparams=laparams)
-        interpreter = PDFPageInterpreter(rsrcmgr, device)
-        for page in doc.get_pages():
-            interpreter.process_page(page)
-            layout = device.get_result()
-            for lt_obj in layout:
-                if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
-                    #for text in lt_obj.get_text().split("\n"):
-                    text = lt_obj.get_text()
-                    if text:
-                        self.buffer.add(text)
-                        #print(text)
-                        #print("--------------------------")
-                        #doc = self.nameSearch.searchNames(text)
-                        #for entity in doc:
-                            #listNames.append(entity['name'].strip("\n"))
+        
+        for text in readPdf(self.path):
+            self.buffer.add(text)
+
         for text in self.buffer:
-            print(text)
-            print("--------------------------")
             doc = self.nameSearch.searchNames(text)
             for entity in doc:
                 listNames.append(entity['name'].strip("\n"))

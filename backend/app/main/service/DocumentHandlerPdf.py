@@ -12,12 +12,49 @@ from app.main.service.languageBuilder import LanguageBuilder
 
 from datetime import datetime
 import re
+from typing import Text
+from collections.abc import Iterable, Iterator
 
 
-def deleteInvalidData(data:list) -> list:
-    return list(
-        filter(lambda element: "\n" not in element, data)
-    )
+class BufferIterator(Iterator):
+    def __init__(self,buffer:list):
+        self.buffer = buffer
+        self.position = 0
+
+    def __next__(self) -> Text:
+        try:
+            text = self.buffer[self.position]
+            if not text['row']:
+                self.position += 1
+                return text['text']
+            count = 1
+            for nextText in self.buffer[self.position:]:
+                if not nextText['row']:
+                    break
+                count += 1
+            if count >= 3:
+                self.position += count
+                text = self.buffer[self.position]
+        except IndexError:
+            raise StopIteration
+        self.position += 1
+        return text['text']
+
+class BufferReaderPdf(Iterable):
+    def __init__(self):
+        self.bufferText = []
+
+    def add(self, text:Text) -> bool:
+        self.bufferText.append(
+            {
+                'text':text,
+                'row': not LanguageBuilder().hasContex(text)
+            }
+        )
+
+    def __iter__(self) -> BufferIterator:
+        return BufferIterator(self.bufferText)
+    
 
 class DocumentHandlerPdf(DocumentHandler):
 
@@ -34,6 +71,7 @@ class DocumentHandlerPdf(DocumentHandler):
         }
         self.options.xmp_filters = [lambda xml: None]
         self.selector = ColumnSelectorDataFrame()
+        self.buffer = BufferReaderPdf()
 
     def getPersonalDataInTables(self, listNames:list):
         keyHeap = []
@@ -85,11 +123,18 @@ class DocumentHandlerPdf(DocumentHandler):
                     #for text in lt_obj.get_text().split("\n"):
                     text = lt_obj.get_text()
                     if text:
+                        self.buffer.add(text)
                         #print(text)
                         #print("--------------------------")
-                        doc = self.nameSearch.searchNames(text)
-                        for entity in doc:
-                            listNames.append(entity['name'].strip("\n"))
+                        #doc = self.nameSearch.searchNames(text)
+                        #for entity in doc:
+                            #listNames.append(entity['name'].strip("\n"))
+        for text in self.buffer:
+            print(text)
+            print("--------------------------")
+            doc = self.nameSearch.searchNames(text)
+            for entity in doc:
+                listNames.append(entity['name'].strip("\n"))
 
     def giveListNames(self) -> list:
         listNames = []

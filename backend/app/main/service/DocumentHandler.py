@@ -57,7 +57,6 @@ class DocumentHandlerHtml(DocumentHandler):
         return newSentence
 
     def encodeNames(self, sentence):
-        print(sentence)
         listNames = self.nameSearch.searchNames(str(sentence))
         if listNames is []:
             return sentence
@@ -74,7 +73,7 @@ class DocumentHandlerHtml(DocumentHandler):
         formatter = HTMLFormatter(self.encodeNames)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
-
+    
     def documentTagger(self):
         formatter = HTMLFormatter(self.locateNames)
         with open(self.destiny, "w") as f:
@@ -86,7 +85,7 @@ class DocumentHandlerHtml(DocumentHandler):
                      'html', 'meta', 'head', 'input', 'script', 'link', 'lang']
         for lable in self.soup.stripped_strings:
             if lable not in blacklist:
-                # print(lable)
+                print(lable)
                 listOfMarks = self.nameSearch.searchNames(str(lable))
                 listNames[len(listNames):] = [name['name'].replace("\n", "") for name in listOfMarks]
         return listNames

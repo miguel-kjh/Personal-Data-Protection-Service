@@ -31,7 +31,7 @@ class DocumentHandlerDocx(DocumentHandler):
                         if labels:
                             picker.addIndexColumn(index)
                     else:
-                        if picker.isColumnName(index) and bool(paragraph.text.strip()):
+                        if picker.isColumnName(index) and paragraph.text.strip():
                             picker.addName(index, paragraph.text)
                             if self.nameSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
             isLabels = False
@@ -42,7 +42,7 @@ class DocumentHandlerDocx(DocumentHandler):
             for index, cell in enumerate(row.cells):
                 if picker.isColumnName(index):
                     for paragraph in cell.paragraphs:
-                        if bool(paragraph.text.strip()):
+                        if paragraph.text.strip():
                             picker.addName(index, paragraph.text)
                             if self.nameSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
 
@@ -62,9 +62,9 @@ class DocumentHandlerDocx(DocumentHandler):
                     block.text = text
             elif isinstance(block, Table):
                 picker = self.getPickerData(block)
-                initialRow = 1
                 if picker.getIndexesColumn():
                     LastIndexesColumn = picker.getIndexesColumn()
+                    initialRow = 1
                 elif LastIndexesColumn:
                     picker.addIndexesColumn(LastIndexesColumn)
                     self.definePicker(block, picker)
@@ -98,8 +98,9 @@ class DocumentHandlerDocx(DocumentHandler):
                 elif LastIndexesColumn:
                     picker.addIndexesColumn(LastIndexesColumn)
                     self.definePicker(block, picker)
+                else: 
+                    continue
                 listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
-
             else:
                 continue
         return listNames

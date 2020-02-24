@@ -60,7 +60,13 @@ def itemIterator(parent):
         elif isinstance(child, CT_Tbl):
             yield Table(child, parent)
 
-def readPdf(path:str) -> Text:
+def readPdf(path:str,options:dict) -> Text:
+    """from app.main.service.pdf_redactor import build_text_layer,tokenize_streams
+    from pdfrw import PdfReader
+    document = PdfReader(path)
+    text_tokens = build_text_layer(document,options)
+    print([t.value for t in text_tokens[0]])
+    return """""
     fp = open(path, 'rb')
     parser = PDFParser(fp)
     fp.close()

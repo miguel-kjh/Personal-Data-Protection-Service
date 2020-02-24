@@ -50,10 +50,15 @@ class DocumentHandlerDocx(DocumentHandler):
         LastIndexesColumn = []
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
-                listNames = self.nameSearch.searchNames(block.text)
-                for name in listNames:
-                    regexName = re.compile(name['name'])
-                    text = regexName.sub(encode(name['name']), block.text)
+                if LanguageBuilder().hasContex(block.text):
+                    listNames = self.nameSearch.searchNames(block.text)
+                    for name in listNames:
+                        regexName = re.compile(name['name'])
+                        text = regexName.sub(encode(name['name']), block.text)
+                        block.text = text
+                elif self.nameSearch.checkNameInDB(block.text):
+                    regexName = re.compile(block.text.strip())
+                    text = regexName.sub(encode(block.text.strip()), block.text)
                     block.text = text
             elif isinstance(block, Table):
                 picker = self.getPickerData(block)
@@ -80,9 +85,12 @@ class DocumentHandlerDocx(DocumentHandler):
         listNames = []
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
-                listOfMarks = self.nameSearch.searchNames(block.text)
-                if listOfMarks != []:
-                    listNames[len(listNames):] = [name['name'] for name in listOfMarks]
+                if LanguageBuilder().hasContex(block.text):
+                    listOfMarks = self.nameSearch.searchNames(block.text)
+                    if listOfMarks != []:
+                        listNames[len(listNames):] = [name['name'] for name in listOfMarks]
+                elif self.nameSearch.checkNameInDB(block.text):
+                    listNames.append(block.text.strip())
             elif isinstance(block, Table):
                 picker = self.getPickerData(block)
                 if picker.getIndexesColumn():

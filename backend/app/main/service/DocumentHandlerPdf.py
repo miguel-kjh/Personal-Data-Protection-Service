@@ -28,7 +28,7 @@ class BufferIterator(Iterator):
                 if not nextText['row']:
                     break
                 count += 1
-            if count >= 3:
+            if count > 3:
                 self.position += count
                 text = self.buffer[self.position]
         except IndexError:
@@ -98,7 +98,7 @@ class DocumentHandlerPdf(DocumentHandler):
 
     def getPersonalDataInTexts(self, listNames: list):
         
-        for text in readPdf(self.path):
+        for text in readPdf(self.path,self.options):
             self.buffer.add(text)
 
         for text in self.buffer:

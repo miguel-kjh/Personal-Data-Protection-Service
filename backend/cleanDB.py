@@ -20,10 +20,17 @@ class ConnectionFileLog:
         self.connection.commit()
         cursorObj.close()
 
+    def updateFile(self):
+        cursorObj = self.connection.cursor()
+        cursorObj.execute("UPDATE fileLog SET isDelete = 1 where isDelete = 0")
+        self.connection.commit()
+
     def __del__(self):
         print("close")
         self.connection.close()
 
 
 if __name__ == "__main__":
-    ConnectionFileLog().deleteFile()
+    conn = ConnectionFileLog()
+    conn.updateFile()
+    conn.deleteFile()

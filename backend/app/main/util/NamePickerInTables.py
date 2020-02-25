@@ -43,3 +43,6 @@ class NamePickerInTables:
 
     def clear(self):
         self.picker.clear()
+
+    def isEmpty(self) -> bool:
+        return not bool(self.picker)

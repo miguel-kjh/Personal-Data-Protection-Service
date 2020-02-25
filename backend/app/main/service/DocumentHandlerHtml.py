@@ -1,18 +1,71 @@
-from deprecated import deprecated
 from app.main.service.DocumentHandler import DocumentHandler
-from bs4 import BeautifulSoup
-from bs4.formatter import HTMLFormatter
 from app.main.util.fileUtils import markInHtml,encode
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.heuristicMeasures import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
 from app.main.util.semanticWordLists import listOfVectorWords
 from app.main.util.NamePickerInTables import NamePickerInTables
 
-import pandas as pd
 import re
+import pandas as pd
+from bs4 import BeautifulSoup
+from bs4.formatter import HTMLFormatter
+from enum import Enum,unique
 
+@unique
+class TableToken(Enum):
+            NONE = 0
+            HEAD = 1
+            ROW = 2
 
-@deprecated(version='1.3.1', reason="This class is deprecated")
+class TokenHtml:
+        def __init__(self,listOfText:list,isTable:TableToken):
+            self.text = listOfText
+            self.isTable = isTable
+
+class TokenizerHtml:
+    def __init__(self, soup:BeautifulSoup):
+        self.soup = soup
+        self.blacklist = ['[document]', 'noscript', 'header','style',
+                     'html', 'meta', 'head', 'input', 'script', 'link', 
+                     'lang', 'code','th', 'td']
+
+    def getToken(self) -> TokenHtml:
+        def lookForward(lable,nextLable,expectLable:str) -> bool:
+            if nextLable.parent.name == expectLable:
+                return True
+            return False
+        
+        lableList = list(filter(lambda lable: lable and lable != "\n", self.soup.find_all(text=True)))
+        headList = []
+        rowList = []
+        for index,lable in enumerate(lableList):
+            if lable.parent.name not in self.blacklist:
+                headList.clear()
+                rowList.clear()
+                yield TokenHtml([str(lable)],TableToken.NONE)
+
+            elif lable.parent.name == 'th':
+                headList.append(str(lable))
+                try:
+                    if lookForward(lable,lableList[index+1], 'th'):
+                        continue
+                    yield TokenHtml(headList,TableToken.HEAD)
+                except IndexError:
+                    yield TokenHtml(headList,TableToken.HEAD)
+
+            elif lable.parent.name == 'td':
+                rowList.append(str(lable))
+                try:
+                    if lookForward(lable,lableList[index+1], 'td') and len(rowList) < len(headList):
+                        continue
+                    aux = rowList[:]
+                    rowList.clear()
+                    yield TokenHtml(aux,TableToken.ROW)
+                except IndexError:
+                    aux = rowList[:]
+                    rowList.clear()
+                    yield TokenHtml(aux,TableToken.ROW)
+
 class DocumentHandlerHtml(DocumentHandler):
 
     def __init__(self, path: str, destiny: str = ""):
@@ -64,43 +117,25 @@ class DocumentHandlerHtml(DocumentHandler):
 
     def giveListNames(self):
         listNames = []
-        indexNameColums = 0
-        indexColums = 0
-        isTable = True
-        blacklist = ['[document]', 'noscript', 'header','style',
-                     'html', 'meta', 'head', 'input', 'script', 'link', 
-                     'lang', 'code','th', 'td']
         picker = NamePickerInTables()
-        for lable in self.soup.find_all(text=True):
-            if lable.parent.name not in blacklist:
-                listOfMarks = self.nameSearch.searchNames(str(lable))
+        tokenizer = TokenizerHtml(self.soup)
+        for token in tokenizer.getToken():
+            if token.isTable == TableToken.NONE:
+                listOfMarks = self.nameSearch.searchNames(token.text[0])
                 listNames[len(listNames):] = [name['name'].replace("\n", "") for name in listOfMarks]
-            elif lable.parent.name == 'th':
-                if(isTable):
-                    #print("Encabezado")
-                    isTable = False
-                    indexNameColums = 0
-                labels = list(
-                            filter(lambda x: 
-                            LanguageBuilder().semanticSimilarity(str(lable),x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
-                            listOfVectorWords))
-                if labels:
-                    picker.addIndexColumn(indexNameColums)
-                indexNameColums += 1
-                indexColums = 0
-                #print(indexNameColums)
-            elif lable.parent.name == 'td':
-                if(not isTable):
-                    isTable = True
-                    #print("columnas")
-                if indexColums in picker.getIndexesColumn():
-                    picker.addName(indexColums,lable)
-                    if self.nameSearch.checkNameInDB(lable):
-                        picker.countRealName(indexColums)
-                indexColums += 1
-                #print("Columan donde estamos",indexColums)
-                #print("Número de columnas",indexNameColums)
-                if indexColums == indexNameColums:
-                    indexColums = 0
-        listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                if not picker.isEmpty():
+                    listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                    picker.clear()
+            elif token.isTable == TableToken.HEAD:
+                keys = list(filter(lambda text: list(
+                        filter(lambda x:LanguageBuilder().semanticSimilarity(text,x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
+                        listOfVectorWords)), token.text))
+                if keys:
+                    for key in keys:
+                        picker.addIndexColumn(token.text.index(key))
+            elif token.isTable == TableToken.ROW:
+                for index in picker.getIndexesColumn():
+                    picker.addName(index,token.text[index])
+                    if self.nameSearch.checkNameInDB(token.text[index]):
+                        picker.countRealName(index)
         return listNames

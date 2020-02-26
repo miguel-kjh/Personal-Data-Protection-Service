@@ -1,50 +1,18 @@
 from flask import request, send_from_directory
 from flask_restplus import Resource
-from werkzeug.utils import secure_filename
 
 from ..util.NameSearchDto import NameSearchDto
-from ..util.envNames import VERSION, UPLOAD_FOLDER, path, ALLOWED_EXTENSIONS
+from ..util.envNames import VERSION, UPLOAD_FOLDER, path
 from ..service.LogService import updateDelete, saveLog
 from ..service.languageBuilder import LanguageBuilder
 from ..service.CreateDocumentHandler import getCreatorDocumentHandler
-from ..util.fileUtils import giveFileNameUnique, giveTypeOfFile, allowedFile
+from ..util.RequestEvaluator import RequestEvaluator
 import os
 
 api = NameSearchDto.api
 
 lb = LanguageBuilder()
 #lb.defineNameEntity()  # Load model before a conections
-
-
-def uploadFile() -> dict:
-    result = {
-        "filename": None,
-        "success": False,
-        "error": "do not send with POST"
-    }
-    if request.method == 'POST':
-        if 'file' not in request.files:
-            result['error'] = "No file part"
-            return result
-        file = request.files['file']
-        if file.filename == '':
-            result['error'] = "No file selected for uploading"
-            return result
-        realFilename = secure_filename(file.filename)
-        result['filename'] = realFilename
-        if file and allowedFile(file.filename):
-            typeOfFile = giveTypeOfFile(file.filename)
-            filename = giveFileNameUnique(realFilename, typeOfFile)
-            file.save(os.path.join(UPLOAD_FOLDER, filename))
-            result['filename'] = filename
-            result['realFilename'] = realFilename
-            result['success'] = True
-            result['error'] = None
-            result['type'] = typeOfFile
-        else:
-            result['error'] = "Allowed file types are %s" % (','.join(ALLOWED_EXTENSIONS))
-            return result
-    return result
 
 
 @api.route("/")
@@ -65,20 +33,20 @@ class Version(Resource):
 class Encode(Resource):
     @api.doc('return a file with names encoded')
     def post(self):
-        res = uploadFile()
-        if res['success']:
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
             publicId = saveLog(
                 {
-                    'name': res['filename'],
+                    'name': evaluator.fakeFilename,
                     'folder': UPLOAD_FOLDER,
                     'isdelete': False,
-                    'filetype': res['type']
+                    'filetype': evaluator.filetype
                 }
             )
-            nameOfNewDocument = "encode_" + res["filename"]
+            nameOfNewDocument = "encode_" + evaluator.fakeFilename
             creator = getCreatorDocumentHandler(
-                os.path.join(path, res["filename"]),
-                res['type'],
+                os.path.join(path, evaluator.fakeFilename),
+                evaluator.filetype,
                 os.path.join(path, nameOfNewDocument)
             )
             dh = creator.create()
@@ -89,33 +57,33 @@ class Encode(Resource):
                     'name': nameOfNewDocument,
                     'folder': UPLOAD_FOLDER,
                     'isdelete': False,
-                    'filetype': res['type']
+                    'filetype': evaluator.filetype
                 }
             )
             fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
             updateDelete(publicId, True)
             return fileSend
         else:
-            return res, 400
+            return evaluator.giveResponse(), 400
 
 
 @api.route('/file/list-names')
 class ListNames(Resource):
     @api.doc('give a list of name in the document')
     def post(self):
-        res = uploadFile()
-        if res['success']:
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
             publicId = saveLog(
                 {
-                    'name': res['filename'],
+                    'name': evaluator.fakeFilename,
                     'folder': UPLOAD_FOLDER,
                     'isdelete': False,
-                    'filetype': res['type']
+                    'filetype': evaluator.filetype
                 }
             )
             creator = getCreatorDocumentHandler(
-                os.path.join(path, res["filename"]),
-                res['type']
+                os.path.join(path, evaluator.fakeFilename),
+                evaluator.filetype
             )
             dh = creator.create()
             names = dh.giveListNames()
@@ -126,27 +94,27 @@ class ListNames(Resource):
                        "Names": names
                    }
         else:
-            return res, 400
+            return evaluator.giveResponse(), 400
 
 
 @api.route('/file/csv-file')
 class CsvFile(Resource):
     @api.doc('return a csv file with names of file sent')
     def post(self):
-        res = uploadFile()
-        if res['success']:
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
             publicId = saveLog(
                 {
-                    'name': res['filename'],
+                    'name': evaluator.fakeFilename,
                     'folder': UPLOAD_FOLDER,
                     'isdelete': False,
-                    'filetype': res['type']
+                    'filetype': evaluator.filetype
                 }
             )
-            nameOfNewDocument = res["filename"].replace('.' + res['type'], ".csv")
+            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".csv")
             creator = getCreatorDocumentHandler(
-                os.path.join(path, res["filename"]),
-                res['type'],
+                os.path.join(path, evaluator.fakeFilename),
+                evaluator.filetype,
                 os.path.join(path, nameOfNewDocument)
             )
             dh = creator.create()
@@ -157,43 +125,43 @@ class CsvFile(Resource):
                     'name': nameOfNewDocument,
                     'folder': UPLOAD_FOLDER,
                     'isdelete': False,
-                    'filetype': res['type']
+                    'filetype': evaluator.filetype
                 }
             )
             fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
             updateDelete(publicId, True)
             return fileSend
         else:
-            return res, 400
+            return evaluator.giveResponse(), 400
 
 
 @api.route('/file/tagger-html')
 class TargetHtml(Resource):
     @api.doc('return a html file with the names targeted with a mark')
     def post(self):
-        res = uploadFile()
-        if res['success']:
-            if res['type'] != 'html':
-                filename = os.path.join(UPLOAD_FOLDER, res['filename'])
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
+            if evaluator.filetype != 'html':
+                filename = os.path.join(UPLOAD_FOLDER, evaluator.fakeFilename)
                 if os.path.exists(filename):
                     os.remove(filename)
                 return {
-                           "filename": res['realFilename'],
+                           "filename": evaluator.filename,
                            "success": False,
                            "error": "this operation is aviable only for html file"
                        }, 400
             publicId = saveLog(
                 {
-                    'name': res['filename'],
+                    'name': evaluator.fakeFilename,
                     'folder': UPLOAD_FOLDER,
                     'isdelete': False,
-                    'filetype': res['type']
+                    'filetype': evaluator.filetype
                 }
             )
-            nameOfNewDocument = "mark_" + res["filename"]
+            nameOfNewDocument = "mark_" + evaluator.fakeFilename
             creator = getCreatorDocumentHandler(
-                os.path.join(path, res["filename"]),
-                res['type'],
+                os.path.join(path, evaluator.fakeFilename),
+                evaluator.filetype,
                 os.path.join(path, nameOfNewDocument)
             )
             dh = creator.create()
@@ -204,11 +172,11 @@ class TargetHtml(Resource):
                     'name': nameOfNewDocument,
                     'folder': UPLOAD_FOLDER,
                     'isdelete': False,
-                    'filetype': res['type']
+                    'filetype': evaluator.filetype
                 }
             )
             fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
             updateDelete(publicId, True)
             return fileSend
         else:
-            return res, 400
+            return evaluator.giveResponse(), 400

@@ -25,7 +25,7 @@ class LanguageBuilder(metaclass=Singleton):
         ruler = EntityRuler(self.nlp)
         patterns = [{"label": "NAME", "pattern": pattern}]
         ruler.add_patterns(patterns)
-        self.nlp.add_pipe(ruler, after='tagger')
+        self.nlp.add_pipe(ruler, after='ner')
         print("defined names as entity")
 
     def semanticSimilarity(self, text: str, textToCompare: str) -> float:

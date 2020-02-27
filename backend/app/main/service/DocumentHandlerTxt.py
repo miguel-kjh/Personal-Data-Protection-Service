@@ -14,14 +14,14 @@ class DocumentHandlerTxt(DocumentHandler):
         return newLine
 
     def documentsProcessing(self):
-        with open(self.path, 'r') as file, open(self.destiny, 'w') as destiny:
+        with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
             for line in file:
                 listNames = self.nameSearch.searchNames(line)
                 destiny.writelines(self.modifyLine(line, listNames))
 
     def giveListNames(self) -> list:
         listNames = []
-        with open(self.path, 'r') as file:
+        with open(self.path, 'r',encoding='utf8') as file:
             for line in file:
                 listNames[len(listNames):] = [name['name'] for name in self.nameSearch.searchNames(line)]
         return listNames

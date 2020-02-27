@@ -22,7 +22,7 @@ class NameSearch(ABC):
         countWordsInName = 0
         countWordsInDB = 0
         normalizeName = normalizeUnicode(fullName).upper()
-        for name in normalizeName.replace('-', ' ').split():
+        for name in normalizeName.replace('-', ' ').replace(',','').split():
             if name not in self.keywords:
                 countWordsInName += 1
                 try:

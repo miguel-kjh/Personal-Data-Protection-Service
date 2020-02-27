@@ -40,3 +40,9 @@ class NamePickerInTables:
     def addIndexesColumn(self, indexes: list):
         for index in indexes:
             self.addIndexColumn(index)
+
+    def clear(self):
+        self.picker.clear()
+
+    def isEmpty(self) -> bool:
+        return not bool(self.picker)

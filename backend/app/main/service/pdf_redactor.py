@@ -82,7 +82,7 @@ def redactor(options, pathSource, pathDestiny):
     if options.content_filters:
         # Build up the complete text stream of the PDF content.
         text_layer = build_text_layer(document, options)
-
+        
         # Apply filters to the text stream.
         update_text_layer(options, *text_layer)
 

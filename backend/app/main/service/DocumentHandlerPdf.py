@@ -9,47 +9,6 @@ from datetime import datetime
 import re
 import tabula
 from typing import Text
-from collections.abc import Iterable, Iterator
-
-
-class BufferIterator(Iterator):
-    def __init__(self,buffer:list):
-        self.buffer = buffer
-        self.position = 0
-
-    def __next__(self) -> Text:
-        try:
-            text = self.buffer[self.position]
-            if not text['row']:
-                self.position += 1
-                return text['text']
-            count = 1
-            for nextText in self.buffer[self.position:]:
-                if not nextText['row']:
-                    break
-                count += 1
-            if count > 3:
-                self.position += count
-                text = self.buffer[self.position]
-        except IndexError:
-            raise StopIteration
-        self.position += 1
-        return text['text']
-
-class BufferReaderPdf(Iterable):
-    def __init__(self):
-        self.bufferText = []
-
-    def add(self, text:Text) -> bool:
-        self.bufferText.append(
-            {
-                'text':text,
-                'row': not LanguageBuilder().hasContex(text)
-            }
-        )
-
-    def __iter__(self) -> BufferIterator:
-        return BufferIterator(self.bufferText)
     
 
 class DocumentHandlerPdf(DocumentHandler):
@@ -67,7 +26,6 @@ class DocumentHandlerPdf(DocumentHandler):
         }
         self.options.xmp_filters = [lambda xml: None]
         self.selector = ColumnSelectorDataFrame()
-        self.buffer = BufferReaderPdf()
 
     def getPersonalDataInTables(self, listNames:list):
         keyHeap = []
@@ -97,12 +55,16 @@ class DocumentHandlerPdf(DocumentHandler):
                 keyHeap.append(lastKeys)
 
     def getPersonalDataInTexts(self, listNames: list):
-        
-        for text in readPdf(self.path,self.options):
-            self.buffer.add(text)
 
-        for text in self.buffer:
-            doc = self.nameSearch.searchNames(text)
+        for text in readPdf(self.path):
+
+            if not LanguageBuilder().hasContex(text):
+                listNames[len(listNames):] = list(
+                    filter(lambda words: words and self.nameSearch.isName(words), map(lambda words: words.strip(), text.split('\n')))
+                )
+                continue
+
+            doc = self.nameSearch.searchNames(text.replace('\n', ' '))
             for entity in doc:
                 listNames.append(entity['name'].strip("\n"))
 

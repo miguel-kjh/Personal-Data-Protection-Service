@@ -56,7 +56,7 @@ class DocumentHandlerDocx(DocumentHandler):
                         regexName = re.compile(name['name'])
                         text = regexName.sub(encode(name['name']), block.text)
                         block.text = text
-                elif self.nameSearch.checkNameInDB(block.text):
+                elif self.nameSearch.isName(block.text):
                     regexName = re.compile(block.text.strip())
                     text = regexName.sub(encode(block.text.strip()), block.text)
                     block.text = text
@@ -89,7 +89,7 @@ class DocumentHandlerDocx(DocumentHandler):
                     listOfMarks = self.nameSearch.searchNames(block.text)
                     if listOfMarks != []:
                         listNames[len(listNames):] = [name['name'] for name in listOfMarks]
-                elif self.nameSearch.checkNameInDB(block.text):
+                elif self.nameSearch.isName(block.text):
                     listNames.append(block.text.strip())
             elif isinstance(block, Table):
                 picker = self.getPickerData(block)

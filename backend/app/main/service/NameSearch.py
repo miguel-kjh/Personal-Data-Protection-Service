@@ -1,9 +1,11 @@
+from app.main.service.languageBuilder import LanguageBuilder
+from app.main.util.heuristicMeasures import ERROR_RANGE_PERCENTAGE_DB
+
 import sqlite3 as lite
+import re
 from abc import ABC, abstractmethod
 from typing import Text
 from unidecode import unidecode
-from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.heuristicMeasures import ERROR_RANGE_PERCENTAGE_DB
 
 
 def normalizeUnicode(string: str) -> str:
@@ -35,12 +37,11 @@ class NameSearch(ABC):
         return countWordsInName > 0 and countWordsInDB / countWordsInName > self.errorRange
 
     def isName(self, fullName: str) -> bool:
-        doc = self.nlp(fullName)
-        if 'VERB' in [token.pos_ for token in doc]:
-            return True if len(self.searchNames(fullName, processedText=doc)) > 0 and \
-                           self.searchNames(fullName, processedText=doc)[0]['name'] == fullName else False
-        else:
-            return self.checkNameInDB(fullName)
+        pattern = re.compile(r'\d')
+        if pattern.search(fullName):
+            return False
+        
+        return self.checkNameInDB(fullName)
 
     @abstractmethod
     def searchNames(self, text: Text, processedText=None) -> list:

@@ -1,4 +1,5 @@
 from app.main.util.envNames import ALLOWED_EXTENSIONS
+from app.main.util.heuristicMeasures import LINE_BREAK_DENSITY
 from datetime import datetime
 
 from docx.document import Document as _Document
@@ -7,10 +8,8 @@ from docx.oxml.table import CT_Tbl
 from docx.table import _Cell, Table, _Row
 from docx.text.paragraph import Paragraph
 
-from pdfminer.pdfparser import PDFParser, PDFDocument
-from pdfminer.pdfinterp import PDFResourceManager, PDFPageInterpreter
-from pdfminer.converter import PDFPageAggregator
-from pdfminer.layout import LAParams, LTTextBox, LTTextLine
+from pdfminer.high_level import extract_text
+from nltk.tokenize import sent_tokenize
 
 from typing import Text
 
@@ -60,31 +59,9 @@ def itemIterator(parent):
         elif isinstance(child, CT_Tbl):
             yield Table(child, parent)
 
-def readPdf(path:str,options:dict) -> Text:
-    """from app.main.service.pdf_redactor import build_text_layer,tokenize_streams
-    from pdfrw import PdfReader
-    document = PdfReader(path)
-    text_tokens = build_text_layer(document,options)
-    print([t.value for t in text_tokens[0]])
-    return """""
-    fp = open(path, 'rb')
-    parser = PDFParser(fp)
-    fp.close()
-    doc = PDFDocument()
-    parser.set_document(doc)
-    doc.set_parser(parser)
-    doc.initialize('')
-    rsrcmgr = PDFResourceManager()
-    laparams = LAParams()
-    laparams.char_margin = 1.0
-    laparams.word_margin = 1.0
-    device = PDFPageAggregator(rsrcmgr, laparams=laparams)
-    interpreter = PDFPageInterpreter(rsrcmgr, device)
-    for page in doc.get_pages():
-        interpreter.process_page(page)
-        layout = device.get_result()
-        for lt_obj in layout:
-            if isinstance(lt_obj, LTTextBox) or isinstance(lt_obj, LTTextLine):
-                text = lt_obj.get_text()
-                if text:
-                    yield text
+def readPdf(path:str) -> Text:
+    text = extract_text(path)
+    for token in sent_tokenize(text):
+        countLineBreak = token.count('\n')
+        if countLineBreak/len(token) <= LINE_BREAK_DENSITY:
+            yield token

@@ -86,12 +86,13 @@ class ListNames(Resource):
                 evaluator.filetype
             )
             dh = creator.create()
-            names = dh.giveListNames()
+            names,idCards = dh.giveListNames()
             updateDelete(publicId, True)
             return {
                        "error": None,
                        "success": True,
-                       "Names": names
+                       "Names": names,
+                       "IdCards": idCards
                    }
         else:
             return evaluator.giveResponse(), 400

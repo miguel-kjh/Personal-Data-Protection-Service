@@ -12,7 +12,7 @@ def normalizeUnicode(string: str) -> str:
     return unidecode(string)
 
 
-class NameSearch(ABC):
+class PersonalDataSearch(ABC):
     def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB):
         # spacy.prefer_gpu()
         self.nlp = LanguageBuilder().getlanguage()
@@ -44,7 +44,7 @@ class NameSearch(ABC):
         return self.checkNameInDB(fullName)
 
     @abstractmethod
-    def searchNames(self, text: Text, processedText=None) -> list:
+    def searchPersonalData(self, text: Text) -> tuple:
         pass
 
 

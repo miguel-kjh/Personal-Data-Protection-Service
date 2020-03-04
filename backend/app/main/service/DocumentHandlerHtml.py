@@ -74,55 +74,79 @@ class DocumentHandlerHtml(DocumentHandler):
             self.soup = BeautifulSoup(f.read(), "lxml")
 
     def locateNames(self, sentence):
-        newSentence = ""
+        newSentence = ''
         index = 0
-        for name in re.finditer(self.regexData,sentence):
+        for name in re.finditer(self.regexName,sentence):
             newSentence += sentence[index:name.start()] + markInHtml(name.group())
             index = name.end()
         if index <= len(sentence) - 1:
             newSentence += sentence[index:]
-        return newSentence
+        
+        finalSentence = ''
+        index = 0
+        for idCard in re.finditer(self.regexCards,newSentence):
+            finalSentence += newSentence[index:idCard.start()] + markInHtml(idCard.group())
+            index = idCard.end()
+        if index <= len(sentence) - 1:
+            finalSentence += newSentence[index:]
+
+        return finalSentence
 
     def encodeNames(self, sentence):
         newSentence = ""
         index = 0
-        for name in re.finditer(self.regexData,sentence):
+        for name in re.finditer(self.regexName,sentence):
             newSentence += sentence[index:name.start()] + encode(name.group())
             index = name.end()
         if index <= len(sentence) - 1:
             newSentence += sentence[index:]
-        return newSentence
+
+        finalSentence = ""
+        index = 0
+        for idCard in re.finditer(self.regexCards,newSentence):
+            finalSentence += newSentence[index:idCard.start()] + encode(idCard.group())
+            index = idCard.end()
+        if index <= len(sentence) - 1:
+            finalSentence += newSentence[index:]
+
+        return finalSentence
 
     def documentsProcessing(self):
         formatter = HTMLFormatter(self.encodeNames)
-        listNames = list(set(self.giveListNames()))
+        listNames,idCards = self.giveListNames()
+        listNames = list(set(listNames))
         listNames.sort(
                 key=lambda value: len(value),
                 reverse=True
             )
-        self.regexData = "|".join(listNames)
+        self.regexName = "|".join(listNames)
+        self.regexCards = "|".join(idCards)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
     
     def documentTagger(self):
         formatter = HTMLFormatter(self.locateNames)
-        listNames = list(set(self.giveListNames()))
+        listNames,idCards = self.giveListNames()
+        listNames = list(set(listNames))
         listNames.sort(
                 key=lambda value: len(value),
                 reverse=True
             )
-        self.regexData = "|".join(listNames)
+        self.regexName = "|".join(listNames)
+        self.regexCards = "|".join(idCards)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
-    def giveListNames(self):
+    def giveListNames(self) -> tuple:
         listNames = []
+        idCards = []
         picker = NamePickerInTables()
         tokenizer = TokenizerHtml(self.soup)
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:
-                listOfMarks = self.nameSearch.searchNames(token.text[0])
-                listNames[len(listNames):] = [name['name'].replace("\n", "") for name in listOfMarks]
+                names,cards = self.nameSearch.searchPersonalData(token.text[0])
+                listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
+                idCards[len(idCards):] = [card['name'] for card in cards]
                 if not picker.isEmpty():
                     listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
                     picker.clear()
@@ -138,4 +162,4 @@ class DocumentHandlerHtml(DocumentHandler):
                     picker.addName(index,token.text[index])
                     if self.nameSearch.checkNameInDB(token.text[index]):
                         picker.countRealName(index)
-        return listNames
+        return listNames,idCards

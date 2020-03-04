@@ -51,10 +51,14 @@ class DocumentHandlerDocx(DocumentHandler):
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    listNames = self.nameSearch.searchNames(block.text)
+                    listNames,listIdCards = self.nameSearch.searchPersonalData(block.text)
                     for name in listNames:
                         regexName = re.compile(name['name'])
                         text = regexName.sub(encode(name['name']), block.text)
+                        block.text = text
+                    for idCard in listIdCards:
+                        regexName = re.compile(idCard['name'])
+                        text = regexName.sub(encode(idCard['name']), block.text)
                         block.text = text
                 elif self.nameSearch.isName(block.text):
                     regexName = re.compile(block.text.strip())
@@ -80,15 +84,18 @@ class DocumentHandlerDocx(DocumentHandler):
                 continue
         self.document.save(self.destiny)
 
-    def giveListNames(self) -> list:
+    def giveListNames(self) -> tuple:
         LastIndexesColumn = []
         listNames = []
+        listIdCard = []
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    listOfMarks = self.nameSearch.searchNames(block.text)
-                    if listOfMarks != []:
-                        listNames[len(listNames):] = [name['name'] for name in listOfMarks]
+                    names,idCards = self.nameSearch.searchPersonalData(block.text)
+                    if names:
+                        listNames[len(listNames):] = [name['name'] for name in names]
+                    if idCards:
+                        listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
                 elif self.nameSearch.isName(block.text):
                     listNames.append(block.text.strip())
             elif isinstance(block, Table):
@@ -103,4 +110,4 @@ class DocumentHandlerDocx(DocumentHandler):
                 listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
             else:
                 continue
-        return listNames
+        return listNames,listIdCard

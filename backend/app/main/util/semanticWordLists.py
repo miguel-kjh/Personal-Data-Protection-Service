@@ -6,3 +6,5 @@ listOfVectorWords = [
     'personal',
     'sujeto'
 ]
+
+lettersOfDni = "TRWAGMYFPDXBNJZSQVHLCKE"

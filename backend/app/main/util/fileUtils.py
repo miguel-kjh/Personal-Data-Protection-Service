@@ -1,5 +1,7 @@
 from app.main.util.envNames import ALLOWED_EXTENSIONS
 from app.main.util.heuristicMeasures import LINE_BREAK_DENSITY
+from app.main.util.semanticWordLists import lettersOfDni
+
 from datetime import datetime
 
 from docx.document import Document as _Document
@@ -12,6 +14,7 @@ from pdfminer.high_level import extract_text
 from nltk.tokenize import sent_tokenize
 
 from typing import Text
+import re
 
 
 def allowedFile(filename: str) -> bool:
@@ -65,3 +68,13 @@ def readPdf(path:str) -> Text:
         countLineBreak = token.count('\n')
         if countLineBreak/len(token) <= LINE_BREAK_DENSITY:
             yield token
+
+def isDni(dni:str) -> bool:
+    number = re.search(r'\d{8}', dni)
+    if not number:
+        return False
+    
+    if lettersOfDni[int(number[0]) % 23] != dni[-1].upper():
+        return False
+    
+    return True

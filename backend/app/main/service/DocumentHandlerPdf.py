@@ -27,7 +27,7 @@ class DocumentHandlerPdf(DocumentHandler):
         self.options.xmp_filters = [lambda xml: None]
         self.selector = ColumnSelectorDataFrame()
 
-    def getPersonalDataInTables(self, listNames:list):
+    def getPersonalDataInTables(self, listNames:list, idCards: list):
         keyHeap = []
         for table in tabula.read_pdf(self.path, pages="all", multiple_tables=True):
             #table = table.loc[:, ~table.columns.str.contains('^Unnamed')]
@@ -54,7 +54,7 @@ class DocumentHandlerPdf(DocumentHandler):
             else:
                 keyHeap.append(lastKeys)
 
-    def getPersonalDataInTexts(self, listNames: list):
+    def getPersonalDataInTexts(self, listNames: list, idCards: list):
 
         for text in readPdf(self.path):
 
@@ -64,26 +64,33 @@ class DocumentHandlerPdf(DocumentHandler):
                 )
                 continue
 
-            doc = self.nameSearch.searchNames(text.replace('\n', ' '))
-            for entity in doc:
-                listNames.append(entity['name'].strip("\n"))
+            names,cards = self.nameSearch.searchPersonalData(text.replace('\n', ' '))
+            for name in names:
+                listNames.append(name['name'].strip("\n"))
+            for card in cards:
+                idCards.append(card['name'])
 
-    def giveListNames(self) -> list:
+    def giveListNames(self) -> tuple:
         listNames = []
-        self.getPersonalDataInTables(listNames)
-        self.getPersonalDataInTexts(listNames)
-        return listNames
+        idCards = []
+        self.getPersonalDataInTables(listNames,idCards)
+        self.getPersonalDataInTexts(listNames,idCards)
+        return listNames,idCards
 
     def documentsProcessing(self):
-        listNames = list(set(self.giveListNames()))
-        if not listNames:
+        listNames,idCards = self.giveListNames()
+        if not listNames and not idCards:
             pdf_redactor.redactor(self.options, self.path, self.destiny)
             return
+        listNames = list(set(listNames))
         listNames.sort(
                 key=lambda value: len(value),
                 reverse=True
             )
-        regex = '|'.join(listNames)
+        data = []
+        data[len(data):] = listNames[:]
+        data[len(data):] = idCards[:]
+        regex = '|'.join(data)
         pdf_redactor.redactor(self.options, self.path, self.destiny)
         self.options.content_filters = [
             (

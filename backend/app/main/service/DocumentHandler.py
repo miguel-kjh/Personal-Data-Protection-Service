@@ -1,6 +1,10 @@
 
 import pandas as pd
-from app.main.service.NameSearchByEntities import NameSearchByEntities
+import os
+import zipfile
+
+from app.main.service.personalDataSearchByEntities import PersonalDataSearchByEntities
+from app.main.util.envNames import UPLOAD_FOLDER
 
 
 class DocumentHandler:
@@ -8,7 +12,7 @@ class DocumentHandler:
     def __init__(self, path: str, destiny: str = ""):
         self.path = path
         self.destiny = destiny
-        self.nameSearch = NameSearchByEntities()
+        self.nameSearch = PersonalDataSearchByEntities()
 
     def documentsProcessing(self):
         pass
@@ -17,12 +21,23 @@ class DocumentHandler:
     # pass
 
     def createFileOfName(self):
-        self.createCsv(self.giveListNames())
+        self.createCsv(*self.giveListNames())
 
-    def giveListNames(self) -> list:
+    def giveListNames(self) -> tuple:
         pass
 
-    def createCsv(self, listNames: list):
-        dataFrame = pd.DataFrame(listNames, columns=['Names'])
-        export_csv = dataFrame.to_csv(self.destiny, index=None, header=True)
-        print(export_csv)
+    def _saveInZipFile(self, zipf, filename:str,nameColum:str, collection:list):
+        dataFrame = pd.DataFrame({nameColum:collection})
+        export = dataFrame.to_csv(filename, index=None, header=True)
+        if not export:
+            zipf.write(filename)
+            os.remove(filename)
+
+    def createCsv(self, listNames: list, idCards: list):
+        zipf = zipfile.ZipFile(self.destiny, 'w', zipfile.ZIP_DEFLATED)
+        if listNames:
+            filename = os.path.join(UPLOAD_FOLDER,"names.csv")
+            self._saveInZipFile(zipf,filename,"Names", listNames)
+        if idCards:
+            filename = os.path.join(UPLOAD_FOLDER,"idCards.csv")
+            self._saveInZipFile(zipf,filename,"IdCards", idCards)

@@ -86,12 +86,13 @@ class ListNames(Resource):
                 evaluator.filetype
             )
             dh = creator.create()
-            names = dh.giveListNames()
+            names,idCards = dh.giveListNames()
             updateDelete(publicId, True)
             return {
                        "error": None,
                        "success": True,
-                       "Names": names
+                       "Names": names,
+                       "IdCards": idCards
                    }
         else:
             return evaluator.giveResponse(), 400
@@ -111,7 +112,7 @@ class CsvFile(Resource):
                     'filetype': evaluator.filetype
                 }
             )
-            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".csv")
+            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".zip")
             creator = getCreatorDocumentHandler(
                 os.path.join(path, evaluator.fakeFilename),
                 evaluator.filetype,

@@ -2,7 +2,7 @@ from app.main.util.fileUtils import encode, itemIterator
 from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.semanticWordLists import listOfVectorWords
-from app.main.util.NamePickerInTables import NamePickerInTables
+from app.main.util.dataPickerInTables import DataPickerInTables
 from app.main.service.DocumentHandler import DocumentHandler
 
 import docx
@@ -17,8 +17,9 @@ class DocumentHandlerDocx(DocumentHandler):
         super().__init__(path, destiny=destiny)
         self.document = docx.Document(self.path)
 
-    def getPickerData(self, table: Table) -> NamePickerInTables:
-        picker = NamePickerInTables()
+    def _getPickerData(self, table: Table) -> DataPickerInTables:
+        namePicker = DataPickerInTables()
+        idCardsPicker = DataPickerInTables()
         isLabels = True
         for row in table.rows:
             for index, cell in enumerate(row.cells):
@@ -29,15 +30,17 @@ class DocumentHandlerDocx(DocumentHandler):
                                                                                   x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
                                    listOfVectorWords))
                         if labels:
-                            picker.addIndexColumn(index)
+                            namePicker.addIndexColumn(index)
+                        else:
+                            idCardsPicker.addIndexColumn(index)
                     else:
-                        if picker.isColumnName(index) and paragraph.text.strip():
-                            picker.addName(index, paragraph.text)
-                            if self.nameSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
+                        if namePicker.isColumnName(index) and paragraph.text.strip():
+                            namePicker.addName(index, paragraph.text)
+                            if self.nameSearch.checkNameInDB(paragraph.text): namePicker.countRealName(index)
             isLabels = False
-        return picker
+        return namePicker
 
-    def definePicker(self, table: Table, picker: NamePickerInTables):
+    def _defineNamePicker(self, table: Table, picker: DataPickerInTables):
         for row in table.rows:
             for index, cell in enumerate(row.cells):
                 if picker.isColumnName(index):
@@ -45,29 +48,49 @@ class DocumentHandlerDocx(DocumentHandler):
                         if paragraph.text.strip():
                             picker.addName(index, paragraph.text)
                             if self.nameSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
+    
+    def getIdCards(self,table: Table, picker: DataPickerInTables) -> list:
+        idCards = []
+        for row in table.rows:
+            for index, cell in enumerate(row.cells):
+                if not picker.isColumnName(index):
+                    for paragraph in cell.paragraphs:
+                        if self.nameSearch.isDni(paragraph.text):
+                            idCards.append(paragraph.text)
+        return idCards
 
     def documentsProcessing(self):
         LastIndexesColumn = []
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    listNames = self.nameSearch.searchNames(block.text)
+                    listNames,listIdCards = self.nameSearch.searchPersonalData(block.text)
                     for name in listNames:
                         regexName = re.compile(name['name'])
                         text = regexName.sub(encode(name['name']), block.text)
                         block.text = text
-                elif self.nameSearch.checkNameInDB(block.text):
+                    for idCard in listIdCards:
+                        regexName = re.compile(idCard['name'])
+                        text = regexName.sub(encode(idCard['name']), block.text)
+                        block.text = text
+                elif self.nameSearch.isName(block.text):
                     regexName = re.compile(block.text.strip())
                     text = regexName.sub(encode(block.text.strip()), block.text)
                     block.text = text
+                else:
+                    _,listIdCards = self.nameSearch.searchPersonalData(block.text)
+                    for idCard in listIdCards:
+                        regexName = re.compile(idCard['name'])
+                        text = regexName.sub(encode(idCard['name']), block.text)
+                        block.text = text
             elif isinstance(block, Table):
-                picker = self.getPickerData(block)
+                picker = self._getPickerData(block)
                 if picker.getIndexesColumn():
                     LastIndexesColumn = picker.getIndexesColumn()
                     initialRow = 1
                 elif LastIndexesColumn:
                     picker.addIndexesColumn(LastIndexesColumn)
-                    self.definePicker(block, picker)
+                    self._defineNamePicker(block, picker)
                     initialRow = 0
                 else:
                     continue
@@ -76,31 +99,43 @@ class DocumentHandlerDocx(DocumentHandler):
                         if picker.isRealColumName(index, MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
                             for paragraph in cell.paragraphs:
                                 paragraph.text = encode(paragraph.text)
+                        else:
+                            for paragraph in cell.paragraphs:
+                                if self.nameSearch.isDni(paragraph.text):
+                                    paragraph.text = encode(paragraph.text)
             else:
                 continue
         self.document.save(self.destiny)
 
-    def giveListNames(self) -> list:
+    def giveListNames(self) -> tuple:
         LastIndexesColumn = []
         listNames = []
+        listIdCard = []
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    listOfMarks = self.nameSearch.searchNames(block.text)
-                    if listOfMarks != []:
-                        listNames[len(listNames):] = [name['name'] for name in listOfMarks]
-                elif self.nameSearch.checkNameInDB(block.text):
+                    names,idCards = self.nameSearch.searchPersonalData(block.text)
+                    if names:
+                        listNames[len(listNames):] = [name['name'] for name in names]
+                    if idCards:
+                        listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
+                elif self.nameSearch.isName(block.text):
                     listNames.append(block.text.strip())
+                else:
+                    _,idCards = self.nameSearch.searchPersonalData(block.text)
+                    if idCards:
+                        listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
             elif isinstance(block, Table):
-                picker = self.getPickerData(block)
+                picker = self._getPickerData(block)
                 if picker.getIndexesColumn():
                     LastIndexesColumn = picker.getIndexesColumn()
                 elif LastIndexesColumn:
                     picker.addIndexesColumn(LastIndexesColumn)
-                    self.definePicker(block, picker)
+                    self._defineNamePicker(block, picker)
                 else: 
                     continue
                 listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                listIdCard[len(listIdCard):] = self.getIdCards(block,picker)
             else:
                 continue
-        return listNames
+        return listNames,listIdCard

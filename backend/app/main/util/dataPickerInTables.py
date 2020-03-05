@@ -2,7 +2,7 @@ from collections import defaultdict
 from itertools import chain
 
 
-class NamePickerInTables:
+class DataPickerInTables:
 
     def __init__(self):
         self.picker = defaultdict(dict)

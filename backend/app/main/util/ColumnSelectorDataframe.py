@@ -6,9 +6,6 @@ import pandas as pd
 
 class ColumnSelectorDataFrame:
 
-    def __init__(self):
-        self.keyHeap = []
-
     def getPossibleColumnsNames(self, df: pd.DataFrame) -> str:
         for key, typeColumn in zip(df.keys(), df.dtypes):
             if typeColumn == object:
@@ -20,6 +17,11 @@ class ColumnSelectorDataFrame:
                     )
                 if listOfWordSemantics:
                     yield key
+
+    def getPossibleColumnsIdCards(self, df: pd.DataFrame):
+        for key, typeColumn in zip(df.keys(), df.dtypes):
+            if typeColumn == object:
+                yield key
 
     def columnSearch(self, df: pd.DataFrame, comparateFuntion: classmethod) -> int:
         return sum(list(map(lambda x: comparateFuntion(str(x)), df)))

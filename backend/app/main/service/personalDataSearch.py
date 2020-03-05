@@ -1,5 +1,6 @@
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.heuristicMeasures import ERROR_RANGE_PERCENTAGE_DB
+from app.main.util.fileUtils import isDni
 
 import sqlite3 as lite
 import re
@@ -42,6 +43,11 @@ class PersonalDataSearch(ABC):
             return False
         
         return self.checkNameInDB(fullName)
+
+    def isDni(self, idCards: str) -> bool:
+        with self.nlp.disable_pipes("ner"):
+            doc = self.nlp(idCards)
+        return len(doc.ents) == 1 and str(doc.ents[0]) == idCards and isDni(idCards)
 
     @abstractmethod
     def searchPersonalData(self, text: Text) -> tuple:

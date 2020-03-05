@@ -112,7 +112,7 @@ class CsvFile(Resource):
                     'filetype': evaluator.filetype
                 }
             )
-            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".csv")
+            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".zip")
             creator = getCreatorDocumentHandler(
                 os.path.join(path, evaluator.fakeFilename),
                 evaluator.filetype,

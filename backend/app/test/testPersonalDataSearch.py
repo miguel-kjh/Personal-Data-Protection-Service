@@ -44,6 +44,26 @@ class TestSearchText(BaseTestCase):
         for index, name in enumerate(names):
             self.assertEqual(dictionatyOfNames[index]["name"], name)
 
+    def test_isDni(self):
+        self.assertTrue(searchNamesText.isDni("54094110L"))
+        self.assertTrue(searchNamesText.isDni("54094110l"))
+        self.assertTrue(searchNamesText.isDni("54094110 L"))
+        self.assertTrue(searchNamesText.isDni("54094110\tL"))
+        self.assertTrue(searchNamesText.isDni("54094110         L"))
+        self.assertTrue(searchNamesText.isDni("43294881\t\tA"))
+        self.assertFalse(searchNamesText.isDni("54094110 hola L"))
+        self.assertFalse(searchNamesText.isDni("43294884A"))
+        self.assertTrue(searchNamesText.isDni("54094110\nL"))
+        self.assertFalse(searchNamesText.isDni("example"))
+        self.assertFalse(searchNamesText.isDni(""))
+
+    def test_isName(self):
+        self.assertTrue(searchNamesText.isName("Miguel"))
+        self.assertTrue(searchNamesText.isName("Miguel Ángel"))
+        self.assertTrue(searchNamesText.isName("Paco León Medina"))
+        self.assertFalse(searchNamesText.isDni(""))
+        self.assertFalse(searchNamesText.isDni("estoy aqui"))
+
 
 if __name__ == '__main__':
     unittest.main()

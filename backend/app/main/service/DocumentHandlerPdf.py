@@ -53,6 +53,12 @@ class DocumentHandlerPdf(DocumentHandler):
                         listNames[len(listNames):] = dfNotNull
             else:
                 keyHeap.append(lastKeys)
+            for key in self.selector.getPossibleColumnsIdCards(table):
+                if self.nameSearch.isDni(key):
+                    idCards.append(key)
+                idCards[len(idCards):] = list(
+                    filter(lambda idCards: self.nameSearch.isDni(idCards),table[key][table[key].notnull()])
+                )
 
     def getPersonalDataInTexts(self, listNames: list, idCards: list):
 

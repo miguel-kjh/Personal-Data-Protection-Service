@@ -3,7 +3,7 @@ from app.main.util.fileUtils import markInHtml,encode
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.heuristicMeasures import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
 from app.main.util.semanticWordLists import listOfVectorWords
-from app.main.util.NamePickerInTables import NamePickerInTables
+from app.main.util.dataPickerInTables import DataPickerInTables
 
 import re
 import pandas as pd
@@ -140,7 +140,7 @@ class DocumentHandlerHtml(DocumentHandler):
     def giveListNames(self) -> tuple:
         listNames = []
         idCards = []
-        picker = NamePickerInTables()
+        picker = DataPickerInTables()
         tokenizer = TokenizerHtml(self.soup)
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:
@@ -162,4 +162,7 @@ class DocumentHandlerHtml(DocumentHandler):
                     picker.addName(index,token.text[index])
                     if self.nameSearch.checkNameInDB(token.text[index]):
                         picker.countRealName(index)
+                for index,token in enumerate(token.text):
+                    if not index in picker.getIndexesColumn() and self.nameSearch.isDni(token):
+                        idCards.append(token)
         return listNames,idCards

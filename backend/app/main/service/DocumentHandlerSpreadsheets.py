@@ -12,14 +12,19 @@ class DocumentHandlerSpreadsheets(DocumentHandler):
         self.df = df
         self.selector = ColumnSelectorDataFrame()
 
-    def giveListNames(self) -> list:
+    def giveListNames(self) -> tuple:
         listNames = []
         for key in self.selector.getPossibleColumnsNames(self.df):
             dfNotNull = self.df[key][self.df[key].notnull()]
             countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
             if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                 listNames[len(listNames):] = dfNotNull
-        return listNames
+        idCards = []
+        for key in self.selector.getPossibleColumnsIdCards(self.df):
+            idCards[len(idCards):] = list(
+                filter(lambda idCards: self.nameSearch.isDni(idCards),self.df[key][self.df[key].notnull()])
+            )
+        return listNames,idCards
 
     def documentsProcessing(self):
         for key in self.selector.getPossibleColumnsNames(self.df):
@@ -27,6 +32,11 @@ class DocumentHandlerSpreadsheets(DocumentHandler):
             countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
             if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                 self.df[key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
+        for key in self.selector.getPossibleColumnsIdCards(self.df):
+            idCards = list(
+                filter(lambda idCards: self.nameSearch.isDni(idCards),self.df[key][self.df[key].notnull()])
+            )
+            self.df[key].replace({str(idCard): encode(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()
 
     def save(self):

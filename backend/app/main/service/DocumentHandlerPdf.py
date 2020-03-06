@@ -33,12 +33,20 @@ class DocumentHandlerPdf(DocumentHandler):
             #table = table.loc[:, ~table.columns.str.contains('^Unnamed')]
             lastKeys = []
 
-            for key in self.selector.getPossibleColumnsNames(table):
-                dfNotNull = table[key][table[key].notnull()]
-                countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
-                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                    listNames[len(listNames):] = dfNotNull
-                    lastKeys.append(list(table.keys()).index(key))
+            for typeColumn in self.selector.getPossibleColumnsNames(table):
+                if typeColumn.isName:
+                    dfNotNull = table[typeColumn.key][table[typeColumn.key].notnull()]
+                    countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
+                    if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                        listNames[len(listNames):] = dfNotNull
+                        lastKeys.append(list(table.keys()).index(typeColumn.key))
+                else:
+                    if self.nameSearch.isDni(typeColumn.key):
+                        idCards.append(typeColumn.key)
+                    idCards[len(idCards):] = list(
+                        filter(lambda idCards: self.nameSearch.isDni(idCards),table[typeColumn.key][table[typeColumn.key].notnull()])
+                    )
+
             if not lastKeys:
                 if not keyHeap:continue
                 for indexKey in keyHeap[-1]:
@@ -53,12 +61,6 @@ class DocumentHandlerPdf(DocumentHandler):
                         listNames[len(listNames):] = dfNotNull
             else:
                 keyHeap.append(lastKeys)
-            for key in self.selector.getPossibleColumnsIdCards(table):
-                if self.nameSearch.isDni(key):
-                    idCards.append(key)
-                idCards[len(idCards):] = list(
-                    filter(lambda idCards: self.nameSearch.isDni(idCards),table[key][table[key].notnull()])
-                )
 
     def getPersonalDataInTexts(self, listNames: list, idCards: list):
 
@@ -94,8 +96,8 @@ class DocumentHandlerPdf(DocumentHandler):
                 reverse=True
             )
         data = []
-        data[len(data):] = listNames[:]
-        data[len(data):] = idCards[:]
+        data[len(data):] = listNames
+        data[len(data):] = idCards
         regex = '|'.join(data)
         pdf_redactor.redactor(self.options, self.path, self.destiny)
         self.options.content_filters = [

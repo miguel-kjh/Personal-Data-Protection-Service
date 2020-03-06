@@ -81,16 +81,8 @@ class DocumentHandlerHtml(DocumentHandler):
             index = name.end()
         if index <= len(sentence) - 1:
             newSentence += sentence[index:]
-        
-        finalSentence = ''
-        index = 0
-        for idCard in re.finditer(self.regexCards,newSentence):
-            finalSentence += newSentence[index:idCard.start()] + markInHtml(idCard.group())
-            index = idCard.end()
-        if index <= len(sentence) - 1:
-            finalSentence += newSentence[index:]
 
-        return finalSentence
+        return newSentence
 
     def encodeNames(self, sentence):
         newSentence = ""
@@ -100,16 +92,8 @@ class DocumentHandlerHtml(DocumentHandler):
             index = name.end()
         if index <= len(sentence) - 1:
             newSentence += sentence[index:]
-
-        finalSentence = ""
-        index = 0
-        for idCard in re.finditer(self.regexCards,newSentence):
-            finalSentence += newSentence[index:idCard.start()] + encode(idCard.group())
-            index = idCard.end()
-        if index <= len(sentence) - 1:
-            finalSentence += newSentence[index:]
-
-        return finalSentence
+        
+        return newSentence
 
     def documentsProcessing(self):
         formatter = HTMLFormatter(self.encodeNames)
@@ -119,8 +103,10 @@ class DocumentHandlerHtml(DocumentHandler):
                 key=lambda value: len(value),
                 reverse=True
             )
-        self.regexName = "|".join(listNames)
-        self.regexCards = "|".join(idCards)
+        data = []
+        data[len(data):] = listNames
+        data[len(data):] = idCards
+        self.regexName = "|".join(data)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
     
@@ -132,8 +118,10 @@ class DocumentHandlerHtml(DocumentHandler):
                 key=lambda value: len(value),
                 reverse=True
             )
-        self.regexName = "|".join(listNames)
-        self.regexCards = "|".join(idCards)
+        data = []
+        data[len(data):] = listNames
+        data[len(data):] = idCards
+        self.regexName = "|".join(data)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 

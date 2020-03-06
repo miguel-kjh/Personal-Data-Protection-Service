@@ -116,7 +116,7 @@ class DocumentHandlerDocx(DocumentHandler):
                 if LanguageBuilder().hasContex(block.text):
                     names,idCards = self.nameSearch.searchPersonalData(block.text)
                     if names:
-                        listNames[len(listNames):] = [name['name'] for name in names]
+                        listNames[len(listNames):]   = [name['name'] for name in names]
                     if idCards:
                         listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
                 elif self.nameSearch.isName(block.text):

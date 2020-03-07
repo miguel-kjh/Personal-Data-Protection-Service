@@ -20,8 +20,8 @@ class DocumentHandler:
     # def documentTagger(self):
     # pass
 
-    def createFileOfName(self):
-        self.createCsv(*self.giveListNames())
+    def createDataZipFolder(self):
+        self.createZip(*self.giveListNames())
 
     def giveListNames(self) -> tuple:
         pass
@@ -33,7 +33,7 @@ class DocumentHandler:
             zipf.write(filename)
             os.remove(filename)
 
-    def createCsv(self, listNames: list, idCards: list):
+    def createZip(self, listNames: list, idCards: list):
         zipf = zipfile.ZipFile(self.destiny, 'w', zipfile.ZIP_DEFLATED)
         if listNames:
             filename = os.path.join(UPLOAD_FOLDER,"names.csv")

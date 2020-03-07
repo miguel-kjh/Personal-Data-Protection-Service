@@ -16,6 +16,8 @@ class DocumentHandlerTxt(DocumentHandler):
     def documentsProcessing(self):
         with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
             for line in file:
+                #print(line)
+                #print("############")
                 data = []
                 data[len(data):] = self.nameSearch.searchPersonalData(line)[0]
                 data[len(data):] = self.nameSearch.searchPersonalData(line)[1]

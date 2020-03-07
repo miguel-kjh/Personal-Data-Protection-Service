@@ -67,7 +67,7 @@ class Encode(Resource):
             return evaluator.giveResponse(), 400
 
 
-@api.route('/file/list-names')
+@api.route('/file/extract-data/json')
 class ListNames(Resource):
     @api.doc('give a list of name in the document')
     def post(self):
@@ -98,9 +98,9 @@ class ListNames(Resource):
             return evaluator.giveResponse(), 400
 
 
-@api.route('/file/csv-file')
+@api.route('/file/extract-data/zip')
 class CsvFile(Resource):
-    @api.doc('return a csv file with names of file sent')
+    @api.doc('return a zip folder with all data found grouped in CSV files')
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
@@ -119,7 +119,7 @@ class CsvFile(Resource):
                 os.path.join(path, nameOfNewDocument)
             )
             dh = creator.create()
-            dh.createFileOfName()
+            dh.createDataZipFolder()
             updateDelete(publicId, True)
             publicId = saveLog(
                 {

@@ -21,13 +21,13 @@
             function setTime() {
                 switch ($("#sel").val()) {
                     case "1":
-                        $('#formId').attr('action', server+'/search/file/list-names'); 
+                        $('#formId').attr('action', server+'/search/file/extract-data/json'); 
                         break;
                     case "2":
                         $('#formId').attr('action', server+'/search/file/encode');
                         break;
                     case "3":
-                        $('#formId').attr('action', server+'/search/file/csv-file');       
+                        $('#formId').attr('action', server+'/search/file/extract-data/zip');       
                         break;
                     default:
                         $('#formId').attr('action', server+'/search/file/tagger-html');    

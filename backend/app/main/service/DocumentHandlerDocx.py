@@ -36,7 +36,7 @@ class DocumentHandlerDocx(DocumentHandler):
                     else:
                         if namePicker.isColumnName(index) and paragraph.text.strip():
                             namePicker.addName(index, paragraph.text)
-                            if self.nameSearch.checkNameInDB(paragraph.text): namePicker.countRealName(index)
+                            if self.dataSearch.checkNameInDB(paragraph.text): namePicker.countRealName(index)
             isLabels = False
         return namePicker
 
@@ -47,7 +47,7 @@ class DocumentHandlerDocx(DocumentHandler):
                     for paragraph in cell.paragraphs:
                         if paragraph.text.strip():
                             picker.addName(index, paragraph.text)
-                            if self.nameSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
+                            if self.dataSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
     
     def getIdCards(self,table: Table, picker: DataPickerInTables) -> list:
         idCards = []
@@ -55,7 +55,7 @@ class DocumentHandlerDocx(DocumentHandler):
             for index, cell in enumerate(row.cells):
                 if not picker.isColumnName(index):
                     for paragraph in cell.paragraphs:
-                        if self.nameSearch.isDni(paragraph.text):
+                        if self.dataSearch.isDni(paragraph.text):
                             idCards.append(paragraph.text)
         return idCards
 
@@ -64,7 +64,7 @@ class DocumentHandlerDocx(DocumentHandler):
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    listNames,listIdCards = self.nameSearch.searchPersonalData(block.text)
+                    listNames,listIdCards = self.dataSearch.searchPersonalData(block.text)
                     for name in listNames:
                         regexName = re.compile(name['name'])
                         text = regexName.sub(encode(name['name']), block.text)
@@ -73,12 +73,12 @@ class DocumentHandlerDocx(DocumentHandler):
                         regexName = re.compile(idCard['name'])
                         text = regexName.sub(encode(idCard['name']), block.text)
                         block.text = text
-                elif self.nameSearch.isName(block.text):
+                elif self.dataSearch.isName(block.text):
                     regexName = re.compile(block.text.strip())
                     text = regexName.sub(encode(block.text.strip()), block.text)
                     block.text = text
                 else:
-                    _,listIdCards = self.nameSearch.searchPersonalData(block.text)
+                    _,listIdCards = self.dataSearch.searchPersonalData(block.text)
                     for idCard in listIdCards:
                         regexName = re.compile(idCard['name'])
                         text = regexName.sub(encode(idCard['name']), block.text)
@@ -101,7 +101,7 @@ class DocumentHandlerDocx(DocumentHandler):
                                 paragraph.text = encode(paragraph.text)
                         else:
                             for paragraph in cell.paragraphs:
-                                if self.nameSearch.isDni(paragraph.text):
+                                if self.dataSearch.isDni(paragraph.text):
                                     paragraph.text = encode(paragraph.text)
             else:
                 continue
@@ -114,15 +114,15 @@ class DocumentHandlerDocx(DocumentHandler):
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    names,idCards = self.nameSearch.searchPersonalData(block.text)
+                    names,idCards = self.dataSearch.searchPersonalData(block.text)
                     if names:
                         listNames[len(listNames):]   = [name['name'] for name in names]
                     if idCards:
                         listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
-                elif self.nameSearch.isName(block.text):
+                elif self.dataSearch.isName(block.text):
                     listNames.append(block.text.strip())
                 else:
-                    _,idCards = self.nameSearch.searchPersonalData(block.text)
+                    _,idCards = self.dataSearch.searchPersonalData(block.text)
                     if idCards:
                         listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
             elif isinstance(block, Table):

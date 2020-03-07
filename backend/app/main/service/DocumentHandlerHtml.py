@@ -13,9 +13,9 @@ from enum import Enum,unique
 
 @unique
 class TableToken(Enum):
-            NONE = 0
-            HEAD = 1
-            ROW = 2
+        NONE = 0
+        HEAD = 1
+        ROW = 2
 
 class TokenHtml:
         def __init__(self,listOfText:list,isTable:TableToken):
@@ -132,7 +132,7 @@ class DocumentHandlerHtml(DocumentHandler):
         tokenizer = TokenizerHtml(self.soup)
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:
-                names,cards = self.nameSearch.searchPersonalData(token.text[0])
+                names,cards = self.dataSearch.searchPersonalData(token.text[0])
                 listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
                 idCards[len(idCards):] = [card['name'] for card in cards]
                 if not picker.isEmpty():
@@ -148,9 +148,9 @@ class DocumentHandlerHtml(DocumentHandler):
             elif token.isTable == TableToken.ROW:
                 for index in picker.getIndexesColumn():
                     picker.addName(index,token.text[index])
-                    if self.nameSearch.checkNameInDB(token.text[index]):
+                    if self.dataSearch.checkNameInDB(token.text[index]):
                         picker.countRealName(index)
                 for index,token in enumerate(token.text):
-                    if not index in picker.getIndexesColumn() and self.nameSearch.isDni(token):
+                    if not index in picker.getIndexesColumn() and self.dataSearch.isDni(token):
                         idCards.append(token)
         return listNames,idCards

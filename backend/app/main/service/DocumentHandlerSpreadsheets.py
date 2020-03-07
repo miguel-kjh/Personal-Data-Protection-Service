@@ -27,12 +27,12 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
             for typeColumn in self.selector.getPossibleColumnsNames(self.sheets[table]):
                 if typeColumn.isName:
                     dfNotNull = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
+                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         listNames[len(listNames):] = dfNotNull
                 else:
                     idCards[len(idCards):] = list(
-                        filter(lambda idCards: self.nameSearch.isDni(idCards),self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()])
+                        filter(lambda idCards: self.dataSearch.isDni(idCards),self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()])
                     )
         return listNames,idCards
 
@@ -41,12 +41,12 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
             for typeColumn in self.selector.getPossibleColumnsNames(self.sheets[table]):
                 if typeColumn.isName:
                     dfNotNull = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
+                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         self.sheets[table][typeColumn.key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
                 else:
                     idCards = list(
-                        filter(lambda idCards: self.nameSearch.isDni(idCards),self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()])
+                        filter(lambda idCards: self.dataSearch.isDni(idCards),self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()])
                     )
                     self.sheets[table][typeColumn.key].replace({str(idCard): encode(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()
@@ -69,12 +69,12 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
             if typeColumn.isName:
                 dfNotNull = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
-                countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
+                countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     listNames[len(listNames):] = dfNotNull
             else:
                 idCards[len(idCards):] = list(
-                    filter(lambda idCards: self.nameSearch.isDni(idCards),self.df[typeColumn.key][self.df[typeColumn.key].notnull()])
+                    filter(lambda idCards: self.dataSearch.isDni(idCards),self.df[typeColumn.key][self.df[typeColumn.key].notnull()])
                 )
         return listNames,idCards
 
@@ -82,12 +82,12 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
             if typeColumn.isName:
                 dfNotNull = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
-                countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
+                countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     self.df[typeColumn.key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
             else:
                 idCards = list(
-                    filter(lambda idCards: self.nameSearch.isDni(idCards),self.df[typeColumn.key][self.df[typeColumn.key].notnull()])
+                    filter(lambda idCards: self.dataSearch.isDni(idCards),self.df[typeColumn.key][self.df[typeColumn.key].notnull()])
                 )
                 self.df[typeColumn.key].replace({str(idCard): encode(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()

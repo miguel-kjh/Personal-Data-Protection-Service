@@ -27,7 +27,7 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
             for typeColumn in self.selector.getPossibleColumnsNames(self.sheets[table]):
                 if typeColumn.isName:
                     dfNotNull = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
+                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         listNames[len(listNames):] = dfNotNull
                 else:
@@ -41,7 +41,7 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
             for typeColumn in self.selector.getPossibleColumnsNames(self.sheets[table]):
                 if typeColumn.isName:
                     dfNotNull = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
+                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         self.sheets[table][typeColumn.key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
                 else:
@@ -69,7 +69,7 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
             if typeColumn.isName:
                 dfNotNull = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
-                countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
+                countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     listNames[len(listNames):] = dfNotNull
             else:
@@ -82,7 +82,7 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
             if typeColumn.isName:
                 dfNotNull = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
-                countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
+                countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     self.df[typeColumn.key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
             else:

@@ -7,10 +7,12 @@ import re
 from abc import ABC, abstractmethod
 from typing import Text
 from unidecode import unidecode
+from itertools import chain
 
 
 def normalizeUnicode(string: str) -> str:
     return unidecode(string)
+
 
 
 class PersonalDataSearch(ABC):
@@ -20,6 +22,37 @@ class PersonalDataSearch(ABC):
         self.errorRange = errorRange
         self.connection = SpanishNamesDB()
         self.keywords = ["DE", "DEL", "EL", "LOS", "TODOS"]
+
+    def _convertName(self,name:str) -> list:
+        normalizeName = normalizeUnicode(name).upper()
+        words = list(filter(lambda n: n not in self.keywords, normalizeName.replace('-', ' ').replace(',','').replace('\'','').split()))
+        return words
+
+    def _checkNameInSubset(self,name:list, nameSubset:list) -> bool:
+        namesFound = list(filter(lambda n: n in nameSubset, name))
+        return len(namesFound)/len(name) > self.errorRange
+
+    def checkNamesInDB(self, names:list):
+        listNames = list(map(lambda x: self._convertName(x), names))
+        words = list(chain.from_iterable(listNames))
+        if not words: return []
+        strName = "('" + '\',\''.join(list(set(words))) + "')"
+        nameSubset = []
+        try:
+            sentence = "select distinct names from names where names in %s;" % (strName)
+            senteceResult  = self.connection.query(sentence)
+            nameSubset[len(nameSubset):] = [queryResult[0] for queryResult in senteceResult.fetchall()]
+            sentence = "select distinct surnames from surnames where surnames in %s;" % (strName)
+            senteceResult  = self.connection.query(sentence)
+            nameSubset[len(nameSubset):] = [queryResult[0] for queryResult in senteceResult.fetchall()]
+        except lite.OperationalError as identifier:
+            print(identifier)
+        finalNames = list(
+            filter(
+                lambda name: self._checkNameInSubset(name,nameSubset), listNames
+            )
+        )
+        return [names[listNames.index(strName)] for strName in finalNames]
 
     def checkNameInDB(self, fullName: str) -> bool:
         countWordsInName = 0

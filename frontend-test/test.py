@@ -7,7 +7,7 @@ listaNames = 'http://127.0.0.1:5000/search/file/list-names'
 encode = 'http://127.0.0.1:5000/search/file/encode'
 file = '/home/miguel/Escritorio/Ingeniería informática/cuarto/TFG/NameSearcher-WebService/frontend-test/demos/titulares.xls'
 
-for _ in range(nIter):    
+for _ in range(nIter):
     with open(file, 'rb') as f:
         st = time.time()
         r = requests.post(encode, files={'file': f})

@@ -25,6 +25,6 @@ class ColumnSelectorDataFrame:
                 yield typeOfColumn(key,False)
 
     def columnSearch(self, df: pd.DataFrame, comparateFuntion: classmethod) -> int:
-        return sum(list(map(lambda x: comparateFuntion(str(x)), df)))
+        return len(comparateFuntion(list(df)))
 
     

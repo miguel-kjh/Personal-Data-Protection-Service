@@ -85,10 +85,9 @@ class PersonalDataSearch(ABC):
             )
         )
 
-    def isDni(self, idCards: str) -> bool:
-        with self.nlp.disable_pipes("ner"):
-            doc = self.nlp(idCards)
-        return len(doc.ents) == 1 and str(doc.ents[0]) == idCards and isDni(idCards)
+    def isDni(self, idCard: str) -> bool:
+        match = list(filter(lambda x: isDni(x.group()) , re.finditer(r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w',idCard)))
+        return len(match) == 1 and match[0].group() == idCard
 
     @abstractmethod
     def searchPersonalData(self, text: Text) -> tuple:

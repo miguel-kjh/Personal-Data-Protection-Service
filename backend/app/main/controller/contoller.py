@@ -12,7 +12,7 @@ import os
 api = NameSearchDto.api
 
 lb = LanguageBuilder()
-lb.defineNameEntity()  # Load model before a conections
+#lb.defineNameEntity()  # Load model before a conections
 
 
 @api.route("/")

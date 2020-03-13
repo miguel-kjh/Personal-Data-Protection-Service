@@ -47,6 +47,9 @@ class TestSearchText(BaseTestCase):
     def test_isDni(self):
         self.assertTrue(personalDataSearch.isDni("54094110L"))
         self.assertTrue(personalDataSearch.isDni("54094110l"))
+        self.assertTrue(personalDataSearch.isDni("54.09.41.10l"))
+        self.assertTrue(personalDataSearch.isDni("54.09 41 10 L"))
+        self.assertTrue(personalDataSearch.isDni("54 09 41 10L"))
         self.assertTrue(personalDataSearch.isDni("54094110 L"))
         self.assertTrue(personalDataSearch.isDni("54094110\tL"))
         self.assertTrue(personalDataSearch.isDni("54094110         L"))

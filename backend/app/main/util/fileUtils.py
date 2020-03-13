@@ -15,6 +15,7 @@ from nltk.tokenize import sent_tokenize
 
 from typing import Text
 import re
+import string
 
 
 def allowedFile(filename: str) -> bool:
@@ -70,11 +71,11 @@ def readPdf(path:str) -> Text:
             yield token
 
 def isDni(dni:str) -> bool:
-    number = re.search(r'\d{8}', dni)
+    number = re.search(r'\d{2}.?\d{2}.?\d{2}.?\d{2}', dni)
     if not number:
         return False
-    
-    if lettersOfDni[int(number[0]) % 23] != dni[-1].upper():
+    number = ''.join(filter(str.isdigit, dni))
+    if lettersOfDni[int(number) % 23] != dni[-1].upper():
         return False
     
     return True

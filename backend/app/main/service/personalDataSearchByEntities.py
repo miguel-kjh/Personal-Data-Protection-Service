@@ -8,9 +8,10 @@ class PersonalDataSearchByEntities(PersonalDataSearch):
         doc = self.nlp(text)
         listNames = [
             {"name": ent.text, "star_char": ent.start_char, "end_char": ent.end_char}
-            for ent in doc.ents if ent.label_ == 'PER' and self.checkNameInDB(ent.text)
+            for ent in doc.ents if ent.label_ == 'PER'
         ]
-        listDNI = [
+        listNames = self.selectNames(listNames)
+        idCards = [
             {"name": ent.text, "star_char": ent.start_char, "end_char": ent.end_char}
             for ent in doc.ents if ent.label_ in ['BROKEN_DNI','DNI'] and isDni(ent.text)
         ]
@@ -19,4 +20,4 @@ class PersonalDataSearchByEntities(PersonalDataSearch):
         # listNames = list(
         #    filter(lambda name: self.checkNameInDB(name['name']), listNames)
         #)
-        return (listNames,listDNI)
+        return (listNames,idCards)

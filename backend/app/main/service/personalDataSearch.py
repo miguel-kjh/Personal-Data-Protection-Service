@@ -77,6 +77,14 @@ class PersonalDataSearch(ABC):
         
         return self.checkNameInDB(fullName)
 
+    def selectNames(self, names: list) -> list:
+        selectedNames = self.checkNamesInDB([name['name'] for name in names])
+        return list(
+            filter(
+                lambda name: name['name'] in selectedNames,names
+            )
+        )
+
     def isDni(self, idCards: str) -> bool:
         with self.nlp.disable_pipes("ner"):
             doc = self.nlp(idCards)

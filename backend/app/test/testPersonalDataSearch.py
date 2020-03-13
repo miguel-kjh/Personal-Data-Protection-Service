@@ -65,6 +65,22 @@ class TestSearchText(BaseTestCase):
         self.assertFalse(personalDataSearch.isName("MIguel9 Medina"))
         self.assertFalse(personalDataSearch.isName("estoy aqui"))
 
+    def test_selectedName(self):
+        self.assertEqual(personalDataSearch.selectNames([{"name": "", "star_char": 0, "end_char": 0}]), [])
+        self.assertEqual(personalDataSearch.selectNames([]), [])
+        self.assertEqual(personalDataSearch.selectNames(
+            [{"name": "Miguel", "star_char": 0, "end_char": 0}]),
+            [{"name": "Miguel", "star_char": 0, "end_char": 0}])
+        self.assertEqual(personalDataSearch.selectNames(
+            [{"name": "Miguel Ángel Medina Ramírez", "star_char": 0, "end_char": 0}, 
+            {"name": "Paco Guerra", "star_char": 0, "end_char": 0}]), 
+            [{"name": "Miguel Ángel Medina Ramírez", "star_char": 0, "end_char": 0}, 
+            {"name": "Paco Guerra", "star_char": 0, "end_char": 0}])
+        self.assertEqual(personalDataSearch.selectNames(
+            [{"name": "Miguel Ángel Medina Ramírez", "star_char": 0, "end_char": 0}, 
+            {"name": "ff Guefffrra", "star_char": 0, "end_char": 0}]), 
+            [{"name": "Miguel Ángel Medina Ramírez", "star_char": 0, "end_char": 0}])
+
     def test_check_data_in_DB_name(self):
         self.assertEqual(personalDataSearch.checkNamesInDB([""]), [])
         self.assertEqual(personalDataSearch.checkNamesInDB([]), [])

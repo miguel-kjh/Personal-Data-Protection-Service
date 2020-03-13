@@ -36,7 +36,6 @@ class DocumentHandlerDocx(DocumentHandler):
                     else:
                         if namePicker.isColumnName(index) and paragraph.text.strip():
                             namePicker.addName(index, paragraph.text)
-                            if self.dataSearch.checkNameInDB(paragraph.text): namePicker.countRealName(index)
             isLabels = False
         return namePicker
 
@@ -47,7 +46,6 @@ class DocumentHandlerDocx(DocumentHandler):
                     for paragraph in cell.paragraphs:
                         if paragraph.text.strip():
                             picker.addName(index, paragraph.text)
-                            if self.dataSearch.checkNameInDB(paragraph.text): picker.countRealName(index)
     
     def getIdCards(self,table: Table, picker: DataPickerInTables) -> list:
         idCards = []
@@ -96,7 +94,7 @@ class DocumentHandlerDocx(DocumentHandler):
                     continue
                 for row in block.rows[initialRow:]:
                     for index, cell in enumerate(row.cells):
-                        if picker.isRealColumName(index, MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
+                        if picker.isRealColumName(self.dataSearch.checkNamesInDB, index, MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
                             for paragraph in cell.paragraphs:
                                 paragraph.text = encode(paragraph.text)
                         else:
@@ -134,7 +132,7 @@ class DocumentHandlerDocx(DocumentHandler):
                     self._defineNamePicker(block, picker)
                 else: 
                     continue
-                listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                listNames[len(listNames):] = picker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
                 listIdCard[len(listIdCard):] = self.getIdCards(block,picker)
             else:
                 continue

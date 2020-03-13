@@ -136,7 +136,7 @@ class DocumentHandlerHtml(DocumentHandler):
                 listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
                 idCards[len(idCards):] = [card['name'] for card in cards]
                 if not picker.isEmpty():
-                    listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                    listNames[len(listNames):] = picker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
                     picker.clear()
             elif token.isTable == TableToken.HEAD:
                 keys = list(filter(lambda text: list(
@@ -148,8 +148,6 @@ class DocumentHandlerHtml(DocumentHandler):
             elif token.isTable == TableToken.ROW:
                 for index in picker.getIndexesColumn():
                     picker.addName(index,token.text[index])
-                    if self.dataSearch.checkNameInDB(token.text[index]):
-                        picker.countRealName(index)
                 for index,token in enumerate(token.text):
                     if not index in picker.getIndexesColumn() and self.dataSearch.isDni(token):
                         idCards.append(token)

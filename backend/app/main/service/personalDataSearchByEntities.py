@@ -17,7 +17,7 @@ class PersonalDataSearchByEntities(PersonalDataSearch):
         ]
         # print([(ent.text, ent.label_) for ent in doc.ents])
         # print(listNames)
-        # listNames = list(
+        # listNames = list(b
         #    filter(lambda name: self.checkNameInDB(name['name']), listNames)
         #)
         return (listNames,idCards)

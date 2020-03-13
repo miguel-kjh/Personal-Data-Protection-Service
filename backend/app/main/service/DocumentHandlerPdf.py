@@ -36,7 +36,7 @@ class DocumentHandlerPdf(DocumentHandler):
             for typeColumn in self.selector.getPossibleColumnsNames(table):
                 if typeColumn.isName:
                     dfNotNull = table[typeColumn.key][table[typeColumn.key].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
+                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         listNames[len(listNames):] = dfNotNull
                         lastKeys.append(list(table.keys()).index(typeColumn.key))
@@ -55,7 +55,7 @@ class DocumentHandlerPdf(DocumentHandler):
                     except IndexError:
                         continue
                     dfNotNull = table[dataKey][table[dataKey].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNameInDB)
+                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         listNames.append(dataKey)
                         listNames[len(listNames):] = dfNotNull

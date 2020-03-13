@@ -19,19 +19,10 @@ class DocumentHandlerTxt(DocumentHandler):
     def documentsProcessing(self):
         with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
             for line in file:
-
-                if LanguageBuilder().hasContex(line):
-                    data = []
-                    data[len(data):] = self.dataSearch.searchPersonalData(line)[0]
-                    data[len(data):] = self.dataSearch.searchPersonalData(line)[1]
-                    destiny.writelines(self.modifyLine(line, data))
-                    continue
-
-                if self.dataSearch.checkNameInDB(line):
-                    line = encode(line)
-
-                _,idCards = self.dataSearch.searchPersonalData(line)
-                destiny.writelines(self.modifyLine(line, idCards))
+                data = []
+                data[len(data):] = self.dataSearch.searchPersonalData(line)[0]
+                data[len(data):] = self.dataSearch.searchPersonalData(line)[1]
+                destiny.writelines(self.modifyLine(line, data))
 
                 
 
@@ -40,14 +31,7 @@ class DocumentHandlerTxt(DocumentHandler):
         idCards = []
         with open(self.path, 'r',encoding='utf8') as file:
             for line in file:
-                if LanguageBuilder().hasContex(line):
-                    listNames[len(listNames):] = [name['name'] for name in self.dataSearch.searchPersonalData(line)[0]]
-                    idCards[len(idCards):]     = [idCard['name'] for idCard in self.dataSearch.searchPersonalData(line)[1]]
-                    continue
-
-                if self.dataSearch.checkNameInDB(line):
-                    listNames.append(line[0:len(line) - 1])
-                    continue
-
-                idCards[len(idCards):] = [idCard['name'] for idCard in self.dataSearch.searchPersonalData(line)[1]]
+                data = self.dataSearch.searchPersonalData(line)
+                listNames[len(listNames):] = [name['name'] for name in data[0]]
+                idCards[len(idCards):]     = [idCard['name'] for idCard in data[1]]
         return listNames,idCards

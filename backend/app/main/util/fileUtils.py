@@ -65,7 +65,7 @@ def itemIterator(parent):
 
 def readPdf(path:str) -> Text:
     text = extract_text(path)
-    for token in sent_tokenize(text):
+    for token in sent_tokenize(text,language='spanish'):
         countLineBreak = token.count('\n')
         if countLineBreak/len(token) <= LINE_BREAK_DENSITY:
             yield token

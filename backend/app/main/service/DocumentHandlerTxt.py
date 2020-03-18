@@ -1,8 +1,6 @@
 from app.main.service.DocumentHandler import DocumentHandler
 from app.main.util.fileUtils import encode
 from app.main.service.languageBuilder import LanguageBuilder
-from nltk.tokenize import sent_tokenize
-
 
 class DocumentHandlerTxt(DocumentHandler):
 
@@ -21,10 +19,9 @@ class DocumentHandlerTxt(DocumentHandler):
     def documentsProcessing(self):
         with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
             for line in file:
-                for token in sent_tokenize(line ,language='spanish'):
-                    data = []
-                    data[len(data):],data[len(data):] = self.dataSearch.searchPersonalData(token)
-                    destiny.writelines(self.modifyLine(token, data))
+                data = []
+                data[len(data):],data[len(data):] = self.dataSearch.searchPersonalData(line)
+                destiny.writelines(self.modifyLine(line, data))
 
                 
 
@@ -33,8 +30,7 @@ class DocumentHandlerTxt(DocumentHandler):
         idCards = []
         with open(self.path, 'r',encoding='utf8') as file:
             for line in file:
-                for token in sent_tokenize(line ,language='spanish'):
-                    data = self.dataSearch.searchPersonalData(token)
-                    listNames[len(listNames):] = [name['name'] for name in data[0]]
-                    idCards[len(idCards):]     = [idCard['name'] for idCard in data[1]]
+                data = self.dataSearch.searchPersonalData(line)
+                listNames[len(listNames):] = [name['name'] for name in data[0]]
+                idCards[len(idCards):]     = [idCard['name'] for idCard in data[1]]
         return listNames,idCards

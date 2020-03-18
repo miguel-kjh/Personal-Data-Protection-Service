@@ -10,7 +10,8 @@ textForTest = {
     "hard": "Bien, soy el juez Cayo Medina de Lara, voy a nombrar a los representantes de la Asamblea, que son: "
             + " Laura Vega, "
             + "Juan Sebastian Ramírez y "
-            + "Miguel Medina."
+            + "Miguel Medina.",
+    "twoSent": "Daniel está comiendo como si nada, mientras José intenta mantener la calma ante esta situción. ¿Dónde está Miguel?"
 }
 
 
@@ -21,6 +22,19 @@ class TestSearchText(BaseTestCase):
         self.assertNotEqual(dictionatyOfNames, [])
         self.assertEqual(dictionatyOfNames[0]["star_char"], textForTest["simple"].find("Miguel"))
         self.assertEqual(dictionatyOfNames[0]["end_char"], textForTest["simple"].find("Miguel") + len("Miguel"))
+
+        dictionatyOfNames,_ = personalDataSearch.searchPersonalData(textForTest["twoSent"])
+        self.assertNotEqual(dictionatyOfNames, [])
+        
+        self.assertEqual(dictionatyOfNames[0]["star_char"], textForTest["twoSent"].find("Daniel"))
+        self.assertEqual(dictionatyOfNames[0]["end_char"], textForTest["twoSent"].find("Daniel") + len("Daniel"))
+        
+        self.assertEqual(dictionatyOfNames[1]["star_char"], textForTest["twoSent"].find("José"))
+        self.assertEqual(dictionatyOfNames[1]["end_char"], textForTest["twoSent"].find("José") + len("José"))
+
+        self.assertEqual(dictionatyOfNames[2]["star_char"], textForTest["twoSent"].find("Miguel"))
+        self.assertEqual(dictionatyOfNames[2]["end_char"], textForTest["twoSent"].find("Miguel") + len("Miguel"))
+        
 
     def test_simple_look_for_names_by_searchNamesText(self):
         dictionatyOfNames,_ = personalDataSearch.searchPersonalData(textForTest["simple"])

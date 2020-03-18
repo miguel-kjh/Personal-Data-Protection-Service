@@ -21,10 +21,10 @@ class DocumentHandlerTxt(DocumentHandler):
     def documentsProcessing(self):
         with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
             for line in file:
-                data = []
-                data[len(data):] = self.dataSearch.searchPersonalData(line)[0]
-                data[len(data):] = self.dataSearch.searchPersonalData(line)[1]
-                destiny.writelines(self.modifyLine(line, data))
+                for token in sent_tokenize(line ,language='spanish'):
+                    data = []
+                    data[len(data):],data[len(data):] = self.dataSearch.searchPersonalData(token)
+                    destiny.writelines(self.modifyLine(token, data))
 
                 
 

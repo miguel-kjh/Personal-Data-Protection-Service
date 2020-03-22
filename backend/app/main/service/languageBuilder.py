@@ -17,21 +17,14 @@ class LanguageBuilder(metaclass=Singleton):
         print("model load")
 
     def defineNameEntity(self):
-        """names = [
+        names = [
             {'POS': 'PROPN', 'OP': '+'},
             {'TEXT': {'REGEX': 'de|del|-|el|los|todos'}, 'OP': '?'},
             {'POS': 'PROPN', 'OP': '?'}
-        ]"""
-        brokenDni = [
-            {'TEXT': {'REGEX': r'\d{8}$'}},
-            {'TEXT': {'REGEX': r'\s'}, 'OP':'*'},
-            {'TEXT': {'REGEX': r'\w$'}}
         ]
-        dni = [{'TEXT': {'REGEX': r'\d{8}\w'}}]
         ruler = EntityRuler(self.nlp)
         patterns = [
-            {"label": "BROKEN_DNI", "pattern": brokenDni},
-            {"label": "DNI", "pattern": dni}
+            {"label": "NAME", "pattern":names}
         ]
         ruler.add_patterns(patterns)
         self.nlp.add_pipe(ruler, before='ner')

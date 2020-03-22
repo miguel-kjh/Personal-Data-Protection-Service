@@ -13,9 +13,9 @@ from enum import Enum,unique
 
 @unique
 class TableToken(Enum):
-            NONE = 0
-            HEAD = 1
-            ROW = 2
+        NONE = 0
+        HEAD = 1
+        ROW = 2
 
 class TokenHtml:
         def __init__(self,listOfText:list,isTable:TableToken):
@@ -81,16 +81,8 @@ class DocumentHandlerHtml(DocumentHandler):
             index = name.end()
         if index <= len(sentence) - 1:
             newSentence += sentence[index:]
-        
-        finalSentence = ''
-        index = 0
-        for idCard in re.finditer(self.regexCards,newSentence):
-            finalSentence += newSentence[index:idCard.start()] + markInHtml(idCard.group())
-            index = idCard.end()
-        if index <= len(sentence) - 1:
-            finalSentence += newSentence[index:]
 
-        return finalSentence
+        return newSentence
 
     def encodeNames(self, sentence):
         newSentence = ""
@@ -100,16 +92,8 @@ class DocumentHandlerHtml(DocumentHandler):
             index = name.end()
         if index <= len(sentence) - 1:
             newSentence += sentence[index:]
-
-        finalSentence = ""
-        index = 0
-        for idCard in re.finditer(self.regexCards,newSentence):
-            finalSentence += newSentence[index:idCard.start()] + encode(idCard.group())
-            index = idCard.end()
-        if index <= len(sentence) - 1:
-            finalSentence += newSentence[index:]
-
-        return finalSentence
+        
+        return newSentence
 
     def documentsProcessing(self):
         formatter = HTMLFormatter(self.encodeNames)
@@ -119,8 +103,10 @@ class DocumentHandlerHtml(DocumentHandler):
                 key=lambda value: len(value),
                 reverse=True
             )
-        self.regexName = "|".join(listNames)
-        self.regexCards = "|".join(idCards)
+        data = []
+        data[len(data):] = listNames
+        data[len(data):] = idCards
+        self.regexName = "|".join(data)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
     
@@ -132,8 +118,10 @@ class DocumentHandlerHtml(DocumentHandler):
                 key=lambda value: len(value),
                 reverse=True
             )
-        self.regexName = "|".join(listNames)
-        self.regexCards = "|".join(idCards)
+        data = []
+        data[len(data):] = listNames
+        data[len(data):] = idCards
+        self.regexName = "|".join(data)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
@@ -144,11 +132,11 @@ class DocumentHandlerHtml(DocumentHandler):
         tokenizer = TokenizerHtml(self.soup)
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:
-                names,cards = self.nameSearch.searchPersonalData(token.text[0])
+                names,cards = self.dataSearch.searchPersonalData(token.text[0])
                 listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
                 idCards[len(idCards):] = [card['name'] for card in cards]
                 if not picker.isEmpty():
-                    listNames[len(listNames):] = picker.getAllNames(MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                    listNames[len(listNames):] = picker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
                     picker.clear()
             elif token.isTable == TableToken.HEAD:
                 keys = list(filter(lambda text: list(
@@ -160,9 +148,7 @@ class DocumentHandlerHtml(DocumentHandler):
             elif token.isTable == TableToken.ROW:
                 for index in picker.getIndexesColumn():
                     picker.addName(index,token.text[index])
-                    if self.nameSearch.checkNameInDB(token.text[index]):
-                        picker.countRealName(index)
                 for index,token in enumerate(token.text):
-                    if not index in picker.getIndexesColumn() and self.nameSearch.isDni(token):
+                    if not index in picker.getIndexesColumn() and self.dataSearch.isDni(token):
                         idCards.append(token)
         return listNames,idCards

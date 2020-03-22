@@ -1,5 +1,5 @@
 from app.main.util.envNames import ALLOWED_EXTENSIONS
-from app.main.util.heuristicMeasures import LINE_BREAK_DENSITY
+from app.main.util.heuristicMeasures import MINIMAL_WHITE_SPACE_DENSITY
 from app.main.util.semanticWordLists import lettersOfDni
 
 from datetime import datetime
@@ -10,11 +10,16 @@ from docx.oxml.table import CT_Tbl
 from docx.table import _Cell, Table, _Row
 from docx.text.paragraph import Paragraph
 
-from pdfminer.high_level import extract_text
+import io
+from pdfminer.converter import TextConverter
+from pdfminer.pdfinterp import PDFPageInterpreter
+from pdfminer.pdfinterp import PDFResourceManager
+from pdfminer.pdfpage import PDFPage
 from nltk.tokenize import sent_tokenize
 
 from typing import Text
 import re
+import string
 
 
 def allowedFile(filename: str) -> bool:
@@ -63,18 +68,30 @@ def itemIterator(parent):
             yield Table(child, parent)
 
 def readPdf(path:str) -> Text:
-    text = extract_text(path)
-    for token in sent_tokenize(text):
-        countLineBreak = token.count('\n')
-        if countLineBreak/len(token) <= LINE_BREAK_DENSITY:
-            yield token
+    with open(path, 'rb') as fh:
+        for page in PDFPage.get_pages(fh, 
+                                      caching=True,
+                                      check_extractable=True):
+            resource_manager = PDFResourceManager()
+            fake_file_handle = io.StringIO()
+            converter = TextConverter(resource_manager, fake_file_handle)
+            page_interpreter = PDFPageInterpreter(resource_manager, converter)
+            page_interpreter.process_page(page)
+            
+            text = fake_file_handle.getvalue()
+            if text.count(' ')/len(text) > MINIMAL_WHITE_SPACE_DENSITY: 
+                yield text
+    
+            # close open handles
+            converter.close()
+            fake_file_handle.close()
 
 def isDni(dni:str) -> bool:
-    number = re.search(r'\d{8}', dni)
+    number = re.search(r'\d{2}.?\d{2}.?\d{2}.?\d{2}', dni)
     if not number:
         return False
-    
-    if lettersOfDni[int(number[0]) % 23] != dni[-1].upper():
+    number = ''.join(filter(str.isdigit, dni))
+    if lettersOfDni[int(number) % 23] != dni[-1].upper():
         return False
     
     return True

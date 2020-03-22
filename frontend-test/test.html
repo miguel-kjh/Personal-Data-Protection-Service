@@ -9,9 +9,9 @@
         <input type = "submit" value="Upload">  
     </form>
     <select id="sel">
-        <option value="1" selected>lista de Nombres</option>
-        <option value="2">Codificación de Nombres</option>
-        <option value="3">csv</option>
+        <option value="1" selected>lista de datos</option>
+        <option value="2">Anonimización</option>
+        <option value="3">Zip data</option>
         <option value="4">Etiquetar html</option>
     </select>
     <script>
@@ -21,13 +21,13 @@
             function setTime() {
                 switch ($("#sel").val()) {
                     case "1":
-                        $('#formId').attr('action', server+'/search/file/list-names'); 
+                        $('#formId').attr('action', server+'/search/file/extract-data/json'); 
                         break;
                     case "2":
                         $('#formId').attr('action', server+'/search/file/encode');
                         break;
                     case "3":
-                        $('#formId').attr('action', server+'/search/file/csv-file');       
+                        $('#formId').attr('action', server+'/search/file/extract-data/zip');       
                         break;
                     default:
                         $('#formId').attr('action', server+'/search/file/tagger-html');    

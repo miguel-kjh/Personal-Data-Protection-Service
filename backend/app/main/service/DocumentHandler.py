@@ -12,7 +12,7 @@ class DocumentHandler:
     def __init__(self, path: str, destiny: str = ""):
         self.path = path
         self.destiny = destiny
-        self.nameSearch = PersonalDataSearchByEntities()
+        self.dataSearch = PersonalDataSearchByEntities()
 
     def documentsProcessing(self):
         pass
@@ -20,20 +20,20 @@ class DocumentHandler:
     # def documentTagger(self):
     # pass
 
-    def createFileOfName(self):
-        self.createCsv(*self.giveListNames())
+    def createDataZipFolder(self):
+        self._createZip(*self.giveListNames())
 
     def giveListNames(self) -> tuple:
         pass
 
-    def _saveInZipFile(self, zipf, filename:str,nameColum:str, collection:list):
+    def _saveInZipFile(self, zipf:zipfile.ZipFile, filename:str,nameColum:str, collection:list):
         dataFrame = pd.DataFrame({nameColum:collection})
         export = dataFrame.to_csv(filename, index=None, header=True)
         if not export:
             zipf.write(filename)
             os.remove(filename)
 
-    def createCsv(self, listNames: list, idCards: list):
+    def _createZip(self, listNames: list, idCards: list):
         zipf = zipfile.ZipFile(self.destiny, 'w', zipfile.ZIP_DEFLATED)
         if listNames:
             filename = os.path.join(UPLOAD_FOLDER,"names.csv")

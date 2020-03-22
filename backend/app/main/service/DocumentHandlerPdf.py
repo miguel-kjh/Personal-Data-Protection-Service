@@ -33,12 +33,20 @@ class DocumentHandlerPdf(DocumentHandler):
             #table = table.loc[:, ~table.columns.str.contains('^Unnamed')]
             lastKeys = []
 
-            for key in self.selector.getPossibleColumnsNames(table):
-                dfNotNull = table[key][table[key].notnull()]
-                countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
-                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                    listNames[len(listNames):] = dfNotNull
-                    lastKeys.append(list(table.keys()).index(key))
+            for typeColumn in self.selector.getPossibleColumnsNames(table):
+                if typeColumn.isName:
+                    dfNotNull = table[typeColumn.key][table[typeColumn.key].notnull()]
+                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
+                    if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                        listNames[len(listNames):] = dfNotNull
+                        lastKeys.append(list(table.keys()).index(typeColumn.key))
+                else:
+                    if self.dataSearch.isDni(typeColumn.key):
+                        idCards.append(typeColumn.key)
+                    idCards[len(idCards):] = list(
+                        filter(lambda idCards: self.dataSearch.isDni(idCards),table[typeColumn.key][table[typeColumn.key].notnull()])
+                    )
+
             if not lastKeys:
                 if not keyHeap:continue
                 for indexKey in keyHeap[-1]:
@@ -47,30 +55,24 @@ class DocumentHandlerPdf(DocumentHandler):
                     except IndexError:
                         continue
                     dfNotNull = table[dataKey][table[dataKey].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.nameSearch.checkNameInDB)
+                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         listNames.append(dataKey)
                         listNames[len(listNames):] = dfNotNull
             else:
                 keyHeap.append(lastKeys)
-            for key in self.selector.getPossibleColumnsIdCards(table):
-                if self.nameSearch.isDni(key):
-                    idCards.append(key)
-                idCards[len(idCards):] = list(
-                    filter(lambda idCards: self.nameSearch.isDni(idCards),table[key][table[key].notnull()])
-                )
 
     def getPersonalDataInTexts(self, listNames: list, idCards: list):
 
         for text in readPdf(self.path):
-
+            
             if not LanguageBuilder().hasContex(text):
                 listNames[len(listNames):] = list(
-                    filter(lambda words: words and self.nameSearch.isName(words), map(lambda words: words.strip(), text.split('\n')))
+                    filter(lambda words: words and self.dataSearch.isName(words), map(lambda words: words.strip(), text.split('\n')))
                 )
                 continue
 
-            names,cards = self.nameSearch.searchPersonalData(text.replace('\n', ' '))
+            names,cards = self.dataSearch.searchPersonalData(text.replace('\n', ' '))
             for name in names:
                 listNames.append(name['name'].strip("\n"))
             for card in cards:
@@ -94,8 +96,8 @@ class DocumentHandlerPdf(DocumentHandler):
                 reverse=True
             )
         data = []
-        data[len(data):] = listNames[:]
-        data[len(data):] = idCards[:]
+        data[len(data):] = listNames
+        data[len(data):] = idCards
         regex = '|'.join(data)
         pdf_redactor.redactor(self.options, self.path, self.destiny)
         self.options.content_filters = [

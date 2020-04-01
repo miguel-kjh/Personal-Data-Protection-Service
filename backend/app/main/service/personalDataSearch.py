@@ -86,7 +86,7 @@ class PersonalDataSearch(ABC):
         )
 
     def isDni(self, idCard: str) -> bool:
-        match = list(filter(lambda x: isDni(x.group()) , re.finditer(r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w',idCard)))
+        match = list(filter(lambda x: isDni(x.group()) , re.finditer(r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w',str(idCard))))
         return len(match) == 1 and match[0].group() == idCard
 
     @abstractmethod

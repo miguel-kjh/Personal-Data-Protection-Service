@@ -9,12 +9,16 @@ import pandas as pd
 import seaborn as sns
 from nltk.tokenize import sent_tokenize
 import matplotlib.pyplot as plt
+import requests
 
 pathTables = 'app/test/data/tablas/tabla'
 pathTexts  = 'app/test/data/textos/carta'
+pathWeb    = 'app/test/data/web/examples.txt'
 
 
 def saveHeatmap(array:np.array,filename:str):
+    print("\n")
+    print(array, "\n")
     plt.close('all')
     heatmap = sns.heatmap(array,cmap="Blues", annot=True,annot_kws={"size": 16})
     figure = heatmap.get_figure()
@@ -25,7 +29,7 @@ def saveHeatmap(array:np.array,filename:str):
 class TestPerfomanceTables(BaseTestCase):
     
     def test_tables(self):
-        iteration = 4
+        iteration = 10
         array     = np.array([[0,0],[0,0]])
         for index in range(1,iteration):
             with open(pathTables + "%s.json" %(index)) as file:
@@ -57,7 +61,6 @@ class TestPerfomanceTables(BaseTestCase):
             array[0][1] += falseNegatives
             array[1][0] += falsePositives
             array[1][1] += failures
-        print(array)
         saveHeatmap(array,'app/test/result/table.png')
 
 class TestPerfomanceTexts(BaseTestCase):
@@ -108,8 +111,24 @@ class TestPerfomanceTexts(BaseTestCase):
             array[1][0] += falsePositives
             array[1][1] += failures
         
-        print(array)
         saveHeatmap(array,'app/test/result/text.png')
+
+class TestPerfomanceWeb(BaseTestCase):
+    def test_web(self):
+        iteration = 10
+        array     = np.array([[0,0],[0,0]])
+        with open(pathWeb, 'r',encoding='utf8') as file:
+            for index,url in enumerate(file):
+                try:
+                    req = requests.get(url)
+                except Exception:
+                    print("\nWARRNING:", url, "not can get html")
+                    break
+                creator        = getCreatorDocumentHandler(req.text,'url')
+                dh             = creator.create()
+                listNames,_    = dh.giveListNames() 
+                print(listNames)
+        saveHeatmap(array,'app/test/result/web.png')
 
         
 

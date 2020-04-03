@@ -26,49 +26,113 @@ def saveHeatmap(array:np.array,filename:str):
     figure = heatmap.get_figure()
     figure.savefig(filename, dpi=400)
 
+class ConfidenceMatrixBuilder:
+    def __init__(self):
+        self.hits                 = 0
+        self.failures             = 0
+        self.falsePositives       = 0
+        self.falseNegatives       = 0
+        self.nlp                  = LanguageBuilder().getlanguage()
+        self.listOfFalseNegatives = []
+        self.listOfFalsePositives = []
+
+    def countHinstInTexts(self, listNames:list, data:list):
+        for name in list(set(listNames)):
+            countNameInModel = listNames.count(name)
+            realCountName    = data.count(name)
+            namestokens      = len(self.nlp(name))
+            if realCountName == 0:
+                self.falsePositives += countNameInModel*namestokens
+                self.listOfFalsePositives.append((name,countNameInModel,realCountName))
+                continue
+
+            if countNameInModel == realCountName:
+                self.hits += countNameInModel*namestokens
+            elif countNameInModel < realCountName:
+                self.hits += countNameInModel*namestokens
+                self.falseNegatives += (realCountName-countNameInModel)*namestokens
+                self.listOfFalseNegatives.append((name,countNameInModel,realCountName))
+            else:
+                print("imposible")
+
+    def countHinstInTables(self,listNames:list, data:list):
+        for name in listNames:
+            if name in data:
+                self.hits += 1
+            else:
+                self.falsePositives += 1
+
+        for name in data:
+            if name not in listNames:
+                self.falseNegatives += 1
+
+    def countFailuresInTexts(self, listNames:list, file):
+        tokens = []
+        for line in file:
+            for phares in sent_tokenize(line.replace('—', ',') ,language='spanish'):
+                tokens[len(tokens):] = self.nlp(phares)
+        
+        for token in tokens:
+            for ent in listNames:
+                if token not in self.nlp(ent):
+                    self.failures += 1
+                    break
+
+    def countFailuresInWeb(self, listNames:list, tokenizer:TokenizerHtml):
+        linguisticTokens = []
+        for token in tokenizer.getToken():
+            if token.isTable == TableToken.NONE:
+                for phares in sent_tokenize(token.text[0].replace('—', ',') ,language='spanish'):
+                    linguisticTokens[len(linguisticTokens):] = self.nlp(phares)
+
+        for token in linguisticTokens:
+            for ent in listNames:
+                if token not in self.nlp(ent):
+                    self.failures += 1
+                    break
+    
+    def countFailuresInTables(self, listNames:list, df:pd.DataFrame):
+        for key in df.keys():
+            for ele in df[key]:
+                if ele not in listNames:
+                    self.failures += 1
+
+    def getMatrix(self) -> np.array:
+        return np.array([
+            [self.failures      , self.falseNegatives],
+            [self.falsePositives, self.hits]
+        ])
+
+    def getListOfFalseNegatives(self):
+        return self.listOfFalseNegatives
+
+    def getListOfFalsePositive(self):
+        return self.listOfFalsePositives
+
 
 
 class TestPerfomanceTables(BaseTestCase):
     
     def test_tables(self):
         iteration = 10
-        array     = np.array([[0,0],[0,0]])
+        builder   = ConfidenceMatrixBuilder()
         for index in range(1,iteration):
             with open(pathTables + "%s.json" %(index)) as file:
                 data = json.load(file)
             creator        = getCreatorDocumentHandler(pathTables + "%s.xls" %(index),'xls')
             dh             = creator.create()
             listNames,_    = dh.giveListNames()
-            hits           = 0
-            failures       = 0
-            falsePositives = 0
-            falseNegatives = 0
             df             = pd.read_excel(pathTables + "%s.xls" %(index))
-            for name in listNames:
-                if name in data["names"]:
-                    hits += 1
-                else:
-                    falsePositives += 1
 
-            for name in data["names"]:
-                if name not in listNames:
-                    falseNegatives += 1
+            builder.countHinstInTables(listNames,data['names'])
+            builder.countFailuresInTables(listNames,df)
 
-            for key in df.keys():
-                for ele in df[key]:
-                    if ele not in listNames:
-                        failures += 1
-
-            array[0][0] += hits
-            array[0][1] += falseNegatives
-            array[1][0] += falsePositives
-            array[1][1] += failures
-        saveHeatmap(array,'app/test/result/table.png')
+        saveHeatmap(builder.getMatrix(),'app/test/result/table.png')
 
 class TestPerfomanceTexts(BaseTestCase):
     def test_text(self):
         iteration = 10
-        array     = np.array([[0,0],[0,0]])
+        builder   = ConfidenceMatrixBuilder()
         for index in range(1,iteration):
             with open(pathTexts + "%s.json" %(index)) as file:
                 data = json.load(file)
@@ -76,49 +140,19 @@ class TestPerfomanceTexts(BaseTestCase):
             creator        = getCreatorDocumentHandler(pathTexts + "%s.txt" %(index),'txt')
             dh             = creator.create()
             listNames,_    = dh.giveListNames()
-            hits           = 0
-            failures       = 0
-            falsePositives = 0
-            falseNegatives = 0
-
-            for name in listNames:
-                for nameData in data["names"]:
-                    if name == nameData:
-                        hits += 1
-                        break
-
-            for name in listNames:
-                if name not in data["names"]:
-                    falsePositives += 1
-
-            for name in data["names"]:
-                if name not in listNames:
-                    falseNegatives += 1
             
-            tokens = []
-            nlp = LanguageBuilder().getlanguage()
+            builder.countHinstInTexts(listNames,data['names'])
+
             with open(pathTexts + "%s.txt" %(index), 'r',encoding='utf8') as file:
-                for line in file:
-                    for phares in sent_tokenize(line.replace('—', ',') ,language='spanish'):
-                        tokens[len(tokens):] = nlp(phares)
-            
-            for token in tokens:
-                for ent in listNames:
-                    if token not in nlp(ent):
-                        failures += 1
-                        break
-
-            array[0][0] += hits
-            array[0][1] += falseNegatives
-            array[1][0] += falsePositives
-            array[1][1] += failures
+                builder.countFailuresInTexts(listNames,file)    
         
-        saveHeatmap(array,'app/test/result/text.png')
+        print(builder.listOfFalsePositives, "\n"  , builder.listOfFalseNegatives)
+        saveHeatmap(builder.getMatrix(),'app/test/result/text.png')
 
 class TestPerfomanceWeb(BaseTestCase):
     def test_web(self):
         web       = 'app/test/data/web/web'
-        array     = np.array([[0,0],[0,0]])
+        builder   = ConfidenceMatrixBuilder()
         with open(pathWeb, 'r',encoding='utf8') as file:
             for index,url in enumerate(file):
                 try:
@@ -131,46 +165,14 @@ class TestPerfomanceWeb(BaseTestCase):
                 tokenizer      = TokenizerHtml(soup)
                 dh             = creator.create()
                 listNames,_    = dh.giveListNames()
-                hits           = 0
-                failures       = 0
-                falsePositives = 0
-                falseNegatives = 0
-
                 with open(web + "%s.json" %(index+1)) as file:
                     data = json.load(file)
 
-                for name in listNames:
-                    for nameData in data["names"]:
-                        if name == nameData:
-                            hits += 1
-                            break
+                builder.countHinstInTexts(listNames,data['names'])    
+                builder.countFailuresInWeb(listNames,tokenizer)
 
-                for name in listNames:
-                    if name not in data["names"]:
-                        falsePositives += 1
-
-                for name in data["names"]:
-                    if name not in listNames:
-                        falseNegatives += 1
-                
-                linguisticTokens = []
-                nlp = LanguageBuilder().getlanguage()
-                for token in tokenizer.getToken():
-                    if token.isTable == TableToken.NONE:
-                        for phares in sent_tokenize(token.text[0].replace('—', ',') ,language='spanish'):
-                            linguisticTokens[len(linguisticTokens):] = nlp(phares)
-
-                for token in linguisticTokens:
-                    for ent in listNames:
-                        if token not in nlp(ent):
-                            failures += 1
-                            break
-                
-                array[0][0] += hits
-                array[0][1] += falseNegatives
-                array[1][0] += falsePositives
-                array[1][1] += failures
-        saveHeatmap(array,'app/test/result/web.png')
+        print(builder.listOfFalsePositives, "\n"  , builder.listOfFalseNegatives)
+        saveHeatmap(builder.getMatrix(),'app/test/result/web.png')
 
         
 

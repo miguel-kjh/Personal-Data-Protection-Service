@@ -10,6 +10,7 @@ import pandas as pd
 from bs4 import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 from enum import Enum,unique
+from typing import Text
 
 @unique
 class TableToken(Enum):
@@ -30,33 +31,46 @@ class TokenizerHtml:
                      'lang', 'code','th', 'td']
 
     def getToken(self) -> TokenHtml:
-        def lookForward(lable,nextLable,expectLable:str) -> bool:
-            if nextLable.parent.name == expectLable:
-                return True
-            return False
+        def giveParentName(label) -> str:
+            auxLable = label
+            while auxLable.parent.name != '[document]':
+                if auxLable.parent.name in ['th','td']:
+                    return auxLable.parent.name
+                auxLable = auxLable.parent
+            return label.parent.name
         
-        lableList = list(filter(lambda lable: lable and lable != "\n", self.soup.find_all(text=True)))
-        headList = []
-        rowList = []
-        for index,lable in enumerate(lableList):
-            if lable.parent.name not in self.blacklist:
+        labelList  = list(filter(lambda label: label and label != "\n", self.soup.find_all(text=True)))
+        tags       = list(map(lambda label: giveParentName(label),labelList))
+        #print(tags)
+        headList   = []
+        rowList    = []
+        lenHead    = 0
+        for index,htmlLabel in enumerate(zip(labelList,tags)):
+            label,tag = htmlLabel
+            if tag not in self.blacklist:
+                lenHead = 0
                 headList.clear()
                 rowList.clear()
-                yield TokenHtml([str(lable)],TableToken.NONE)
+                yield TokenHtml([str(label)],TableToken.NONE)
 
-            elif lable.parent.name == 'th':
-                headList.append(str(lable))
+            elif tag == 'th':
+                headList.append(str(label))
+                lenHead = len(headList)
                 try:
-                    if lookForward(lable,lableList[index+1], 'th'):
+                    if tags[index+1] == 'th':
                         continue
-                    yield TokenHtml(headList,TableToken.HEAD)
+                    aux = headList[:]
+                    headList.clear()
+                    yield TokenHtml(aux,TableToken.HEAD)
                 except IndexError:
-                    yield TokenHtml(headList,TableToken.HEAD)
+                    aux = headList[:]
+                    headList.clear()
+                    yield TokenHtml(aux,TableToken.HEAD)
 
-            elif lable.parent.name == 'td':
-                rowList.append(str(lable))
+            elif tag == 'td':
+                rowList.append(str(label))
                 try:
-                    if lookForward(lable,lableList[index+1], 'td') and len(rowList) < len(headList):
+                    if tags[index+1] == 'td' and len(rowList) < lenHead:
                         continue
                     aux = rowList[:]
                     rowList.clear()
@@ -68,10 +82,13 @@ class TokenizerHtml:
 
 class DocumentHandlerHtml(DocumentHandler):
 
-    def __init__(self, path: str, destiny: str = ""):
+    def __init__(self, path: Text, destiny: str = "", isUrl:bool = False):
         super().__init__(path, destiny=destiny)
-        with open(self.path, "r", encoding="utf8") as f:
-            self.soup = BeautifulSoup(f.read(), "lxml")
+        if not isUrl:
+            with open(self.path, "r", encoding="utf8") as f:
+                self.soup = BeautifulSoup(f.read(), "lxml")
+        else:
+            self.soup = BeautifulSoup(path, "lxml")
 
     def locateNames(self, sentence):
         newSentence = ''
@@ -126,6 +143,11 @@ class DocumentHandlerHtml(DocumentHandler):
             f.write(self.soup.prettify(formatter=formatter))
 
     def giveListNames(self) -> tuple:
+        def cleanPicker():
+            if not picker.isEmpty():
+                listNames[len(listNames):] = picker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                picker.clear()
+
         listNames = []
         idCards = []
         picker = DataPickerInTables()
@@ -135,19 +157,24 @@ class DocumentHandlerHtml(DocumentHandler):
                 names,cards = self.dataSearch.searchPersonalData(token.text[0])
                 listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
                 idCards[len(idCards):] = [card['name'] for card in cards]
-                if not picker.isEmpty():
-                    listNames[len(listNames):] = picker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
-                    picker.clear()
+                cleanPicker()
             elif token.isTable == TableToken.HEAD:
+                #print(token.text)
+                cleanPicker()
                 keys = list(filter(lambda text: list(
                         filter(lambda x:LanguageBuilder().semanticSimilarity(text,x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
                         listOfVectorWords)), token.text))
                 if keys:
+                    #print(keys)
                     for key in keys:
                         picker.addIndexColumn(token.text.index(key))
             elif token.isTable == TableToken.ROW:
+                #print(token.text)
                 for index in picker.getIndexesColumn():
-                    picker.addName(index,token.text[index])
+                    try:
+                        picker.addName(index,token.text[index])
+                    except IndexError:
+                        continue
                 for index,token in enumerate(token.text):
                     if not index in picker.getIndexesColumn() and self.dataSearch.isDni(token):
                         idCards.append(token)

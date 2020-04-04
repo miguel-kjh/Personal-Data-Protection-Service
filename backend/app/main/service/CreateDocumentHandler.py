@@ -18,6 +18,8 @@ def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = ""):
         return CreatorDocumentHandlerCsv(filename, destiny)
     elif typeFile == 'html':
         return CreatorDocumentHandlerHtml(filename, destiny)
+    elif typeFile == 'url':
+        return CreatorDocumentHandlerUrl(filename, destiny)
     elif typeFile == 'txt':
         return CreatorDocumentHandlerTxt(filename, destiny)
     else:
@@ -59,6 +61,9 @@ class CreatorDocumentHandlerHtml(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerHtml(self.path, self.destiny)
 
+class CreatorDocumentHandlerUrl(CreatorDocumentHandler):
+    def create(self) -> DocumentHandler:
+        return DocumentHandlerHtml(self.path, self.destiny, isUrl=True)
 
 class CreatorDocumentHandlerTxt(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:

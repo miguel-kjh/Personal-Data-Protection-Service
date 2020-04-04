@@ -4,7 +4,6 @@ listOfVectorWords = [
     'apellido',
     'alumno',
     'personal',
-    'padres',
     'sujeto'
 ]
 

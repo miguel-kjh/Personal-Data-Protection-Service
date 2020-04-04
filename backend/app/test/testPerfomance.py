@@ -15,7 +15,7 @@ from bs4 import BeautifulSoup
 
 pathTables = 'app/test/data/tablas/tabla'
 pathTexts  = 'app/test/data/textos/carta'
-pathWeb    = 'app/test/data/web/examples.txt'
+pathWeb    = 'app/test/data/web/web'
 
 
 def saveHeatmap(array:np.array,filename:str):
@@ -61,10 +61,12 @@ class ConfidenceMatrixBuilder:
                 self.hits += 1
             else:
                 self.falsePositives += 1
+                self.listOfFalsePositives.append(name)
 
         for name in data:
             if name not in listNames:
                 self.falseNegatives += 1
+                self.listOfFalseNegatives.append(name)
 
     def countFailuresInTexts(self, listNames:list, file):
         tokens = []
@@ -127,6 +129,7 @@ class TestPerfomanceTables(BaseTestCase):
             builder.countHinstInTables(listNames,data['names'])
             builder.countFailuresInTables(listNames,df)
 
+        print(builder.listOfFalsePositives, "\n"  , builder.listOfFalseNegatives)
         saveHeatmap(builder.getMatrix(),'app/test/result/table.png')
 
 class TestPerfomanceTexts(BaseTestCase):
@@ -151,25 +154,21 @@ class TestPerfomanceTexts(BaseTestCase):
 
 class TestPerfomanceWeb(BaseTestCase):
     def test_web(self):
-        web       = 'app/test/data/web/web'
+        iteration = 4
         builder   = ConfidenceMatrixBuilder()
-        with open(pathWeb, 'r',encoding='utf8') as file:
-            for index,url in enumerate(file):
-                try:
-                    req = requests.get(url)
-                except Exception:
-                    print("\nWARRNING:", url, "not can get html")
-                    break
-                creator        = getCreatorDocumentHandler(req.text,'url')
-                soup           = BeautifulSoup(req.text, "lxml")
-                tokenizer      = TokenizerHtml(soup)
-                dh             = creator.create()
-                listNames,_    = dh.giveListNames()
-                with open(web + "%s.json" %(index+1)) as file:
-                    data = json.load(file)
+        for index in range(1,iteration):
+            with open(pathWeb + "%s.json" %(index)) as file:
+                data = json.load(file)
 
-                builder.countHinstInTexts(listNames,data['names'])    
-                builder.countFailuresInWeb(listNames,tokenizer)
+            creator        = getCreatorDocumentHandler(pathWeb + "%s.html" %(index),'html')
+            with open(pathWeb + "%s.html" %(index)) as file:
+                soup           = BeautifulSoup(file.read(), "lxml")
+                tokenizer      = TokenizerHtml(soup)
+            dh             = creator.create()
+            listNames,_    = dh.giveListNames()
+
+            builder.countHinstInTexts(listNames,data['names'])    
+            builder.countFailuresInWeb(listNames,tokenizer)
 
         print(builder.listOfFalsePositives, "\n"  , builder.listOfFalseNegatives)
         saveHeatmap(builder.getMatrix(),'app/test/result/web.png')

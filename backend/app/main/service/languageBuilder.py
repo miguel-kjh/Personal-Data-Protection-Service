@@ -37,6 +37,7 @@ class LanguageBuilder(metaclass=Singleton):
         if not text.strip(): return 0.0
         with self.nlp.disable_pipes("tagger","parser","ner"):
             doc = self.nlp(text)
+            if not doc.vector_norm: return False
             docToCompare = self.nlp(textToCompare)
         return doc.similarity(docToCompare)
 

@@ -8,10 +8,10 @@ class DocumentHandlerTxt(DocumentHandler):
         if not data:
             return line
         newLine = ""
-        index = 0
+        index   = 0
         for ent in data:
             newLine += line[index:ent['star_char']] + encode(ent['name'])
-            index = ent['end_char']
+            index    = ent['end_char']
         if index <= len(line) - 1:
             newLine += line[index:]
         return newLine
@@ -20,17 +20,25 @@ class DocumentHandlerTxt(DocumentHandler):
         with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
             for line in file:
                 data = []
-                data[len(data):],data[len(data):] = self.dataSearch.searchPersonalData(line)
+                if LanguageBuilder().hasContex(line[0:len(line)-1]):
+                    data[len(data):],data[len(data):] = self.dataSearch.searchPersonalData(line)
+                elif self.dataSearch.isName(line):
+                    data.append({"name": line[0:len(line)-1], "star_char": 0, "end_char": len(line) - 1})
                 destiny.writelines(self.modifyLine(line, data))
+                
 
                 
 
     def giveListNames(self) -> tuple:
         listNames = []
-        idCards = []
+        idCards   = []
         with open(self.path, 'r',encoding='utf8') as file:
             for line in file:
-                data = self.dataSearch.searchPersonalData(line)
-                listNames[len(listNames):] = [name['name'] for name in data[0]]
-                idCards[len(idCards):]     = [idCard['name'] for idCard in data[1]]
+                line = line[0:len(line)-1]
+                if LanguageBuilder().hasContex(line):
+                    data                       = self.dataSearch.searchPersonalData(line)
+                    listNames[len(listNames):] = [name['name'] for name in data[0]]
+                    idCards[len(idCards):]     = [idCard['name'] for idCard in data[1]]
+                elif self.dataSearch.isName(line):
+                    listNames.append(line)
         return listNames,idCards

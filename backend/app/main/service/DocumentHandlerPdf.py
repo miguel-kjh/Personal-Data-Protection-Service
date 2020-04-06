@@ -65,7 +65,6 @@ class DocumentHandlerPdf(DocumentHandler):
     def getPersonalDataInTexts(self, listNames: list, idCards: list):
 
         for text in readPdf(self.path):
-            
             if not LanguageBuilder().hasContex(text):
                 listNames[len(listNames):] = list(
                     filter(lambda words: words and self.dataSearch.isName(words), map(lambda words: words.strip(), text.split('\n')))

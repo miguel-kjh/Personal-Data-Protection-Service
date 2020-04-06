@@ -154,9 +154,12 @@ class DocumentHandlerHtml(DocumentHandler):
         tokenizer = TokenizerHtml(self.soup)
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:
-                names,cards = self.dataSearch.searchPersonalData(token.text[0])
-                listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
-                idCards[len(idCards):] = [card['name'] for card in cards]
+                if LanguageBuilder().hasContex(token.text[0]):
+                    names,cards = self.dataSearch.searchPersonalData(token.text[0])
+                    listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
+                    idCards[len(idCards):]     = [card['name'] for card in cards]
+                elif self.dataSearch.isName(token.text[0]):
+                    listNames.append(token.text[0])
                 cleanPicker()
             elif token.isTable == TableToken.HEAD:
                 #print(token.text)

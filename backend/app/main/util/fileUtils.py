@@ -11,11 +11,8 @@ from docx.table import _Cell, Table, _Row
 from docx.text.paragraph import Paragraph
 
 import io
-from pdfminer.converter import TextConverter
-from pdfminer.pdfinterp import PDFPageInterpreter
-from pdfminer.pdfinterp import PDFResourceManager
-from pdfminer.pdfpage import PDFPage
-from nltk.tokenize import sent_tokenize
+import pdfplumber
+import pandas as pd
 
 from typing import Text
 import re
@@ -68,23 +65,51 @@ def itemIterator(parent):
             yield Table(child, parent)
 
 def readPdf(path:str) -> Text:
-    with open(path, 'rb') as fh:
-        for page in PDFPage.get_pages(fh, 
-                                      caching=True,
-                                      check_extractable=True):
-            resource_manager = PDFResourceManager()
-            fake_file_handle = io.StringIO()
-            converter = TextConverter(resource_manager, fake_file_handle)
-            page_interpreter = PDFPageInterpreter(resource_manager, converter)
-            page_interpreter.process_page(page)
-            
-            text = fake_file_handle.getvalue()
-            if text.count(' ')/len(text) > MINIMAL_WHITE_SPACE_DENSITY: 
-                yield text
-    
-            # close open handles
-            converter.close()
-            fake_file_handle.close()
+    #with open(path, 'rb') as fh:
+    #    for page in PDFPage.get_pages(fh, 
+    #                                  caching=True,
+    #                                  check_extractable=True):
+    #        resource_manager = PDFResourceManager()
+    #        fake_file_handle = io.StringIO()
+    #        converter = TextConverter(resource_manager, fake_file_handle)
+    #        page_interpreter = PDFPageInterpreter(resource_manager, converter)
+    #        page_interpreter.process_page(page)
+    #        
+    #        text = fake_file_handle.getvalue()
+    #        if text.count(' ')/len(text) > MINIMAL_WHITE_SPACE_DENSITY: 
+    #            yield text
+    #
+    #        # close open handles
+    #        converter.close()
+    #        fake_file_handle.close()
+    with pdfplumber.open(path) as pdf:
+        for page in pdf.pages:
+            text   = page.extract_text()
+            tables = []
+            for pdf_table in page.extract_tables():
+                table = []
+                cells = []
+                for row in pdf_table:
+                    if not any(row):
+                        if any(cells):
+                            table.append(cells)
+                            cells = []
+                    elif all(row):
+                        if any(cells):
+                            table.append(cells)
+                            cells = []
+                        table.append(row)
+                    else:
+                        if len(cells) == 0:
+                            cells = row
+                        else:
+                            for i in range(len(row)):
+                                if row[i] is not None:
+                                    cells[i] = row[i] if cells[i] is None else cells[i] + row[i]
+                for regex in map(lambda row: ".*" + ".*".join(row) + ".*", table):
+                    text = re.sub(regex,'',text)
+                tables.append(table)
+            yield (text, tables)
 
 def isDni(dni:str) -> bool:
     number = re.search(r'\d{2}.?\d{2}.?\d{2}.?\d{2}', dni)

@@ -12,6 +12,12 @@ class DataPickerInTables:
             "names": [],
         }
 
+    def addIndexesColumn(self, indexes: list):
+        for index in indexes:
+            self.picker[index] = {
+                "names": [],
+            }
+
     def getIndexesColumn(self) -> list:
         return list(self.picker.keys())
 
@@ -32,10 +38,6 @@ class DataPickerInTables:
             len(dataName['names']) > 0 and len(funtion(dataName['names'])) / len(dataName['names']) > threshold
         ])
         )
-
-    def addIndexesColumn(self, indexes: list):
-        for index in indexes:
-            self.addIndexColumn(index)
 
     def clear(self):
         self.picker.clear()

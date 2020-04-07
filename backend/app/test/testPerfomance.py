@@ -154,7 +154,7 @@ class TestPerfomanceTexts(BaseTestCase):
 
 class TestPerfomanceWeb(BaseTestCase):
     def test_web(self):
-        iteration = 4
+        iteration = 6
         builder   = ConfidenceMatrixBuilder()
         for index in range(1,iteration):
             with open(pathWeb + "%s.json" %(index)) as file:

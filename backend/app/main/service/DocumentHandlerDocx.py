@@ -19,7 +19,6 @@ class DocumentHandlerDocx(DocumentHandler):
 
     def _getPickerData(self, table: Table) -> DataPickerInTables:
         namePicker = DataPickerInTables()
-        idCardsPicker = DataPickerInTables()
         isLabels = True
         for row in table.rows:
             for index, cell in enumerate(row.cells):
@@ -31,8 +30,6 @@ class DocumentHandlerDocx(DocumentHandler):
                                    listOfVectorWords))
                         if labels:
                             namePicker.addIndexColumn(index)
-                        else:
-                            idCardsPicker.addIndexColumn(index)
                     else:
                         if namePicker.isColumnName(index) and paragraph.text.strip():
                             namePicker.addName(index, paragraph.text)
@@ -58,56 +55,56 @@ class DocumentHandlerDocx(DocumentHandler):
         return idCards
 
     def documentsProcessing(self):
-        LastIndexesColumn = []
+        #LastIndexesColumn = []
+        data = []
+        data[len(data):],data[len(data):] = self.giveListNames()
+        regex = '|'.join(data)
+        regexName = re.compile(regex)
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
-                if LanguageBuilder().hasContex(block.text):
-                    listNames,listIdCards = self.dataSearch.searchPersonalData(block.text)
-                    for name in listNames:
-                        regexName = re.compile(name['name'])
-                        text = regexName.sub(encode(name['name']), block.text)
-                        block.text = text
-                    for idCard in listIdCards:
-                        regexName = re.compile(idCard['name'])
-                        text = regexName.sub(encode(idCard['name']), block.text)
-                        block.text = text
-                elif self.dataSearch.isName(block.text):
-                    regexName = re.compile(block.text.strip())
-                    text = regexName.sub(encode(block.text.strip()), block.text)
-                    block.text = text
-                else:
-                    _,listIdCards = self.dataSearch.searchPersonalData(block.text)
-                    for idCard in listIdCards:
-                        regexName = re.compile(idCard['name'])
-                        text = regexName.sub(encode(idCard['name']), block.text)
-                        block.text = text
+                #if LanguageBuilder().hasContex(block.text):
+                #    listNames,listIdCards = self.dataSearch.searchPersonalData(block.text)
+                #    for name in listNames:
+                #        regexName = re.compile(name['name'])
+                #        text = regexName.sub(encode(name['name']), block.text)
+                #        block.text = text
+                #    for idCard in listIdCards:
+                #        regexName = re.compile(idCard['name'])
+                #        text = regexName.sub(encode(idCard['name']), block.text)
+                #        block.text = text
+                #elif self.dataSearch.isName(block.text):
+                #    regexName = re.compile(block.text.strip())
+                #    text = regexName.sub(encode(block.text.strip()), block.text)
+                #    block.text = text
+                #else:
+                #    _,listIdCards = self.dataSearch.searchPersonalData(block.text)
+                #    for idCard in listIdCards:
+                #        regexName = re.compile(idCard['name'])
+                #        text = regexName.sub(encode(idCard['name']), block.text)
+                #        block.text = text
+                    block.text = regexName.sub(lambda match: encode(match.group()), block.text)
             elif isinstance(block, Table):
-                picker = self._getPickerData(block)
-                if picker.getIndexesColumn():
-                    LastIndexesColumn = picker.getIndexesColumn()
-                    initialRow = 1
-                elif LastIndexesColumn:
-                    picker.addIndexesColumn(LastIndexesColumn)
-                    self._defineNamePicker(block, picker)
-                    initialRow = 0
-                else:
-                    continue
-                for row in block.rows[initialRow:]:
-                    for index, cell in enumerate(row.cells):
-                        if picker.isRealColumName(self.dataSearch.checkNamesInDB, index, MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS):
-                            for paragraph in cell.paragraphs:
-                                paragraph.text = encode(paragraph.text)
-                        else:
-                            for paragraph in cell.paragraphs:
-                                if self.dataSearch.isDni(paragraph.text):
-                                    paragraph.text = encode(paragraph.text)
+                #picker = self._getPickerData(block)
+                #if picker.getIndexesColumn():
+                #    LastIndexesColumn = picker.getIndexesColumn()
+                #    initialRow = 1
+                #elif LastIndexesColumn:
+                #    picker.addIndexesColumn(LastIndexesColumn)
+                #    self._defineNamePicker(block, picker)
+                #    initialRow = 0
+                #else:
+                #    continue
+                for row in block.rows:
+                    for cell in row.cells:
+                        cell.text = regexName.sub(lambda match: encode(match.group()), cell.text)
+
             else:
                 continue
         self.document.save(self.destiny)
 
     def giveListNames(self) -> tuple:
-        LastIndexesColumn = []
-        listNames = []
+        lastKey    = []
+        listNames  = []
         listIdCard = []
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
@@ -124,16 +121,29 @@ class DocumentHandlerDocx(DocumentHandler):
                     if idCards:
                         listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
             elif isinstance(block, Table):
-                picker = self._getPickerData(block)
-                if picker.getIndexesColumn():
-                    LastIndexesColumn = picker.getIndexesColumn()
-                elif LastIndexesColumn:
-                    picker.addIndexesColumn(LastIndexesColumn)
-                    self._defineNamePicker(block, picker)
-                else: 
-                    continue
-                listNames[len(listNames):] = picker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
-                listIdCard[len(listIdCard):] = self.getIdCards(block,picker)
+                namePicker = DataPickerInTables()
+                for index, row in enumerate(block.rows):
+                    rowText = [cell.text for cell in row.cells]
+                    if index == 0:
+                        lables = list(
+                            filter(lambda cell: list(filter(lambda x: LanguageBuilder().semanticSimilarity(cell,x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,listOfVectorWords)), rowText)
+                        )
+                        key = list(map(lambda cell: rowText.index(cell),lables))
+                        if not key:
+                            key = lastKey
+                            namePicker.addIndexesColumn(key)
+                        else:
+                            lastKey = key
+                            namePicker.addIndexesColumn(key)
+                            continue
+
+                    nameRow = list(filter(lambda cell: namePicker.isColumnName(rowText.index(cell)), rowText))
+                    for cell in nameRow:
+                        namePicker.addName(rowText.index(cell), cell)
+
+                    listIdCard[len(listIdCard):] = list(filter(lambda cell: self.dataSearch.isDni(cell), filter(lambda cell: cell not in nameRow, rowText)))
+                    
+                listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
             else:
                 continue
         return listNames,listIdCard

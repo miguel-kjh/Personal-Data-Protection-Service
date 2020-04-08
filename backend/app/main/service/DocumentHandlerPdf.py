@@ -44,7 +44,7 @@ class DocumentHandlerPdf(DocumentHandler):
                         namePicker.addIndexesColumn(key)
                         continue
 
-                nameRow    = list(filter(lambda cell: namePicker.isColumnName(row.index(cell)), row))
+                nameRow = list(filter(lambda cell: namePicker.isColumnName(row.index(cell)), row))
                 for cell in nameRow:
                     namePicker.addName(row.index(cell), cell)
 
@@ -82,6 +82,17 @@ class DocumentHandlerPdf(DocumentHandler):
         return listNames,idCards
 
     def documentsProcessing(self):
+        def updatePdf(regex:str):
+            self.options.content_filters = [
+                (
+                    re.compile(regex),
+                    lambda m: encode(m.group())
+                )
+            ]
+            pdf_redactor.redactor(self.options, self.path, self.destiny)
+            self.path = self.destiny
+        
+        maxLength = 4000
         listNames,idCards = self.giveListNames()
         if not listNames and not idCards:
             pdf_redactor.redactor(self.options, self.path, self.destiny)
@@ -94,12 +105,13 @@ class DocumentHandlerPdf(DocumentHandler):
         data = []
         data[len(data):] = listNames
         data[len(data):] = idCards
-        regex = '|'.join(data)
-        pdf_redactor.redactor(self.options, self.path, self.destiny)
-        self.options.content_filters = [
-            (
-                re.compile(regex),
-                lambda m: encode(m.group())
-            )
-        ]
-        pdf_redactor.redactor(self.options, self.path, self.destiny)
+        if len(data) > maxLength:
+            intial = 0
+            for numberRange in range(maxLength,len(data),maxLength):
+                updatePdf('|'.join(data[intial:numberRange]))
+                intial = numberRange
+            updatePdf('|'.join(data[intial:]))
+        else:
+            updatePdf('|'.join(data))
+        
+        

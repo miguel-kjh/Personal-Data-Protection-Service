@@ -104,6 +104,23 @@ class ConfidenceMatrixBuilder:
             [self.failures      , self.falseNegatives],
             [self.falsePositives, self.hits]
         ])
+    
+    def saveReport(self,filename):
+        table = {"names":[], "matches":[], "real matches": [], "type": []}
+        for name,matches,realMatches in self.listOfFalsePositives:
+            table["names"].append(name)
+            table["matches"].append(matches)
+            table["real matches"].append(realMatches)
+            table["type"].append("False Positive")
+
+        for name,matches,realMatches in self.listOfFalseNegatives:
+            table["names"].append(name)
+            table["matches"].append(matches)
+            table["real matches"].append(realMatches)
+            table["type"].append("False Negative")
+        
+        df = pd.DataFrame(table, columns=table.keys())
+        df.to_csv(filename, index=False)
 
     def getListOfFalseNegatives(self):
         return self.listOfFalseNegatives
@@ -129,7 +146,7 @@ class TestPerfomanceTables(BaseTestCase):
             builder.countHinstInTables(listNames,data['names'])
             builder.countFailuresInTables(listNames,df)
 
-        print(builder.listOfFalsePositives, "\n"  , builder.listOfFalseNegatives)
+        builder.saveReport('app/test/result/tables_report.csv')
         saveHeatmap(builder.getMatrix(),'app/test/result/table.png')
 
 class TestPerfomanceTexts(BaseTestCase):
@@ -149,12 +166,12 @@ class TestPerfomanceTexts(BaseTestCase):
             with open(pathTexts + "%s.txt" %(index), 'r',encoding='utf8') as file:
                 builder.countFailuresInTexts(listNames,file)    
         
-        print(builder.listOfFalsePositives, "\n"  , builder.listOfFalseNegatives)
+        builder.saveReport('app/test/result/text_report.csv')
         saveHeatmap(builder.getMatrix(),'app/test/result/text.png')
 
 class TestPerfomanceWeb(BaseTestCase):
     def test_web(self):
-        iteration = 6
+        iteration = 10
         builder   = ConfidenceMatrixBuilder()
         for index in range(1,iteration):
             with open(pathWeb + "%s.json" %(index)) as file:
@@ -170,7 +187,7 @@ class TestPerfomanceWeb(BaseTestCase):
             builder.countHinstInTexts(listNames,data['names'])    
             builder.countFailuresInWeb(listNames,tokenizer)
 
-        print(builder.listOfFalsePositives, "\n"  , builder.listOfFalseNegatives)
+        builder.saveReport('app/test/result/web_report.csv')
         saveHeatmap(builder.getMatrix(),'app/test/result/web.png')
 
         

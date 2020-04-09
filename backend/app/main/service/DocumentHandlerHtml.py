@@ -98,8 +98,7 @@ class DocumentHandlerHtml(DocumentHandler):
             index = name.end()
         if index <= len(sentence) - 1:
             newSentence += sentence[index:]
-
-        return newSentence
+        return sentence
 
     def encodeNames(self, sentence):
         newSentence = ""
@@ -109,8 +108,7 @@ class DocumentHandlerHtml(DocumentHandler):
             index = name.end()
         if index <= len(sentence) - 1:
             newSentence += sentence[index:]
-        
-        return newSentence
+        return sentence
 
     def documentsProcessing(self):
         formatter = HTMLFormatter(self.encodeNames)
@@ -162,17 +160,14 @@ class DocumentHandlerHtml(DocumentHandler):
                     listNames.append(token.text[0])
                 cleanPicker()
             elif token.isTable == TableToken.HEAD:
-                #print(token.text)
                 cleanPicker()
                 keys = list(filter(lambda text: list(
                         filter(lambda x:LanguageBuilder().semanticSimilarity(text,x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
                         listOfVectorWords)), token.text))
                 if keys:
-                    #print(keys)
                     for key in keys:
                         picker.addIndexColumn(token.text.index(key))
             elif token.isTable == TableToken.ROW:
-                #print(token.text)
                 for index in picker.getIndexesColumn():
                     try:
                         picker.addName(index,token.text[index])

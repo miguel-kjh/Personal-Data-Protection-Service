@@ -48,10 +48,7 @@ class DocumentHandlerPdf(DocumentHandler):
                 for cell in nameRow:
                     namePicker.addName(row.index(cell), cell)
 
-                notNameRow = list(filter(lambda cell: cell not in nameRow, row))
-                for cell in notNameRow:
-                    if self.dataSearch.isDni(cell):
-                        idCards.append(cell)
+                idCards[len(idCards):] = list(filter(lambda cell: self.dataSearch.isDni(cell), filter(lambda cell: cell not in nameRow, row)))
                 
             listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)  
         return lastKey    

@@ -1,154 +1,154 @@
-,names,matches,real matches,type
-0,Menú,1,0,False Positive
-1,Jonathan Story,1,0,False Positive
-2,"6 al 8 de febrero de 1981
+names,matches,real matches,type
+Italiano,1,0,False Positive
+Jonathan Story,1,0,False Positive
+Galego,1,0,False Positive
+Fernández Ordóñez,1,0,False Positive
+Extremadura Unida,1,0,False Positive
+Magyar,1,0,False Positive
+Íñiguez,1,0,False Positive
+Madrid,2,0,False Positive
+Menú,1,0,False Positive
+Routledge,2,0,False Positive
+"6 al 8 de febrero de 1981
 ",1,0,False Positive
-3,Íñiguez,1,0,False Positive
-4,Diputación Foral de Navarra,1,0,False Positive
-5,Extremadura Unida,1,0,False Positive
-6,Die Parteiensysteme Westeuropas,1,0,False Positive
-7,Italiano,1,0,False Positive
-8,Fernández Ordóñez,1,0,False Positive
-9,Routledge,2,0,False Positive
-10,Dimisión de Suárez,2,0,False Positive
-11,Madrid,2,0,False Positive
-12,Anand,1,0,False Positive
-13,Galego,1,0,False Positive
-14,Omar G.,1,0,False Positive
-15,Magyar,1,0,False Positive
-16,Partido Popular Europeo,1,0,False Positive
-17,Emperador,2,0,False Positive
-18,Emperador de los Franceses,1,0,False Positive
-19,Gobierno,1,0,False Positive
-20,SOBRE NOSOTROS,1,0,False Positive
-21,Lé,1,0,False Positive
-22,DEJA UNA RESPUESTA ,1,0,False Positive
-23,París,2,0,False Positive
-24,Emperador Tu,1,0,False Positive
-25,Capitán General de Filipinas,2,0,False Positive
-26,Capitán General Norzagaray,1,0,False Positive
-27,SIN COMENTARIOS,1,0,False Positive
-28,Expedición Franco,1,0,False Positive
-29,reina Isabel,1,0,False Positive
-30,Andrés,1,0,False Positive
-31,infanta Juana,1,0,False Positive
-32,"-FERNÁNDEZ, M. ",2,0,False Positive
-33,«Doña Juana,1,0,False Positive
-34,de Castilla,1,0,False Positive
-35,SOBRE NOSOTROS,1,0,False Positive
-36,Doña Juana la Loca,1,0,False Positive
-37,Maya,1,0,False Positive
-38,DEJA UNA RESPUESTA ,1,0,False Positive
-39,archiduquesa no ,1,0,False Positive
-40,Yanko,1,0,False Positive
-41,Toledo,1,0,False Positive
-42,Juana ,3,0,False Positive
-43,Doña Juana,1,0,False Positive
-44,Reyes de Castilla y León,1,0,False Positive
-45,Esteban García Marcos,1,0,False Positive
-46,Romero,1,0,False Positive
-47,Eneko Orueta,1,0,False Positive
-48,Alcalá de Henares,1,0,False Positive
-49,", CSIF, Madrid",1,0,False Positive
-50,SOBRE NOSOTROS,1,0,False Positive
-51,Alfonso XII ,1,0,False Positive
-52,DEJA UNA RESPUESTA ,1,0,False Positive
-53,Don Benito,1,0,False Positive
-54,Junta Civil,1,0,False Positive
-55,Sagasta ,1,0,False Positive
-56,general Serrano,1,0,False Positive
-57,Dios,1,0,False Positive
-58,Miguel Pérez,1,0,False Positive
-59,Segismundo Moret”,1,0,False Positive
-60,Cónsul,1,0,False Positive
-61,Escuela,1,0,False Positive
-62,María del Carmen,1,0,False Positive
-63,Manuel Bretón de los Herreros,1,0,False Positive
-64,Anales Gaditanos,1,0,False Positive
-65,"
+Omar G.,1,0,False Positive
+Diputación Foral de Navarra,1,0,False Positive
+Dimisión de Suárez,2,0,False Positive
+Die Parteiensysteme Westeuropas,1,0,False Positive
+Anand,1,0,False Positive
+Partido Popular Europeo,1,0,False Positive
+DEJA UNA RESPUESTA ,1,0,False Positive
+Emperador,2,0,False Positive
+Emperador Tu,1,0,False Positive
+Expedición Franco,1,0,False Positive
+SIN COMENTARIOS,1,0,False Positive
+SOBRE NOSOTROS,1,0,False Positive
+Lé,1,0,False Positive
+Gobierno,1,0,False Positive
+París,2,0,False Positive
+Capitán General de Filipinas,2,0,False Positive
+Emperador de los Franceses,1,0,False Positive
+Capitán General Norzagaray,1,0,False Positive
+Esteban García Marcos,1,0,False Positive
+Reyes de Castilla y León,1,0,False Positive
+DEJA UNA RESPUESTA ,1,0,False Positive
+SOBRE NOSOTROS,1,0,False Positive
+Maya,1,0,False Positive
+«Doña Juana,1,0,False Positive
+reina Isabel,1,0,False Positive
+Yanko,1,0,False Positive
+infanta Juana,1,0,False Positive
+Doña Juana la Loca,1,0,False Positive
+Toledo,1,0,False Positive
+archiduquesa no ,1,0,False Positive
+Doña Juana,1,0,False Positive
+Andrés,1,0,False Positive
+Juana ,3,0,False Positive
+de Castilla,1,0,False Positive
+"-FERNÁNDEZ, M. ",2,0,False Positive
+Miguel Pérez,1,0,False Positive
+Romero,1,0,False Positive
+DEJA UNA RESPUESTA ,1,0,False Positive
+SOBRE NOSOTROS,1,0,False Positive
+Junta Civil,1,0,False Positive
+Don Benito,1,0,False Positive
+Sagasta ,1,0,False Positive
+Eneko Orueta,1,0,False Positive
+Dios,1,0,False Positive
+", CSIF, Madrid",1,0,False Positive
+general Serrano,1,0,False Positive
+Alcalá de Henares,1,0,False Positive
+Alfonso XII ,1,0,False Positive
+Cocinero,1,0,False Positive
+Almería,2,0,False Positive
+Vals,1,0,False Positive
+Carmen Muchada(s,1,0,False Positive
+Botella Domínguez,1,0,False Positive
+Escuela,1,0,False Positive
+José Rodríguez,1,0,False Positive
+Miss Josephine Haynes,1,0,False Positive
+"Realiza sus estudios de primera enseñanza, probablemente en el Colegio de la Infancia, propiedad de su padre. Con diez años comienza sus estudios secundarios y obtiene el título de Bachiller en el Instituto de Segunda Enseñanza de Cádiz (Actual ",1,0,False Positive
+Menú,1,0,False Positive
+Harper,1,0,False Positive
+Manuel Bretón de los Herreros,1,0,False Positive
+Piano,1,0,False Positive
+Pedro Riaño,2,0,False Positive
+Casino Gaditano,1,0,False Positive
+Cano-Fuentes,1,0,False Positive
+Segismundo Moret”,1,0,False Positive
+"
 Doctor en CC. Exactas",1,0,False Positive
-66,Rodríguez,1,0,False Positive
-67,José Antonio Pérez Rioja,1,0,False Positive
-68,Casino Gaditano,1,0,False Positive
-69,Contador,1,0,False Positive
-70,Julio,1,0,False Positive
-71,Rafael Rodríguez Arias,1,0,False Positive
-72,Falgueras,1,0,False Positive
-73,Diario El Cocinero,1,0,False Positive
-74,Romualdo Álvarez Espino,1,0,False Positive
-75,Miss Josephine Haynes,1,0,False Positive
-76,Valses “Fine Champagne,1,0,False Positive
-77,Piano,1,0,False Positive
-78,Harper,1,0,False Positive
-79,Almería,2,0,False Positive
-80,José Agea,1,0,False Positive
-81,Nancy Lee,1,0,False Positive
-82,Canto,1,0,False Positive
-83,Tango Popular,1,0,False Positive
-84,Botella Domínguez,1,0,False Positive
-85,Fine Champagne,1,0,False Positive
-86,Tesorero,1,0,False Positive
-87,” Ángel J. Gómez,1,0,False Positive
-88,José Rodríguez,1,0,False Positive
-89,Cocinero,1,0,False Positive
-90,Menú,1,0,False Positive
-91,Asilo,1,0,False Positive
-92,Cano-Fuentes,1,0,False Positive
-93,Vals,1,0,False Positive
-94,Tinta China,2,0,False Positive
-95,Vals-Serenata,1,0,False Positive
-96,Carmen Muchada(s,1,0,False Positive
-97,"Realiza sus estudios de primera enseñanza, probablemente en el Colegio de la Infancia, propiedad de su padre. Con diez años comienza sus estudios secundarios y obtiene el título de Bachiller en el Instituto de Segunda Enseñanza de Cádiz (Actual ",1,0,False Positive
-98,Ateneo de Cádiz,1,0,False Positive
-99,Pedro Riaño,2,0,False Positive
-100,Menú,1,0,False Positive
-101,"Una joven con mascarilla pasa por delante de una tienda cerrada, con un dibujo de un 'smiley' en su fachada, en Madrid. REUTERS/Sergio Perez",1,0,False Positive
-102,<%= name %>,1,0,False Positive
-103, SINGLE POST ,1,0,False Positive
-104,Orbán,2,0,False Positive
-105,Guillén del Barrio,1,0,False Positive
-106,Berlín,1,0,False Positive
-107,<%= name %>,1,0,False Positive
-108, SINGLE POST ,1,0,False Positive
-109,Donald Trump,1,0,False Positive
-110,Guillén del Barrio,1,0,False Positive
-111,La OMS,1,0,False Positive
-112,Asunción,1,0,False Positive
-113,Sí,1,0,False Positive
-114, Widgets HOLA & MD ,1,0,False Positive
-115,Rey,1,0,False Positive
-116,No,1,0,False Positive
-117,Málaga Coronavirus,1,0,False Positive
-118,Fan,1,0,False Positive
-119,Vasco,1,0,False Positive
-120,Rodolfo Martín Villa,1,2,False Negative
-121,Leopoldo Calvo-Sotelo,3,4,False Negative
-122,Landelino Lavilla,5,6,False Negative
-123,Íñigo Cavero,1,2,False Negative
-124,Juan Antonio Ortega,1,2,False Negative
-125,Rafael Calvo Ortega,1,2,False Negative
-126,Adolfo Suárez,10,16,False Negative
-127,Tu,1,2,False Negative
-128,Felipe,4,6,False Negative
-129,Juana,21,29,False Negative
-130,Juana la Loca,7,10,False Negative
-131,Juana de Castilla,3,4,False Negative
-132,Isabel,3,5,False Negative
-133,Villacampa,3,4,False Negative
-134,Martínez Campos,1,3,False Negative
-135,Ruiz Zorrilla,17,18,False Negative
-136,Francisco Serrano,1,2,False Negative
-137,Isabel II,1,2,False Negative
-138,Higueras Castañeda,2,3,False Negative
-139,Higueras,4,11,False Negative
-140,Práxedes Mateo Sagasta,1,2,False Negative
-141,Burdiel,1,2,False Negative
-142,Pi i Margall,1,2,False Negative
-143,Eduardo Sojo,1,2,False Negative
-144,Zorrilla,6,7,False Negative
-145,Sagasta,2,4,False Negative
-146,Rafael,2,3,False Negative
-147,Manuel de Falla,2,3,False Negative
-148,Segismundo Moret,1,2,False Negative
-149,Cayetano del Toro,1,2,False Negative
-150,Cayetana,1,2,False Negative
+José Agea,1,0,False Positive
+Valses “Fine Champagne,1,0,False Positive
+María del Carmen,1,0,False Positive
+Rafael Rodríguez Arias,1,0,False Positive
+” Ángel J. Gómez,1,0,False Positive
+Tango Popular,1,0,False Positive
+Rodríguez,1,0,False Positive
+Anales Gaditanos,1,0,False Positive
+Tesorero,1,0,False Positive
+Fine Champagne,1,0,False Positive
+Julio,1,0,False Positive
+José Antonio Pérez Rioja,1,0,False Positive
+Asilo,1,0,False Positive
+Vals-Serenata,1,0,False Positive
+Ateneo de Cádiz,1,0,False Positive
+Falgueras,1,0,False Positive
+Tinta China,2,0,False Positive
+Canto,1,0,False Positive
+Diario El Cocinero,1,0,False Positive
+Nancy Lee,1,0,False Positive
+Contador,1,0,False Positive
+Cónsul,1,0,False Positive
+Romualdo Álvarez Espino,1,0,False Positive
+Menú,1,0,False Positive
+ SINGLE POST ,1,0,False Positive
+Orbán,2,0,False Positive
+<%= name %>,1,0,False Positive
+"Una joven con mascarilla pasa por delante de una tienda cerrada, con un dibujo de un 'smiley' en su fachada, en Madrid. REUTERS/Sergio Perez",1,0,False Positive
+Guillén del Barrio,1,0,False Positive
+ SINGLE POST ,1,0,False Positive
+<%= name %>,1,0,False Positive
+Berlín,1,0,False Positive
+Donald Trump,1,0,False Positive
+Guillén del Barrio,1,0,False Positive
+Sí,1,0,False Positive
+Málaga Coronavirus,1,0,False Positive
+Fan,1,0,False Positive
+No,1,0,False Positive
+Rey,1,0,False Positive
+ Widgets HOLA & MD ,1,0,False Positive
+Asunción,1,0,False Positive
+La OMS,1,0,False Positive
+Vasco,1,0,False Positive
+Rafael Calvo Ortega,1,2,False Negative
+Leopoldo Calvo-Sotelo,3,4,False Negative
+Landelino Lavilla,5,6,False Negative
+Rodolfo Martín Villa,1,2,False Negative
+Adolfo Suárez,10,16,False Negative
+Íñigo Cavero,1,2,False Negative
+Juan Antonio Ortega,1,2,False Negative
+Tu,1,2,False Negative
+Juana de Castilla,3,4,False Negative
+Juana,21,29,False Negative
+Isabel,3,5,False Negative
+Juana la Loca,7,10,False Negative
+Felipe,4,6,False Negative
+Práxedes Mateo Sagasta,1,2,False Negative
+Higueras Castañeda,2,3,False Negative
+Martínez Campos,1,3,False Negative
+Eduardo Sojo,1,2,False Negative
+Isabel II,1,2,False Negative
+Ruiz Zorrilla,17,18,False Negative
+Francisco Serrano,1,2,False Negative
+Burdiel,1,2,False Negative
+Sagasta,2,4,False Negative
+Higueras,4,11,False Negative
+Villacampa,3,4,False Negative
+Pi i Margall,1,2,False Negative
+Zorrilla,6,7,False Negative
+Rafael,2,3,False Negative
+Segismundo Moret,1,2,False Negative
+Manuel de Falla,2,3,False Negative
+Cayetano del Toro,1,2,False Negative
+Cayetana,1,2,False Negative

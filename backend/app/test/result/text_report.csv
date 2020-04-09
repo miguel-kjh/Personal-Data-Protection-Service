@@ -1,9 +1,9 @@
-,names,matches,real matches,type
-0,Mendieta Castro,1,0,False Positive
-1,Guadalupe Sánchez Vargas,1,0,False Positive
-2,Sr Jesús Fernández Fuentes,1,0,False Positive
-3,María,1,0,False Positive
-4,Notario No 4997,1,0,False Positive
-5,María Antonieta Mendieta Castro,1,3,False Negative
-6,Lucía,1,2,False Negative
-7,Jesús Fernández Fuentes,1,2,False Negative
+names,matches,real matches,type
+Mendieta Castro,1,0,False Positive
+Sr Jesús Fernández Fuentes,1,0,False Positive
+Guadalupe Sánchez Vargas,1,0,False Positive
+Notario No 4997,1,0,False Positive
+María,1,0,False Positive
+María Antonieta Mendieta Castro,1,3,False Negative
+Jesús Fernández Fuentes,1,2,False Negative
+Lucía,1,2,False Negative

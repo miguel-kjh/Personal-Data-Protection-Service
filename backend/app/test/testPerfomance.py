@@ -106,18 +106,18 @@ class ConfidenceMatrixBuilder:
         ])
     
     def saveReport(self,filename):
-        table = {"names":[], "matches":[], "real matches": [], "type": []}
+        table = {"NAMES":[], "MATCHES":[], "REAL MARCHES": [], "TYPE": []}
         for name,matches,realMatches in self.listOfFalsePositives:
-            table["names"].append(name)
-            table["matches"].append(matches)
-            table["real matches"].append(realMatches)
-            table["type"].append("False Positive")
+            table["NAMES"].append(name)
+            table["MATCHES"].append(matches)
+            table["REAL MARCHES"].append(realMatches)
+            table["TYPE"].append("False Positive")
 
         for name,matches,realMatches in self.listOfFalseNegatives:
-            table["names"].append(name)
-            table["matches"].append(matches)
-            table["real matches"].append(realMatches)
-            table["type"].append("False Negative")
+            table["NAMES"].append(name)
+            table["MATCHES"].append(matches)
+            table["REAL MARCHES"].append(realMatches)
+            table["TYPE"].append("False Negative")
         
         df = pd.DataFrame(table, columns=table.keys())
         df.to_csv(filename, index=False)

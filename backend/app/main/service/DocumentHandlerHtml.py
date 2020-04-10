@@ -147,8 +147,8 @@ class DocumentHandlerHtml(DocumentHandler):
                 picker.clear()
 
         listNames = []
-        idCards = []
-        picker = DataPickerInTables()
+        idCards   = []
+        picker    = DataPickerInTables()
         tokenizer = TokenizerHtml(self.soup)
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:

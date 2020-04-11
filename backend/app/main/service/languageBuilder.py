@@ -21,20 +21,6 @@ class LanguageBuilder(metaclass=Singleton):
             ]
         self.matcher.add("withoutContext", None, patterNotContext)
 
-    def defineNameEntity(self):
-        names = [
-            {'POS': 'PROPN', 'OP': '+'},
-            {'TEXT': {'REGEX': 'de|del|-|el|los|todos'}, 'OP': '?'},
-            {'POS': 'PROPN', 'OP': '?'}
-        ]
-        ruler = EntityRuler(self.nlp)
-        patterns = [
-            {"label": "NAME", "pattern":names}
-        ]
-        ruler.add_patterns(patterns)
-        self.nlp.add_pipe(ruler, before='ner')
-        print("defined datas as entity")
-
     def semanticSimilarity(self, text: str, textToCompare: str) -> float:
         """
         Only use this funtion when used a md or lg models

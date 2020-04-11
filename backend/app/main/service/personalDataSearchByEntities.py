@@ -21,6 +21,6 @@ class PersonalDataSearchByEntities(PersonalDataSearch):
             nextLen += len(tokenText) + 1
         idCards = [
             {"name": idCard.group(), "star_char": idCard.start(), "end_char": idCard.end()}
-            for idCard in list(filter(lambda x: isDni(x.group()) , re.finditer(r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w',text)))
+            for idCard in list(filter(lambda x: isDni(x.group()) , re.finditer(self.regexIdCards,text)))
         ]
         return (listNames,idCards)

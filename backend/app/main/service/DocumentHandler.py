@@ -4,6 +4,7 @@ import os
 import zipfile
 
 from app.main.service.personalDataSearchByEntities import PersonalDataSearchByEntities
+from app.main.service.personalDataSearchByRules import PersonalDataSearchByRules
 from app.main.util.envNames import UPLOAD_FOLDER
 
 
@@ -12,7 +13,7 @@ class DocumentHandler:
     def __init__(self, path: str, destiny: str = ""):
         self.path = path
         self.destiny = destiny
-        self.dataSearch = PersonalDataSearchByEntities()
+        self.dataSearch = PersonalDataSearchByRules()
 
     def documentsProcessing(self):
         pass

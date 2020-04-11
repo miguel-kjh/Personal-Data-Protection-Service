@@ -18,10 +18,11 @@ def normalizeUnicode(string: str) -> str:
 class PersonalDataSearch(ABC):
     def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB):
         # spacy.prefer_gpu()
-        self.nlp = LanguageBuilder().getlanguage()
-        self.errorRange = errorRange
-        self.connection = SpanishNamesDB()
-        self.keywords = ["DE", "DEL", "EL", "LOS", "TODOS"]
+        self.nlp          = LanguageBuilder().getlanguage()
+        self.keywords     = ["DE", "DEL", "EL", "LOS", "TODOS"]
+        self.errorRange   = errorRange
+        self.connection   = SpanishNamesDB()
+        self.regexIdCards = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'
 
     def _convertName(self,name:str) -> list:
         normalizeName = normalizeUnicode(name).upper()

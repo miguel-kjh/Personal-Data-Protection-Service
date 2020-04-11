@@ -2,29 +2,19 @@ from typing import Text
 from app.main.service.personalDataSearch import PersonalDataSearch
 from app.main.util.fileUtils import isDni
 from app.main.util.heuristicMeasures import ERROR_RANGE_PERCENTAGE_DB
+from app.main.service.languageBuilder import LanguageBuilder
 
 import re
 from nltk.tokenize import sent_tokenize
-from spacy.pipeline import EntityRuler
 
 
 
 class PersonalDataSearchByRules(PersonalDataSearch):
 
     def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB):
-        super().__init__(errorRange=errorRange)
-        names      = [
-            {'POS': 'PROPN', 'OP': '+'},
-            {'TEXT': {'REGEX': 'de|del|-|el|los|todos'}, 'OP': '?'},
-            {'POS': 'PROPN', 'OP': '?'}
-        ]
-        ruler      = EntityRuler(self.nlp)
-        self.label = "NAME"
-        patterns = [
-            {"label": self.label, "pattern":names}
-        ]
-        ruler.add_patterns(patterns)
-        self.nlp.add_pipe(ruler, before='ner')
+        super().__init__(errorRange=errorRange,namesByRules=True)
+        self.label = LanguageBuilder().getLabelNameOfRules()
+        
 
     def searchPersonalData(self, text: Text) -> tuple:
         listNames = []

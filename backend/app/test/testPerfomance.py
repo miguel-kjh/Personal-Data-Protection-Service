@@ -37,14 +37,10 @@ class ConfidenceMatrixBuilder:
         self.listOfFalsePositives = []
 
     def countHinstInTexts(self, listNames:list, data:list):
-        for name in list(set(listNames)):
+        for name in list(set(data)):
             countNameInModel = listNames.count(name)
             realCountName    = data.count(name)
             namestokens      = len(self.nlp(name))
-            if realCountName == 0:
-                self.falsePositives += countNameInModel*namestokens
-                self.listOfFalsePositives.append((name,countNameInModel,realCountName))
-                continue
 
             if countNameInModel == realCountName:
                 self.hits += countNameInModel*namestokens
@@ -54,6 +50,15 @@ class ConfidenceMatrixBuilder:
                 self.listOfFalseNegatives.append((name,countNameInModel,realCountName))
             else:
                 print("imposible")
+        
+        for name in list(set(listNames)):
+            countNameInModel = listNames.count(name)
+            realCountName    = data.count(name)
+            namestokens      = len(self.nlp(name))
+            if realCountName == 0:
+                self.falsePositives += countNameInModel*namestokens
+                self.listOfFalsePositives.append((name,countNameInModel,realCountName))
+
 
     def countHinstInTables(self,listNames:list, data:list):
         for name in listNames:

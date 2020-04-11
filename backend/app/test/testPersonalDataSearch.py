@@ -4,7 +4,7 @@ from app.test.base import BaseTestCase
 from app.main.service.personalDataSearchByEntities import PersonalDataSearchByEntities
 from app.main.service.personalDataSearchByRules import PersonalDataSearchByRules
 
-personalDataSearchByEnt = PersonalDataSearchByRules()
+personalDataSearchByEnt = PersonalDataSearchByEntities()
 textForTest = {
     "simple": "Miguel estuvo aquí hace dos minutos",
     "normal": "El calendario Gregoriano es debido a el papa Gregorio XIII y el juliano por Julio Cesar",

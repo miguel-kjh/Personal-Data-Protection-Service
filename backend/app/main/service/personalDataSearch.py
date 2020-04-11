@@ -16,9 +16,12 @@ def normalizeUnicode(string: str) -> str:
 
 
 class PersonalDataSearch(ABC):
-    def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB):
-        # spacy.prefer_gpu()
-        self.nlp          = LanguageBuilder().getlanguage()
+    def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB, namesByRules:bool = False):
+        if not namesByRules :
+            self.nlp = LanguageBuilder().getlanguage()
+        else: 
+            self.nlp = LanguageBuilder().getlanguageByRules()
+        
         self.keywords     = ["DE", "DEL", "EL", "LOS", "TODOS"]
         self.errorRange   = errorRange
         self.connection   = SpanishNamesDB()

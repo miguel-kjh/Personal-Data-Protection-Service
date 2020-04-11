@@ -13,13 +13,30 @@ class Singleton(type):
 
 class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
-        self.nlp = spacy.load("es_core_news_md")
+        self.nlp      = spacy.load("es_core_news_md")
+        self.nlpRules = spacy.load("es_core_news_sm")
         print("model load")
+
+
         self.matcher = Matcher(self.nlp.vocab)
         patterNotContext = [
                 {'POS': 'PROPN', 'OP': '+'}, {"IS_PUNCT": True}, {'POS': 'PROPN', 'OP': '+'}
             ]
         self.matcher.add("withoutContext", None, patterNotContext)
+
+    def defineRulesOfNames(self):
+        names      = [
+            {'POS': 'PROPN', 'OP': '+'},
+            {'TEXT': {'REGEX': 'de|del|-|el|los|de todos los|y'}, 'OP': '?'},
+            {'POS': 'PROPN', 'OP': '?'}
+        ]
+        ruler      = EntityRuler(self.nlpRules)
+        self.label = "NAME"
+        patterns = [
+            {"label": self.label, "pattern":names}
+        ]
+        ruler.add_patterns(patterns)
+        self.nlpRules.add_pipe(ruler, before='ner')
 
     def semanticSimilarity(self, text: str, textToCompare: str) -> float:
         """
@@ -34,6 +51,15 @@ class LanguageBuilder(metaclass=Singleton):
 
     def getlanguage(self):
         return self.nlp
+
+    def getlanguageByRules(self):
+        return self.nlpRules
+    
+    def getLabelNameOfRules(self) -> str:
+        try: 
+            return self.label
+        except NameError:
+            return None
 
     def hasContex(self, text: str) -> bool:
         if not text:

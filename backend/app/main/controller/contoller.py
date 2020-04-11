@@ -11,8 +11,9 @@ import os
 
 api = NameSearchDto.api
 
+# Load model before a conections
 lb = LanguageBuilder()
-#lb.defineNameEntity()  # Load model before a conections
+lb.defineRulesOfNames()
 
 
 @api.route("/")

@@ -1,4 +1,4 @@
-"""import unittest
+import unittest
 from app.test.base import BaseTestCase
 from app.main.service.personalDataSearchByRules import PersonalDataSearchByRules
 
@@ -58,4 +58,4 @@ class TestSearchTextByRul(BaseTestCase):
 
 
 if __name__ == '__main__':
-    unittest.main()"""
+    unittest.main()

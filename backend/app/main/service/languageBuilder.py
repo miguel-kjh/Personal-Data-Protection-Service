@@ -1,6 +1,6 @@
 import spacy
 from spacy.pipeline import EntityRuler
-
+from spacy.matcher import Matcher
 
 class Singleton(type):
     _instances = {}
@@ -15,6 +15,11 @@ class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
         self.nlp = spacy.load("es_core_news_md")
         print("model load")
+        self.matcher = Matcher(self.nlp.vocab)
+        patterNotContext = [
+                {'POS': 'PROPN', 'OP': '+'}, {"IS_PUNCT": True}, {'POS': 'PROPN', 'OP': '+'}
+            ]
+        self.matcher.add("withoutContext", None, patterNotContext)
 
     def defineNameEntity(self):
         names = [
@@ -45,6 +50,10 @@ class LanguageBuilder(metaclass=Singleton):
         return self.nlp
 
     def hasContex(self, text: str) -> bool:
+        if not text:
+            return False
         with self.nlp.disable_pipes("parser","ner"):
             doc = self.nlp(text)
-        return 'VERB' in [token.pos_ for token in doc]
+        matches = self.matcher(doc)
+        return not ((bool(matches) and matches[-1][2] == len(doc)) 
+        or (sum(char.isupper() for char in text)+1)/len(text) > 0.8)

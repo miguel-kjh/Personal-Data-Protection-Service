@@ -8,7 +8,7 @@ from app.main.service.DocumentHandlerHtml import DocumentHandlerHtml
 
 
 def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = ""):
-    if typeFile == 'docx':
+    if   typeFile == 'docx':
         return CreatorDocumentHandlerDocx(filename, destiny)
     elif typeFile == 'pdf':
         return CreatorDocumentHandlerPdf(filename, destiny)
@@ -18,8 +18,6 @@ def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = ""):
         return CreatorDocumentHandlerCsv(filename, destiny)
     elif typeFile == 'html':
         return CreatorDocumentHandlerHtml(filename, destiny)
-    elif typeFile == 'url':
-        return CreatorDocumentHandlerUrl(filename, destiny)
     elif typeFile == 'txt':
         return CreatorDocumentHandlerTxt(filename, destiny)
     else:
@@ -41,29 +39,21 @@ class CreatorDocumentHandlerDocx(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerDocx(self.path, self.destiny)
 
-
 class CreatorDocumentHandlerExcel(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerExcel(self.path, self.destiny)
-
 
 class CreatorDocumentHandlerPdf(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerPdf(self.path, self.destiny)
 
-
 class CreatorDocumentHandlerCsv(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerCsv(self.path, self.destiny)
 
-
 class CreatorDocumentHandlerHtml(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:
         return DocumentHandlerHtml(self.path, self.destiny)
-
-class CreatorDocumentHandlerUrl(CreatorDocumentHandler):
-    def create(self) -> DocumentHandler:
-        return DocumentHandlerHtml(self.path, self.destiny, isUrl=True)
 
 class CreatorDocumentHandlerTxt(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:

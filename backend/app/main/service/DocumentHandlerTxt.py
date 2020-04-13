@@ -1,6 +1,7 @@
 from app.main.service.DocumentHandler import DocumentHandler
 from app.main.util.fileUtils import encode
 from app.main.service.languageBuilder import LanguageBuilder
+from app.main.util.heuristicMeasures import MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 
 from typing import Text
 import re
@@ -27,12 +28,12 @@ class DocumentHandlerTxt(DocumentHandler):
         with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
             data              = []
             fileText          = str(file.read())
-            maxLength         = 4000
+            maxLength         = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
             listNames,idCards = self.giveListNames()
             listNames = list(set(listNames))
             listNames.sort(
-                    key=lambda value: len(value),
-                    reverse=True
+                    key     = lambda value: len(value),
+                    reverse = True
                 )
             data[len(data):],data[len(data):] = listNames,idCards
             if len(data) > maxLength:

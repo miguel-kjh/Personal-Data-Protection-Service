@@ -18,9 +18,6 @@ class DocumentHandler:
     def documentsProcessing(self):
         pass
 
-    # def documentTagger(self):
-    # pass
-
     def createDataZipFolder(self):
         self._createZip(*self.giveListNames())
 

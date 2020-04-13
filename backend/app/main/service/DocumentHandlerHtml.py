@@ -1,7 +1,7 @@
 from app.main.service.DocumentHandler import DocumentHandler
 from app.main.util.fileUtils import markInHtml,encode
 from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.heuristicMeasures import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
+from app.main.util.heuristicMeasures import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.util.semanticWordLists import listOfVectorWords
 from app.main.util.dataPickerInTables import DataPickerInTables
 
@@ -16,7 +16,7 @@ from typing import Text
 class TableToken(Enum):
         NONE = 0
         HEAD = 1
-        ROW = 2
+        ROW  = 2
 
 class TokenHtml:
         def __init__(self,listOfText:list,isTable:TableToken):
@@ -26,9 +26,11 @@ class TokenHtml:
 class TokenizerHtml:
     def __init__(self, soup:BeautifulSoup):
         self.soup = soup
-        self.blacklist = ['[document]', 'noscript', 'header','style',
-                     'html', 'meta', 'head', 'input', 'script', 'link', 
-                     'lang', 'code','th', 'td']
+        self.blacklist = [
+                    '[document]', 'noscript', 'header','style',
+                    'html', 'meta', 'head', 'input', 'script', 'link', 
+                    'lang', 'code','th', 'td'
+        ]
 
     def getToken(self) -> TokenHtml:
         def giveParentName(label) -> str:
@@ -41,7 +43,6 @@ class TokenizerHtml:
         
         labelList  = list(filter(lambda label: label and label != "\n", self.soup.find_all(text=True)))
         tags       = list(map(lambda label: giveParentName(label),labelList))
-        #print(tags)
         headList   = []
         rowList    = []
         lenHead    = 0
@@ -82,61 +83,74 @@ class TokenizerHtml:
 
 class DocumentHandlerHtml(DocumentHandler):
 
-    def __init__(self, path: Text, destiny: str = "", isUrl:bool = False):
+    def __init__(self, path: Text, destiny: str = ""):
         super().__init__(path, destiny=destiny)
-        if not isUrl:
-            with open(self.path, "r", encoding="utf8") as f:
-                self.soup = BeautifulSoup(f.read(), "lxml")
-        else:
-            self.soup = BeautifulSoup(path, "lxml")
+        with open(self.path, "r", encoding="utf8") as f:
+            self.soup  = BeautifulSoup(f.read(), "lxml")
+        self.regexName = []
 
-    def locateNames(self, sentence):
-        newSentence = ''
-        index = 0
-        for name in re.finditer(self.regexName,sentence):
-            newSentence += sentence[index:name.start()] + markInHtml(name.group())
-            index = name.end()
-        if index <= len(sentence) - 1:
-            newSentence += sentence[index:]
-        return sentence
-
-    def encodeNames(self, sentence):
+    def _locateNames(self, sentence):
         newSentence = ""
-        index = 0
-        for name in re.finditer(self.regexName,sentence):
-            newSentence += sentence[index:name.start()] + encode(name.group())
-            index = name.end()
-        if index <= len(sentence) - 1:
-            newSentence += sentence[index:]
+        for regex in self.regexName:
+            index = 0
+            for name in re.finditer(regex,sentence):
+                newSentence += sentence[index:name.start()] + markInHtml(name.group())
+                index = name.end()
+            if index <= len(sentence) - 1:
+                newSentence += sentence[index:]
+            sentence = newSentence
+        return newSentence
+
+    def _encodeNames(self, sentence):
+        for regex in self.regexName:
+            #index = 0
+            #for name in re.finditer(regex,sentence):
+            #    newSentence += sentence[index:name.start()] + encode(name.group())
+            #    index = name.end()
+            #if index <= len(sentence) - 1:
+            #    newSentence += sentence[index:]
+            #sentence = newSentence
+            sentence = re.compile(regex).sub(lambda match: encode(match.group()), sentence)
         return sentence
+
+    def _buildRegex(self, data):
+        if len(data) <= MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX:
+            self.regexName.append('|'.join(data))
+            return
+        intial = 0
+        for numberRange in range(MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX,len(data),MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX):
+            self.regexName.append('|'.join(data[intial:numberRange]))
+            intial = numberRange
+        self.regexName.append('|'.join(data[intial:]))
+
 
     def documentsProcessing(self):
-        formatter = HTMLFormatter(self.encodeNames)
+        formatter = HTMLFormatter(self._encodeNames)
         listNames,idCards = self.giveListNames()
         listNames = list(set(listNames))
         listNames.sort(
-                key=lambda value: len(value),
-                reverse=True
+                key     = lambda value: len(value),
+                reverse = True
             )
         data = []
-        data[len(data):] = listNames
-        data[len(data):] = idCards
-        self.regexName = "|".join(data)
+        data[len(data):],data[len(data):] = listNames,idCards
+        print(data)
+        self._buildRegex(data)
+        print(self.regexName)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
     
     def documentTagger(self):
-        formatter = HTMLFormatter(self.locateNames)
+        formatter = HTMLFormatter(self._locateNames)
         listNames,idCards = self.giveListNames()
         listNames = list(set(listNames))
         listNames.sort(
-                key=lambda value: len(value),
-                reverse=True
+                key     = lambda value: len(value),
+                reverse = True
             )
         data = []
-        data[len(data):] = listNames
-        data[len(data):] = idCards
-        self.regexName = "|".join(data)
+        data[len(data):],data[len(data):] = listNames,idCards
+        self._buildRegex(data)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 

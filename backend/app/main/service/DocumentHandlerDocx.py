@@ -1,5 +1,5 @@
 from app.main.util.fileUtils import encode, itemIterator
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.semanticWordLists import listOfVectorWords
 from app.main.util.dataPickerInTables import DataPickerInTables
@@ -23,19 +23,24 @@ class DocumentHandlerDocx(DocumentHandler):
             regexName = re.compile(regex)
             return regexName.sub(lambda match: encode(match.group()), text)
         data              = []
-        maxLength         = 4000
+        maxLength         = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
         listNames,idCards = self.giveListNames()
-        listNames = list(set(listNames))
+        listNames         = list(set(listNames))
         listNames.sort(
-                key=lambda value: len(value),
-                reverse=True
+                key     = lambda value: len(value),
+                reverse = True
             )
         data[len(data):],data[len(data):] = listNames,idCards
-        regex = '|'.join(data)
-        regexName = re.compile(regex)
+        theExpressionShouldBeTrodden      = True
+
+        if len(data) <= maxLength:
+            theExpressionShouldBeTrodden = False
+            regex     = '|'.join(data)
+            regexName = re.compile(regex)
+
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
-                if len(data) > maxLength:
+                if theExpressionShouldBeTrodden:
                     intial = 0
                     for numberRange in range(maxLength,len(data),maxLength):
                         block.text = updateDocx('|'.join(data[intial:numberRange]), block.text)
@@ -46,7 +51,7 @@ class DocumentHandlerDocx(DocumentHandler):
             elif isinstance(block, Table):
                 for row in block.rows:
                     for cell in row.cells:
-                        if len(data) > maxLength:
+                        if theExpressionShouldBeTrodden:
                             intial = 0
                             for numberRange in range(maxLength,len(data),maxLength):
                                 cell.text = updateDocx('|'.join(data[intial:numberRange]), cell.text)

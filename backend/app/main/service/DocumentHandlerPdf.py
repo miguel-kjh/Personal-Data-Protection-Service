@@ -3,7 +3,7 @@ import app.main.service.pdf_redactor as pdf_redactor
 from app.main.util.dataPickerInTables import DataPickerInTables
 from app.main.util.fileUtils import encode,readPdf
 from app.main.util.semanticWordLists import listOfVectorWords
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.service.languageBuilder import LanguageBuilder
 
 from datetime import datetime
@@ -89,19 +89,18 @@ class DocumentHandlerPdf(DocumentHandler):
             pdf_redactor.redactor(self.options, self.path, self.destiny)
             self.path = self.destiny
         
-        maxLength = 4000
+        maxLength = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
         listNames,idCards = self.giveListNames()
         if not listNames and not idCards:
             pdf_redactor.redactor(self.options, self.path, self.destiny)
             return
         listNames = list(set(listNames))
         listNames.sort(
-                key=lambda value: len(value),
-                reverse=True
+                key     = lambda value: len(value),
+                reverse = True
             )
-        data = []
-        data[len(data):] = listNames
-        data[len(data):] = idCards
+        data                              = []
+        data[len(data):],data[len(data):] = listNames,idCards
         if len(data) > maxLength:
             intial = 0
             for numberRange in range(maxLength,len(data),maxLength):

@@ -90,26 +90,12 @@ class DocumentHandlerHtml(DocumentHandler):
         self.regexName = []
 
     def _locateNames(self, sentence):
-        newSentence = ""
         for regex in self.regexName:
-            index = 0
-            for name in re.finditer(regex,sentence):
-                newSentence += sentence[index:name.start()] + markInHtml(name.group())
-                index = name.end()
-            if index <= len(sentence) - 1:
-                newSentence += sentence[index:]
-            sentence = newSentence
-        return newSentence
+            sentence = re.compile(regex).sub(lambda match: markInHtml(match.group()), sentence)
+        return sentence
 
     def _encodeNames(self, sentence):
         for regex in self.regexName:
-            #index = 0
-            #for name in re.finditer(regex,sentence):
-            #    newSentence += sentence[index:name.start()] + encode(name.group())
-            #    index = name.end()
-            #if index <= len(sentence) - 1:
-            #    newSentence += sentence[index:]
-            #sentence = newSentence
             sentence = re.compile(regex).sub(lambda match: encode(match.group()), sentence)
         return sentence
 

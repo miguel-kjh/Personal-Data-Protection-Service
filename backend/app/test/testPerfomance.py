@@ -36,7 +36,7 @@ class ConfidenceMatrixBuilder:
         self.listOfFalseNegatives = []
         self.listOfFalsePositives = []
 
-    def countHinstInTexts(self, listNames:list, data:list):
+    def countHinstInTexts(self, listNames:list, data:list, file:str=""):
         for name in list(set(data)):
             countNameInModel = listNames.count(name)
             realCountName    = data.count(name)
@@ -48,8 +48,6 @@ class ConfidenceMatrixBuilder:
                 self.hits += countNameInModel*namestokens
                 self.falseNegatives += (realCountName-countNameInModel)*namestokens
                 self.listOfFalseNegatives.append((name,countNameInModel,realCountName))
-            else:
-                print("imposible")
         
         for name in list(set(listNames)):
             countNameInModel = listNames.count(name)
@@ -189,7 +187,7 @@ class TestPerfomanceWeb(BaseTestCase):
             dh             = creator.create()
             listNames,_    = dh.giveListNames()
 
-            builder.countHinstInTexts(listNames,data['names'])    
+            builder.countHinstInTexts(listNames,data['names'], file=str(index))    
             builder.countFailuresInWeb(listNames,tokenizer)
 
         builder.saveReport('app/test/result/web_report.csv')

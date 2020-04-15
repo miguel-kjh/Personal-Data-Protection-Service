@@ -1,196 +1,504 @@
 NAMES,MATCHES,REAL MARCHES,TYPE
-Íñiguez,1,0,False Positive
-Italiano,1,0,False Positive
-Routledge,2,0,False Positive
+Suárez,6,5,False Positive
+País,15,0,False Positive
+Ruiz Giménez y Fernández Ordóñez,1,0,False Positive
+Aragonés,1,0,False Positive
+Valencia,1,0,False Positive
+Português,1,0,False Positive
+Menú de,1,0,False Positive
+León,1,0,False Positive
+Ayuda,1,0,False Positive
+Català,1,0,False Positive
+Gobierno,6,0,False Positive
+Peña,1,0,False Positive
+Santander,1,0,False Positive
+Enrique Sánchez de,1,0,False Positive
+Encarnación,1,0,False Positive
+Ciudad Real,1,0,False Positive
 Galego,1,0,False Positive
-Magyar,1,0,False Positive
-Menú,1,0,False Positive
-Fernández Ordóñez,1,0,False Positive
+Suárez-Íñiguez,1,0,False Positive
+Deutsch,1,0,False Positive
+Partido Liberal,5,0,False Positive
+Colin,1,0,False Positive
+Unión de,1,0,False Positive
+Palencia,1,0,False Positive
+Miguel Herrero y Rodríguez,2,0,False Positive
+Andalucía,1,0,False Positive
+Folgueira Lombardero y Bayón Iglesias,1,0,False Positive
+English,1,0,False Positive
+Routledge,2,0,False Positive
+Portal de,1,0,False Positive
+Senado,1,0,False Positive
 Anand,1,0,False Positive
-Gobierno,1,0,False Positive
-Tu,1,0,False Positive
+Magyar,1,0,False Positive
+Areilza y Cabanillas,1,0,False Positive
+Palma de Mallorca,1,0,False Positive
+some,1,0,False Positive
+Santa Cruz de Tenerife,1,0,False Positive
+Eurico de,1,0,False Positive
+Galicia,1,0,False Positive
+Teruel,1,0,False Positive
+GEA,1,0,False Positive
+Cortes,2,0,False Positive
+UDE,1,0,False Positive
+Burgos,1,0,False Positive
+León y Leopoldo Calvo Sotelo,1,0,False Positive
+Cabanillas y Areilza,1,0,False Positive
+Adolfo Suárez y,2,0,False Positive
+Pontevedra,1,0,False Positive
+Madrid,1,0,False Positive
+REY,1,0,False Positive
+Reino de,1,0,False Positive
+Consejo,2,0,False Positive
+Emperador de,1,0,False Positive
+Blanco,1,0,False Positive
+Sur,1,0,False Positive
+Legazpi y del,1,0,False Positive
+China y,1,0,False Positive
+López de,1,0,False Positive
+Durán,1,0,False Positive
+Turón,1,0,False Positive
+América y,1,0,False Positive
+París el,1,0,False Positive
+Habana el,1,0,False Positive
+París,1,0,False Positive
+Marruecos,1,0,False Positive
+Asia y,1,0,False Positive
+Unión Liberal,2,0,False Positive
+Hué,1,0,False Positive
+Japón,1,0,False Positive
+Menchacatorre,1,0,False Positive
+Gobierno,3,0,False Positive
+Unión Liberal y,2,0,False Positive
+Norte,1,0,False Positive
+Peña,1,0,False Positive
+Matías,1,0,False Positive
+Imperio,1,0,False Positive
+Cuba,3,0,False Positive
+Rey y Canales,1,0,False Positive
+Asia,2,0,False Positive
+Manila,1,0,False Positive
+Consejo de,1,0,False Positive
+PEÑA BLANCO,1,0,False Positive
+Emperador Tu-Duc,2,0,False Positive
+Bebé,1,0,False Positive
+Guerra de África,1,0,False Positive
+Inarejos Muñoz,4,0,False Positive
+Italia,1,0,False Positive
+China,6,0,False Positive
+Miguel,1,0,False Positive
+Pedro,1,0,False Positive
 Lé,1,0,False Positive
-Duc,3,0,False Positive
-París,2,0,False Positive
-Emperador Tu,1,0,False Positive
-Emperador,2,0,False Positive
-Doña Juana,1,0,False Positive
-de Castilla,1,0,False Positive
-Yanko,1,0,False Positive
+MARTÍNEZ GALLEGO,1,0,False Positive
+INAREJOS MUÑOZ,1,0,False Positive
+Extremo Oriente,1,0,False Positive
+Paz,1,0,False Positive
+Francia,12,0,False Positive
+Madrid,7,0,False Positive
+Almena,1,0,False Positive
+Juana,38,29,False Positive
+Toledo –,1,0,False Positive
+Isabel y Fernando,2,0,False Positive
+Julia,1,0,False Positive
+Margarita y Felipe,1,0,False Positive
+Francisco Pradilla y Ortiz,1,0,False Positive
+Granada,2,0,False Positive
+Juana y Felipe,1,0,False Positive
+María y,2,0,False Positive
+Mundo,1,0,False Positive
+América,1,0,False Positive
+-GÓMEZ,1,0,False Positive
+GÓNZALEZ,1,0,False Positive
+New,1,0,False Positive
+Flandes,4,0,False Positive
+Felipe el,1,0,False Positive
+Andrés de,1,0,False Positive
+Castilla y León,1,0,False Positive
+Austria y,1,0,False Positive
+Aroní Yanko –Consuelo Puerta–,1,0,False Positive
+Sevilla,1,0,False Positive
+Felipe y,1,0,False Positive
+MORENO,1,0,False Positive
+PÉREZ,1,0,False Positive
+Castilla y Aragón,1,0,False Positive
+Francia de,1,0,False Positive
+CERRATO,1,0,False Positive
+SUÁREZ,1,0,False Positive
+Rioja,1,0,False Positive
+VÁZQUEZ,1,0,False Positive
+Voz del Kaiser,1,0,False Positive
+SAMPER,1,0,False Positive
+Maximiliano,1,0,False Positive
+Reyes de,1,0,False Positive
+Palencia,1,0,False Positive
+Miranda,1,0,False Positive
+Manuel,1,0,False Positive
+Viena,1,0,False Positive
 Maya,1,0,False Positive
-Andrés,1,0,False Positive
-Toledo,1,0,False Positive
-reina Isabel,1,0,False Positive
+Castilla,3,0,False Positive
+FERNÁNDEZ,2,0,False Positive
+MARTÍN,1,0,False Positive
 Esteban García Marcos,1,0,False Positive
-Juana ,3,0,False Positive
-Romero,1,0,False Positive
+Alba Frasquet Álvarez,2,0,False Positive
+Laredo,1,0,False Positive
+Juana y los,1,0,False Positive
+Isabel y Juan,1,0,False Positive
+Corte,2,0,False Positive
+Tordesillas,3,0,False Positive
+Doña Juana,3,0,False Positive
+Olmeda,1,0,False Positive
+Leyenda Negra de,1,0,False Positive
+Juan y,1,0,False Positive
+Espasa,1,0,False Positive
+Tamayo y Baus,1,0,False Positive
+Hermoso y Juana,1,0,False Positive
+Bélgica,1,0,False Positive
+Valladolid,1,0,False Positive
+Francia,3,0,False Positive
+Madrid,4,0,False Positive
+Zorrilla,8,7,False Positive
+Urgel y Santo Domingo,1,0,False Positive
+Centro de,1,0,False Positive
+Ciudad Real,1,0,False Positive
+Santo Domingo de,2,0,False Positive
+Zorrilla y,2,0,False Positive
+Madrid,4,0,False Positive
+Seo de Urgel,1,0,False Positive
+Guerra y el,1,0,False Positive
 Eneko Orueta,1,0,False Positive
-Dios,1,0,False Positive
-Sagasta ,1,0,False Positive
-Don Benito,1,0,False Positive
+Partido,1,0,False Positive
+Cartagena,1,0,False Positive
+Liberal,1,0,False Positive
+Amadeo,2,0,False Positive
+Sagasta y,1,0,False Positive
+Ruiz,3,0,False Positive
+Levante,1,0,False Positive
+Pi,2,0,False Positive
 Alcalá de Henares,1,0,False Positive
+Valladolid,1,0,False Positive
+Seo de,1,0,False Positive
+Rioja,1,0,False Positive
+Higinio,1,0,False Positive
+Barcelona,1,0,False Positive
+Don,1,0,False Positive
+Santamarta,1,0,False Positive
+Cortes,2,0,False Positive
+Caballería,1,0,False Positive
+Francisco Pi,1,0,False Positive
+Gobierno,2,0,False Positive
+Burgos,1,0,False Positive
+Villanueva de,1,0,False Positive
 Miguel Pérez,1,0,False Positive
-José Antonio Pérez Rioja,1,0,False Positive
-Rodríguez,1,0,False Positive
-María del Carmen,1,0,False Positive
-José Agea,1,0,False Positive
-Nancy Lee,1,0,False Positive
-Asilo,1,0,False Positive
-Contador,1,0,False Positive
-Piano,1,0,False Positive
-Harper,1,0,False Positive
-Botella Domínguez,1,0,False Positive
-Falgueras,1,0,False Positive
-Cocinero,1,0,False Positive
-Tesorero,1,0,False Positive
-Canto,1,0,False Positive
-Cano-Fuentes,1,0,False Positive
-Cónsul,1,0,False Positive
-Menú,1,0,False Positive
-Manuel Bretón de los Herreros,1,0,False Positive
-Romualdo Álvarez Espino,1,0,False Positive
-José Rodríguez,1,0,False Positive
-Almería,2,0,False Positive
+Práxedes Mateo,1,0,False Positive
+Serena y Don Benito,1,0,False Positive
+Santander,1,0,False Positive
+Calzada,2,0,False Positive
+Calzada y,1,0,False Positive
+Francia,1,0,False Positive
+Ferrol,1,0,False Positive
+Merelo y,1,0,False Positive
+Badajoz,4,0,False Positive
+Bebé,1,0,False Positive
+Cristino Martos y Eugenio Montero Ríos,1,0,False Positive
+UME,1,0,False Positive
+Dios y,1,0,False Positive
+Aiza y,1,0,False Positive
+Seo de Urgell,1,0,False Positive
+Ginebra,1,0,False Positive
+Margall,3,0,False Positive
+Genovés el,1,0,False Positive
+Escuela de,2,0,False Positive
 Rafael Rodríguez Arias,1,0,False Positive
-Tinta China,2,0,False Positive
-Escuela,1,0,False Positive
-Vals,1,0,False Positive
 Julio,1,0,False Positive
-Menú,1,0,False Positive
-Orbán,2,0,False Positive
+Menú de,1,0,False Positive
+Real Orden de,1,0,False Positive
+Cárdenas,1,0,False Positive
+Rafael y Josefina,1,0,False Positive
+Casino de,1,0,False Positive
+Ayuda,1,0,False Positive
+Cádiz Alegre,1,0,False Positive
+Canto y Piano,1,0,False Positive
+María de,2,0,False Positive
+Agosto,1,0,False Positive
+San Antonio de Cádiz,1,0,False Positive
+Asilo,1,0,False Positive
+Tesorero y,1,0,False Positive
+Manuel de,1,0,False Positive
+Antonio San Nicolás Expósito y,1,0,False Positive
+Chiclana,1,0,False Positive
+Vega y Piñero,1,0,False Positive
+Contador,1,0,False Positive
+Palma de Cádiz,5,0,False Positive
+Manuel Bretón de los Herreros,1,0,False Positive
+Falla y Matheu,1,0,False Positive
+tea y Cano,1,0,False Positive
+Partido Liberal,2,0,False Positive
+Romualdo Álvarez Espino,1,0,False Positive
+Patrocinio,1,0,False Positive
+José Falla y,1,0,False Positive
+Cádiz de,1,0,False Positive
+Juan de,1,0,False Positive
+Mª de,1,0,False Positive
+Joaquín Estébanez y,1,0,False Positive
+Concepción Shaw y Rodríguez,1,0,False Positive
+Cádiz el,1,0,False Positive
+José Antonio Pérez Rioja,1,0,False Positive
+Tinta China,1,0,False Positive
+María del Carmen,1,0,False Positive
+Julio de,1,0,False Positive
+Marqués del Real Tesoro,1,0,False Positive
+Tesorero,1,0,False Positive
+Portal de,1,0,False Positive
+Cayetano del,1,0,False Positive
+Nancy Lee,1,0,False Positive
+Rafael de,1,0,False Positive
+Salón de Manuel Quirell,1,0,False Positive
+Concepción y Eusebio Rodríguez Fernández,1,0,False Positive
+Eusebio Pedro Rodríguez Ramírez y Ana Mª Fernández Repeto,1,0,False Positive
+Eusebio y de Juan Martín Barbadillo,1,0,False Positive
+Martín Barbadillo y Fernando Ortega,1,0,False Positive
+Almería,2,0,False Positive
+Manuel Aranda y Manuel Grosso,1,0,False Positive
+Iglesia,2,0,False Positive
+Cocinero,2,0,False Positive
+Cádiz,18,0,False Positive
+Escuela de Artes,1,0,False Positive
+Toro y Adolfo García Cabezas,1,0,False Positive
+Pierna Negra,1,0,False Positive
+Palma,2,0,False Positive
+Alondra,1,0,False Positive
+Arbolí,1,0,False Positive
+Cano-,1,0,False Positive
+Doctor,1,0,False Positive
+Harper,1,0,False Positive
+Canto de,1,0,False Positive
+Madrid,1,0,False Positive
+Menú de,1,0,False Positive
+Bandera,1,0,False Positive
+Portal de,1,0,False Positive
+Feliz,1,0,False Positive
+Javier ya,2,0,False Positive
+Ayuda,1,0,False Positive
+Madrid,2,0,False Positive
+Montero,4,2,False Positive
+Dorado Games,1,0,False Positive
+Orbán y,2,0,False Positive
+Gobierno,1,0,False Positive
+love,2,0,False Positive
+Holanda,4,0,False Positive
+Guerra Civil,2,0,False Positive
+Juan Torres,1,0,False Positive
+Israel,1,0,False Positive
 Guillén del Barrio,1,0,False Positive
+Francia y,1,0,False Positive
+Europa,3,0,False Positive
+Montero,4,3,False Positive
+Orbán y,3,0,False Positive
+China y,1,0,False Positive
+Dorado Games,1,0,False Positive
+love,2,0,False Positive
+Francia de,1,0,False Positive
+Guerra Civil,2,0,False Positive
+Gobierno,1,0,False Positive
+Holanda,1,0,False Positive
+Europa,3,0,False Positive
 Berlín,1,0,False Positive
+Roma,1,0,False Positive
+Razón,1,0,False Positive
+Italia,3,0,False Positive
+China,2,0,False Positive
 Guillén del Barrio,1,0,False Positive
+Sánchez,3,2,False Positive
+prin-,1,0,False Positive
+Saber,1,0,False Positive
+País,1,0,False Positive
+Salud,1,0,False Positive
+Justicia,1,0,False Positive
+Concepción,1,0,False Positive
 Asunción,1,0,False Positive
-Vasco,1,0,False Positive
+Natural,1,0,False Positive
 Rey,1,0,False Positive
-No,1,0,False Positive
+Vivo,1,0,False Positive
+Reto,1,0,False Positive
+País Vasco,1,0,False Positive
+IP,1,0,False Positive
+Barcelona,1,0,False Positive
+Ayuda,1,0,False Positive
+Guardia Civil,1,0,False Positive
+Padre,1,0,False Positive
+Gobierno,8,0,False Positive
 Fan,1,0,False Positive
+Contra,1,0,False Positive
+Sabadell,1,0,False Positive
+Rueda de,2,0,False Positive
+Cámara,1,0,False Positive
+Jaén,1,0,False Positive
+Gobierno de Roma,1,0,False Positive
+OMS,1,0,False Positive
+Milán,1,0,False Positive
+Europa y,1,0,False Positive
+Pausa,1,0,False Positive
+Canales,1,0,False Positive
+Lombardía,1,0,False Positive
 Sí,1,0,False Positive
-Jesús María Viana,0,1,False Negative
+Murcia,1,0,False Positive
+Andalucía,1,0,False Positive
+Italia,3,0,False Positive
+Roma de,1,0,False Positive
+Liga,2,0,False Positive
+No,1,0,False Positive
+Madrid,3,0,False Positive
 Ignacio Camuñas Solís,0,1,False Negative
-Leopoldo Calvo-Sotelo,3,4,False Negative
-Clavero,0,1,False Negative
-Rodríguez de Miñón,0,2,False Negative
-José Quiroga,0,1,False Negative
-Rafael Arias-Salgad,0,1,False Negative
-Oreja,0,1,False Negative
-Leopoldo Calvo-Sotel,0,1,False Negative
-Jonathan,0,1,False Negative
+Enrique Sánchez de León,1,2,False Negative
 Landelino Lavilla,4,6,False Negative
-Íñigo Cavero,1,2,False Negative
-Antón Cañellas,0,1,False Negative
-Luis Merino Bayona,0,1,False Negative
-Jaime Ignacio del Burgo,0,1,False Negative
-Adolfo Suárez,10,16,False Negative
-Juan Antonio Ortega,1,2,False Negative
-Lavilla,0,1,False Negative
+Jonathan,0,1,False Negative
+Bayón Iglesias,0,1,False Negative
 Ignacio Camuñas,0,2,False Negative
-András Bozóki,0,1,False Negative
-Suárez-Iñiguez,0,1,False Negative
+Luis Merino Bayona,0,1,False Negative
+José Quiroga,0,1,False Negative
+Cabanillas,0,2,False Negative
+Leopoldo Calvo-Sotelo,3,4,False Negative
+Íñigo Cavero,1,2,False Negative
 Rodolfo Martín Villa,1,2,False Negative
+Rafael Arias-Salgad,0,1,False Negative
+Leopoldo Calvo Sotelo,0,1,False Negative
+Díaz-Ambrona,0,1,False Negative
+Miguel Herrero,0,2,False Negative
+Areilza,0,2,False Negative
 Eurico de la Peña,0,1,False Negative
 Fernández Ordoñez,0,1,False Negative
-Rafael Calvo Ortega,1,2,False Negative
+Jesús María Viana,0,1,False Negative
+Agustín Rodríguez Sahagún,1,3,False Negative
+Jaime Ignacio del Burgo,0,1,False Negative
+Lavilla,0,1,False Negative
+Antón Cañellas,0,1,False Negative
+Leopoldo Calvo-Sotel,0,1,False Negative
+András Bozóki,0,1,False Negative
+Adolfo Suárez,8,16,False Negative
+Rodríguez de Miñón,0,2,False Negative
 Miguel Herrero de Miñón,0,1,False Negative
-Díaz-Ambrona,0,1,False Negative
-Agustín Rodríguez Sahagún,0,3,False Negative
-Tu-Duc,0,6,False Negative
-Martínez Gallego,3,5,False Negative
-Napoleón III,0,3,False Negative
-Leopoldo O’Donnell,0,2,False Negative
+Ruiz Giménez,0,1,False Negative
+Suárez-Iñiguez,0,1,False Negative
+Folgueira Lombardero,0,1,False Negative
+Juan Antonio Ortega,1,2,False Negative
+Rafael Calvo Ortega,1,2,False Negative
+Felipe II,0,1,False Negative
+Napoleón,1,4,False Negative
 Fernando de Norzagaray,0,1,False Negative
 Pedro Phung,0,1,False Negative
-Luis XVI,0,1,False Negative
-Napoleón,1,4,False Negative
-Felipe II,0,1,False Negative
-Peña Blanco,1,9,False Negative
-Conde Walewski,0,1,False Negative
+Peña Blanco,7,9,False Negative
+Napoleón III,0,3,False Negative
 Sanjurjo,1,2,False Negative
-Catalina,0,2,False Negative
-Aroní Yanko,0,1,False Negative
-Pablo de Tarso,0,1,False Negative
-Gonzalo Soriano Blasco,0,1,False Negative
-Isabel I,0,1,False Negative
-Maximiliano I,0,1,False Negative
-Fernando II,0,1,False Negative
+Martínez Gallego,4,5,False Negative
+Conde Walewski,0,1,False Negative
+Matías Menchacatorre,0,1,False Negative
+Tu-Duc,3,6,False Negative
+Leopoldo O’Donnell,0,2,False Negative
+Luis XVI,0,1,False Negative
+Miguel López de Legazpi,0,1,False Negative
+Fernando,0,2,False Negative
 Andrés de Miranda,0,1,False Negative
-Manuel Tamayo y Baus,0,1,False Negative
-Juana,21,29,False Negative
-Madwoman Juana,0,1,False Negative
-Juana de Castilla,3,4,False Negative
-Luis XII,0,1,False Negative
+Isabel I,0,1,False Negative
+Francisco Pradilla,1,2,False Negative
+Gonzalo Soriano Blasco,0,1,False Negative
+Maximiliano I,0,1,False Negative
+Aroní Yanko,0,1,False Negative
+Fernando II,0,1,False Negative
+Felipe,3,6,False Negative
+Ortiz,0,1,False Negative
+Felipe el Hermoso,0,1,False Negative
 Felipe V,0,1,False Negative
-Isabel,3,5,False Negative
 Juana I de Castilla,0,4,False Negative
-Juana la Loca,0,10,False Negative
+Madwoman Juana,0,1,False Negative
+Isabel,3,5,False Negative
+Luis XII,0,1,False Negative
+Juan,1,3,False Negative
+María,0,2,False Negative
+Margarita,1,2,False Negative
+Pablo de Tarso,0,1,False Negative
 Juana I,0,4,False Negative
-Felipe,4,6,False Negative
+Manuel Tamayo y Baus,0,1,False Negative
+Juana la Loca,0,10,False Negative
+Juana de Castilla,3,4,False Negative
+Ruiz Zorrilla,13,18,False Negative
+Merelo,0,1,False Negative
+Higueras,10,11,False Negative
+Cristino Martos,0,1,False Negative
+Práxedes Mateo Sagasta,0,2,False Negative
 Francisco Serrano,1,2,False Negative
-Villacampa,3,4,False Negative
-Martínez Campos,1,3,False Negative
-Pi i Margall,0,2,False Negative
-Higueras,4,11,False Negative
-Higueras Castañeda,2,3,False Negative
-Sagasta,2,4,False Negative
-Ruiz Zorrilla,17,18,False Negative
-Amadeo I,0,2,False Negative
-Francisco Pi i Margall,0,1,False Negative
-Salmerón,0,1,False Negative
-Burdiel,1,2,False Negative
-Quijote,0,1,False Negative
-Romero de Quiñones,0,1,False Negative
-Isabel II,0,2,False Negative
-Miguel Pérez Siffler,0,1,False Negative
+Eugenio Montero Ríos,0,1,False Negative
+Richard Bassett,0,1,False Negative
 Alfonso XII,0,1,False Negative
-Serrano,0,2,False Negative
-Zorrilla,6,7,False Negative
-Práxedes Mateo Sagasta,1,2,False Negative
-Manuel de Falla,2,3,False Negative
-Rafael de la Vresca,0,1,False Negative
-Rodríguez de Carassa,0,1,False Negative
-Pedro Riaño de la Iglesia,0,1,False Negative
-Eduardo Holtzer de Anduaga,0,1,False Negative
-Manuel de Falla y Matheu,0,1,False Negative
+Francisco Pi i Margall,0,1,False Negative
+Miguel Pérez Siffler,0,1,False Negative
+Isabel II,0,2,False Negative
+Higinio Mangado,0,1,False Negative
+Aiza,0,1,False Negative
+Romero de Quiñones,0,1,False Negative
+Pi i Margall,0,2,False Negative
+Quijote,0,1,False Negative
+Amadeo I,0,2,False Negative
 Ernesto Kropf,0,1,False Negative
-Juana B. Benítez,0,1,False Negative
-Josephine Haynes y Yeunger,0,1,False Negative
-Mª del Carmen Botella Domínguez,0,1,False Negative
-José Agea y Falgueras,0,1,False Negative
-María de la Vega,0,1,False Negative
-María de la Concepción Shaw,0,1,False Negative
-Segismundo Moret,1,2,False Negative
-Alfonso XIII,0,1,False Negative
-Margarita Kropf,0,1,False Negative
-Luis López Saconne,0,1,False Negative
-Manuel Soba y Pedro Riaño de la Iglesia,0,1,False Negative
-Rafael,2,3,False Negative
+Joaquín Estébanez,0,1,False Negative
+José Juan Rodríguez Fernández,4,5,False Negative
+Ana Mª Fernández Repeto,0,1,False Negative
+Eusebio,3,4,False Negative
 Ángel J. Gómez,0,1,False Negative
-Carmen Muchada(s) y Cárdenas,0,1,False Negative
-José J. Rodríguez Fernández,0,2,False Negative
-José Rodríguez y Rodríguez,0,1,False Negative
-José L. López Barril,0,1,False Negative
-Mª de la Concepción,0,1,False Negative
-José Macalio,0,1,False Negative
+Manuel Quirell,0,1,False Negative
+Luis López Saconne,0,1,False Negative
+Rodríguez de Carassa,0,1,False Negative
+Juana B. Benítez,0,1,False Negative
+Eduardo Holtzer de Anduaga,0,1,False Negative
+Rafael,1,3,False Negative
+Manuel Soba y Pedro Riaño de la Iglesia,0,1,False Negative
+Rodríguez Arias,0,1,False Negative
+Josefina,1,2,False Negative
+Fernando Ortega,0,1,False Negative
+Josephine Haynes y Yeunger,0,1,False Negative
+María de la Vega,0,1,False Negative
+Antonio San Nicolás Expósito,1,2,False Negative
+María de la Concepción Shaw,0,1,False Negative
+Manuel Grosso,0,1,False Negative
+Franklin,0,1,False Negative
+Alfonso XIII,0,1,False Negative
+Eusebio Pedro Rodríguez Ramírez,0,1,False Negative
+Manuel Aranda,0,1,False Negative
+Pedro Riaño de la Iglesia,0,1,False Negative
 Cayetano del Toro,1,2,False Negative
-Cayetana,1,2,False Negative
-Montero,0,2,False Negative
-Adolfo Suárez Illana,0,1,False Negative
-juan losa,0,1,False Negative
-Sergio Perez,0,1,False Negative
+Eusebio Rodríguez Fernández,0,2,False Negative
+Federico Joly Velasco,0,1,False Negative
+José J. Rodríguez Fernández,0,2,False Negative
+Segismundo Moret,1,2,False Negative
+Rafael de la Vresca,0,1,False Negative
+Juan de Martín Barbadillo,0,1,False Negative
+Mª de la Concepción,0,1,False Negative
+Manuel Soba,0,2,False Negative
+Juan Martín Barbadillo,0,1,False Negative
+Adolfo García Cabezas,0,1,False Negative
+José Falla,0,1,False Negative
+Manuel de Falla y Matheu,0,1,False Negative
+José L. López Barril,0,1,False Negative
+Carmen Muchada(s) y Cárdenas,0,1,False Negative
+José Macalio,0,1,False Negative
+Manuel de Falla,2,3,False Negative
+Margarita Kropf,0,1,False Negative
+Javier,0,2,False Negative
+Cristina Valdivielso,2,3,False Negative
 Teodoro García Egea,0,1,False Negative
-NACHO IZQUIERDO,0,1,False Negative
-JOSE A. CANO,0,1,False Negative
+juan losa,0,1,False Negative
+Cayetana,1,2,False Negative
 Cayetano Álvarez de Toledo,0,1,False Negative
-Montero,0,3,False Negative
-Mauro Ferrari,0,1,False Negative
-Viktor Orban,0,1,False Negative
+JOSE A. CANO,0,1,False Negative
+Adolfo Suárez Illana,0,1,False Negative
+Sergio Perez,0,1,False Negative
 NACHO IZQUIERDO,0,1,False Negative
+Mario Centeno,0,1,False Negative
+Orbán,0,3,False Negative
 Ryszard Kapuscinski,0,1,False Negative
+Mauro Ferrari,0,1,False Negative
 Fátima Báñez,0,1,False Negative
 JOSE A. CANO,0,1,False Negative
-Mario Centeno,0,1,False Negative
-Sánchez,0,2,False Negative
-Fontana,0,1,False Negative
+Viktor Orban,0,1,False Negative
+NACHO IZQUIERDO,0,1,False Negative
+Ana Belén,0,2,False Negative
 Ronaldinho,0,2,False Negative
-Casado,0,2,False Negative

@@ -14,7 +14,7 @@ class Singleton(type):
 class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
         self.nlp      = spacy.load("es_core_news_md")
-        self.nlpRules = spacy.load("es_core_news_sm")
+        self.nlpRules = spacy.load("es_core_news_md", disable=["parser","ner"])
         print("model load")
 
 
@@ -28,7 +28,7 @@ class LanguageBuilder(metaclass=Singleton):
         names      = [
             {'POS': 'PROPN', 'OP': '+'},
             {'TEXT': {'REGEX': 'de|del|-|el|los|de todos los|y'}, 'OP': '?'},
-            {'POS': 'PROPN', 'OP': '?'}
+            {'POS': 'PROPN', 'OP': '*'}
         ]
         ruler      = EntityRuler(self.nlpRules)
         self.label = "NAME"
@@ -36,7 +36,7 @@ class LanguageBuilder(metaclass=Singleton):
             {"label": self.label, "pattern":names}
         ]
         ruler.add_patterns(patterns)
-        self.nlpRules.add_pipe(ruler, before='ner')
+        self.nlpRules.add_pipe(ruler, after='tagger')
 
     def semanticSimilarity(self, text: str, textToCompare: str) -> float:
         """

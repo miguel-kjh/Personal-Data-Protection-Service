@@ -1,7 +1,14 @@
 import json
 
-with open('/home/miguel/Escritorio/Ingeniería informática/cuarto/TFG/NameSearcher-WebService/backend/app/test/data/web/web4.json') as f:
-  data = json.load(f)
+pathTables = 'app/test/data/tablas/tabla'
+pathTexts  = 'app/test/data/textos/carta'
+pathWeb    = 'app/test/data/web/web'
 
-for name in sorted(list(set(data['names']))):
-    print(name, data['names'].count(name))
+
+count = 0
+for index in range(1,10):
+    with open(pathWeb + "%s.json" %(index)) as file:
+        data = json.load(file)
+    count += len(data['names'])
+
+print(count)

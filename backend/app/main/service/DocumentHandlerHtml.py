@@ -120,9 +120,7 @@ class DocumentHandlerHtml(DocumentHandler):
             )
         data = []
         data[len(data):],data[len(data):] = listNames,idCards
-        print(data)
         self._buildRegex(data)
-        print(self.regexName)
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
     

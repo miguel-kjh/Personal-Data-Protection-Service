@@ -22,7 +22,7 @@ class PersonalDataSearch(ABC):
         else: 
             self.nlp = LanguageBuilder().getlanguageByRules()
         
-        self.keywords     = ["DE", "DEL", "EL", "LOS", "TODOS"]
+        self.keywords     = ["DE", "DEL", "EL", "LOS", "TODOS", "Y"]
         self.errorRange   = errorRange
         self.connection   = SpanishNamesDB()
         self.regexIdCards = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'

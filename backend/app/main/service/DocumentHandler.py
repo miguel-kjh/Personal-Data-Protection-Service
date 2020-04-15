@@ -13,7 +13,7 @@ class DocumentHandler:
     def __init__(self, path: str, destiny: str = ""):
         self.path = path
         self.destiny = destiny
-        self.dataSearch = PersonalDataSearchByEntities()
+        self.dataSearch = PersonalDataSearchByRules()
 
     def documentsProcessing(self):
         pass

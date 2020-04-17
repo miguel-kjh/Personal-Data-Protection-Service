@@ -1,7 +1,6 @@
 from app.test.base import BaseTestCase
 from app.main.service.CreateDocumentHandler import getCreatorDocumentHandler
 from app.main.service.languageBuilder import LanguageBuilder
-from app.main.service.DocumentHandlerHtml import TokenizerHtml,TableToken
 
 import unittest
 import json 
@@ -26,16 +25,18 @@ class ConfidenceMatrixBuilder:
         self.listOfFalseNegatives = []
         self.listOfFalsePositives = []
 
-    def countHinstInTexts(self, listNames:list, data:list):
+    def countHinst(self, listNames:list, data:list):
         for name in list(set(data)):
             countNameInModel = listNames.count(name)
             realCountName    = data.count(name)
 
             if countNameInModel == realCountName:
                 self.hits += countNameInModel
-            elif countNameInModel < realCountName:
-                self.hits           += countNameInModel
+            elif countNameInModel == 0:
                 self.falseNegatives += (realCountName-countNameInModel)
+                self.listOfFalseNegatives.append((name,countNameInModel,realCountName))
+            elif countNameInModel < realCountName:
+                self.hits           += realCountName
                 self.listOfFalseNegatives.append((name,countNameInModel,realCountName))
             else:
                 self.hits           += realCountName
@@ -49,23 +50,9 @@ class ConfidenceMatrixBuilder:
                 self.falsePositives += countNameInModel
                 self.listOfFalsePositives.append((name,countNameInModel,realCountName))
 
-
-    def countHinstInTables(self,listNames:list, data:list):
-        for name in listNames:
-            if name in data:
-                self.hits += 1
-            else:
-                self.falsePositives += 1
-                self.listOfFalsePositives.append(name)
-
-        for name in data:
-            if name not in listNames:
-                self.falseNegatives += 1
-                self.listOfFalseNegatives.append(name)
-
     def getData(self) -> dict:
         return {
-            "hits":self.hits, 
+            "hits"           :self.hits, 
             "False Positives":self.falsePositives,
             "False Negatives":self.falseNegatives 
         }
@@ -98,8 +85,9 @@ class ConfidenceMatrixBuilder:
 class TestPerfomanceTables(BaseTestCase):
     
     def test_tables(self):
-        iteration = 10
+        iteration = 11
         builder   = ConfidenceMatrixBuilder()
+        print("\n")
         for index in range(1,iteration):
             with open(pathTables + "%s.json" %(index)) as file:
                 data = json.load(file)
@@ -107,15 +95,17 @@ class TestPerfomanceTables(BaseTestCase):
             dh             = creator.create()
             listNames,_    = dh.giveListNames()
 
-            builder.countHinstInTables(listNames,data['names'])
+            builder.countHinst(listNames,data['names'])
+            print(pathTables + "%s.xls" %(index), ":", len(listNames), "names")
         print(builder.getData())
 
         builder.saveReport('app/test/result/tables_report.csv')
 
 class TestPerfomanceTexts(BaseTestCase):
     def test_text(self):
-        iteration = 10
+        iteration = 11
         builder   = ConfidenceMatrixBuilder()
+        print("\n")
         for index in range(1,iteration):
             with open(pathTexts + "%s.json" %(index)) as file:
                 data = json.load(file)
@@ -123,16 +113,17 @@ class TestPerfomanceTexts(BaseTestCase):
             creator        = getCreatorDocumentHandler(pathTexts + "%s.txt" %(index),'txt')
             dh             = creator.create()
             listNames,_    = dh.giveListNames()
-            
-            builder.countHinstInTexts(listNames,data['names'])
+            print(pathTexts + "%s.txt" %(index), ":", len(listNames), "names")
+            builder.countHinst(listNames,data['names'])
         print(builder.getData())
         
         builder.saveReport('app/test/result/text_report.csv')
 
 class TestPerfomanceWeb(BaseTestCase):
     def test_web(self):
-        iteration = 10
+        iteration = 11
         builder   = ConfidenceMatrixBuilder()
+        print("\n")
         for index in range(1,iteration):
             with open(pathWeb + "%s.json" %(index)) as file:
                 data = json.load(file)
@@ -141,13 +132,13 @@ class TestPerfomanceWeb(BaseTestCase):
             dh             = creator.create()
             listNames,_    = dh.giveListNames()
 
-            builder.countHinstInTexts(listNames,data['names'])
-        
+            builder.countHinst(listNames,data['names'])
+            print(pathWeb + "%s.html" %(index), ":", len(listNames), "names")
         print(builder.getData())
 
         builder.saveReport('app/test/result/web_report.csv')
 
-        
+       
 
 
 if __name__ == '__main__':

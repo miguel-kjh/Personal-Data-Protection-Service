@@ -7,7 +7,7 @@ from app.main.service.personalDataSearchByRules import PersonalDataSearchByRules
 personalDataSearchByEnt = PersonalDataSearchByEntities()
 textForTest = {
     "simple": "Miguel estuvo aquí hace dos minutos",
-    "normal": "El calendario Gregoriano es debido a el papa Gregorio XIII y el juliano por Julio Cesar",
+    "normal": "El calendario gregoriano es debido a el papa Gregorio y el juliano por Julio Cesar",
     "hard": "Bien, soy el juez Cayo Medina de Lara, voy a nombrar a los representantes de la Asamblea, que son: "
             + " Laura Vega, "
             + "Juan Sebastian Ramírez y "
@@ -47,7 +47,7 @@ class TestSearchTextByEnt(BaseTestCase):
         dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["normal"])
         self.assertNotEqual(dictionatyOfNames, [])
         self.assertEqual(len(dictionatyOfNames), 2)
-        self.assertEqual(dictionatyOfNames[0]["name"], "Gregorio XIII")
+        self.assertEqual(dictionatyOfNames[0]["name"], "Gregorio")
         self.assertEqual(dictionatyOfNames[1]["name"], "Julio Cesar")
 
     def test_hard_look_for_names_by_searchNamesText(self):

@@ -28,7 +28,7 @@ class PersonalDataSearch(ABC):
         self.regexIdCards = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'
 
     def _convertName(self,name:str) -> list:
-        normalizeName = normalizeUnicode(name).upper()
+        normalizeName = normalizeUnicode(str(name)).upper()
         words = list(filter(lambda n: n not in self.keywords, normalizeName.replace('-', ' ').replace(',','').replace('\'','').split()))
         return words
 

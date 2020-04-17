@@ -11,9 +11,9 @@ from app.main.util.envNames import UPLOAD_FOLDER
 class DocumentHandler:
 
     def __init__(self, path: str, destiny: str = ""):
-        self.path = path
-        self.destiny = destiny
-        self.dataSearch = PersonalDataSearchByRules()
+        self.path       = path
+        self.destiny    = destiny
+        self.dataSearch = PersonalDataSearchByEntities()
 
     def documentsProcessing(self):
         pass

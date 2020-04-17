@@ -27,7 +27,7 @@ class LanguageBuilder(metaclass=Singleton):
     def defineRulesOfNames(self):
         names      = [
             {'POS': 'PROPN', 'OP': '+'},
-            {'TEXT': {'REGEX': 'de|del|-|el|los|de todos los|y'}, 'OP': '?'},
+            {'TEXT': {'REGEX': 'de|del|-|el|los|de todos los'}, 'OP': '?'},
             {'POS': 'PROPN', 'OP': '*'}
         ]
         ruler      = EntityRuler(self.nlpRules)

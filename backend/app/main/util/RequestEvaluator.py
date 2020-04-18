@@ -30,7 +30,7 @@ class RequestEvaluator:
             self.error = "Allowed file types are %s" % (','.join(ALLOWED_EXTENSIONS))
             return self.success
         self.filetype = giveTypeOfFile(file.filename)
-        self.fakeFilename = giveFileNameUnique(self.filename, self.filetype)
+        self.fakeFilename = giveFileNameUnique(self.filetype)
         file.save(os.path.join(UPLOAD_FOLDER, self.fakeFilename))
         self.success = True
         return self.success

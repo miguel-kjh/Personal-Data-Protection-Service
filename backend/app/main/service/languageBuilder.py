@@ -1,6 +1,9 @@
+from app.main.util.heuristicMeasures import MINIMAL_UPPER_CHAR_DENSITY
+
 import spacy
 from spacy.pipeline import EntityRuler
 from spacy.matcher import Matcher
+
 
 class Singleton(type):
     _instances = {}
@@ -68,4 +71,4 @@ class LanguageBuilder(metaclass=Singleton):
             doc = self.nlp(text)
         matches = self.matcher(doc)
         return not ((bool(matches) and matches[-1][2] == len(doc)) 
-        or (sum(char.isupper() for char in text)+1)/len(text) > 0.8)
+        or (sum(char.isupper() for char in text)+1)/len(text) > MINIMAL_UPPER_CHAR_DENSITY)

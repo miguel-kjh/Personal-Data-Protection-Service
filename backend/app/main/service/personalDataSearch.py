@@ -1,19 +1,12 @@
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.heuristicMeasures import ERROR_RANGE_PERCENTAGE_DB
-from app.main.util.fileUtils import isDni
+from app.main.util.fileUtils import isDni,normalizeUnicode,generateWordsAsString
 
 import sqlite3 as lite
 import re
 from abc import ABC, abstractmethod
 from typing import Text
-from unidecode import unidecode
 from itertools import chain
-
-
-def normalizeUnicode(string: str) -> str:
-    return unidecode(string)
-
-
 
 class PersonalDataSearch(ABC):
     def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB, namesByRules:bool = False):
@@ -22,10 +15,10 @@ class PersonalDataSearch(ABC):
         else: 
             self.nlp = LanguageBuilder().getlanguageByRules()
         
-        self.keywords     = ["DE", "DEL", "EL", "LOS", "TODOS", "Y"]
-        self.errorRange   = errorRange
-        self.connection   = SpanishNamesDB()
-        self.regexIdCards = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'
+        self.keywords              = ["DE", "DEL", "EL", "LOS", "TODOS", "Y"]
+        self.errorRange            = errorRange
+        self.connection            = SpanishNamesDB()
+        self.regexIdCards          = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'
 
     def _convertName(self,name:str) -> list:
         normalizeName = normalizeUnicode(str(name)).upper()
@@ -33,25 +26,27 @@ class PersonalDataSearch(ABC):
         return words
 
     def _checkNameInSubset(self,name:list, nameSubset:list) -> bool:
-        if len(name) == 0: return False
+        if not name: return False
         namesFound = list(filter(lambda n: n in nameSubset, name))
         return len(namesFound)/len(name) > self.errorRange
 
-    def checkNamesInDB(self, names:list):
+
+    def checkNamesInDB(self, names:list) -> list:
         listNames = list(map(lambda x: self._convertName(x), names))
-        words = list(chain.from_iterable(listNames))
+        words     = list(chain.from_iterable(listNames))
         if not words: return []
-        strName = "('" + '\',\''.join(list(set(words))) + "')"
         nameSubset = []
-        try:
-            sentence = "select distinct names from names where names in %s;" % (strName)
-            senteceResult  = self.connection.query(sentence)
-            nameSubset[len(nameSubset):] = [queryResult[0] for queryResult in senteceResult.fetchall()]
-            sentence = "select distinct surnames from surnames where surnames in %s;" % (strName)
-            senteceResult  = self.connection.query(sentence)
-            nameSubset[len(nameSubset):] = [queryResult[0] for queryResult in senteceResult.fetchall()]
-        except lite.OperationalError as identifier:
-            print(identifier)
+        
+        for strName in generateWordsAsString(list(set(words))):
+            try:
+                sentence = "select distinct names from names where names in %s;" % (strName)
+                senteceResult  = self.connection.query(sentence)
+                nameSubset[len(nameSubset):] = [queryResult[0] for queryResult in senteceResult.fetchall()]
+                sentence = "select distinct surnames from surnames where surnames in %s;" % (strName)
+                senteceResult  = self.connection.query(sentence)
+                nameSubset[len(nameSubset):] = [queryResult[0] for queryResult in senteceResult.fetchall()]
+            except lite.OperationalError as identifier:
+                print(identifier)
         finalNames = list(
             filter(
                 lambda name: self._checkNameInSubset(name,nameSubset), listNames

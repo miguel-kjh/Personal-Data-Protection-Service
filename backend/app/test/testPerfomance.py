@@ -6,10 +6,7 @@ import unittest
 import json 
 import numpy as np
 import pandas as pd
-from nltk.tokenize import sent_tokenize
-import matplotlib.pyplot as plt
-import requests
-from bs4 import BeautifulSoup
+
 
 pathTables = 'app/test/data/tablas/tabla'
 pathTexts  = 'app/test/data/textos/carta'

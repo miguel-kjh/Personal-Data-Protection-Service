@@ -34,15 +34,6 @@ def giveFileNameUnique(fileType: str) -> str:
     # return sha.hexdigest() + "." + fileType
     return str(datetime.now().timestamp()).replace(".", "") + "." + fileType
 
-
-def encode(text: str):
-    return "*" * len(text)
-
-
-def markInHtml(text: str):
-    return '<mark style="background: #7aecec;">' + text + '</mark>'
-
-
 def itemIterator(parent):
     if isinstance(parent, _Document):
         parent_elm = parent.element.body

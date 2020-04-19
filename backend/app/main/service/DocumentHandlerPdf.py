@@ -1,7 +1,7 @@
 from app.main.service.DocumentHandler import DocumentHandler
 import app.main.service.pdf_redactor as pdf_redactor
 from app.main.util.dataPickerInTables import DataPickerInTables
-from app.main.util.fileUtils import encode,readPdf
+from app.main.util.fileUtils import readPdf
 from app.main.util.semanticWordLists import listOfVectorWords
 from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.service.languageBuilder import LanguageBuilder
@@ -14,8 +14,8 @@ from typing import Text
 
 class DocumentHandlerPdf(DocumentHandler):
 
-    def __init__(self, path: str, destiny: str = ""):
-        super().__init__(path, destiny=destiny)
+    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
+        super().__init__(path, destiny=destiny, anonymizationFunction = anonymizationFunction)
         self.options = pdf_redactor.RedactorOptions()
         self.options.metadata_filters = {
             "Title": [lambda value: value],
@@ -69,7 +69,7 @@ class DocumentHandlerPdf(DocumentHandler):
         for card in cards:
             idCards.append(card['name'])
 
-    def giveListNames(self) -> tuple:
+    def extractData(self) -> tuple:
         listNames = []
         idCards   = []
         lastKey   = []
@@ -83,14 +83,17 @@ class DocumentHandlerPdf(DocumentHandler):
             self.options.content_filters = [
                 (
                     re.compile(regex),
-                    lambda m: encode(m.group())
+                    lambda m: self.anonymizationFunction(m.group())
                 )
             ]
             pdf_redactor.redactor(self.options, self.path, self.destiny)
             self.path = self.destiny
+
+        if not self.anonymizationFunction:
+            return
         
         maxLength = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-        listNames,idCards = self.giveListNames()
+        listNames,idCards = self.extractData()
         if not listNames and not idCards:
             pdf_redactor.redactor(self.options, self.path, self.destiny)
             return

@@ -16,9 +16,10 @@ class Singleton(type):
 
 class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
-        self.nlp      = spacy.load("es_core_news_md")
-        self.nlpRules = spacy.load("es_core_news_md", disable=["parser","ner"])
-        print("model load")
+        self.nlp            = spacy.load("es_core_news_md")
+        self.nlpRules       = spacy.load("es_core_news_md", disable=["parser","ner"])
+        self.vectorialSpace = spacy.load("es_core_news_md", disable=["tagger","parser","ner"])
+        print("models load")
 
 
         self.matcher = Matcher(self.nlp.vocab)
@@ -46,10 +47,9 @@ class LanguageBuilder(metaclass=Singleton):
         Only use this funtion when used a md or lg models
         """
         if not text.strip(): return 0.0
-        with self.nlp.disable_pipes("tagger","parser","ner"):
-            doc = self.nlp(text)
-            if not doc.vector_norm: return False
-            docToCompare = self.nlp(textToCompare)
+        doc = self.vectorialSpace(text)
+        if not doc.vector_norm: return False
+        docToCompare = self.vectorialSpace(textToCompare)
         return doc.similarity(docToCompare)
 
     def getlanguage(self):
@@ -67,8 +67,7 @@ class LanguageBuilder(metaclass=Singleton):
     def hasContex(self, text: str) -> bool:
         if not text:
             return False
-        with self.nlp.disable_pipes("parser","ner"):
-            doc = self.nlp(text)
+        doc = self.nlpRules(text)
         matches = self.matcher(doc)
         return not ((bool(matches) and matches[-1][2] == len(doc)) 
         or (sum(char.isupper() for char in text)+1)/len(text) > MINIMAL_UPPER_CHAR_DENSITY)

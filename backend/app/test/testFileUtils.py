@@ -1,5 +1,6 @@
 from app.test.base import BaseTestCase
 from app.main.util.fileUtils import *
+from app.test.fileVariables import pathTexts
 
 import unittest
 
@@ -26,7 +27,6 @@ class TestFileUtils(BaseTestCase):
         self.assertEquals(giveTypeOfFile(None), False)
 
     def test_readPdf(self):
-        pathTexts  = 'app/test/data/textos/carta'
         self.assertTrue(len(list(readPdf(pathTexts + "1.pdf"))) > 0)
         self.assertEquals(list(readPdf(pathTexts)), [])
         self.assertEquals(list(readPdf(pathTexts + "1.txt")), [])

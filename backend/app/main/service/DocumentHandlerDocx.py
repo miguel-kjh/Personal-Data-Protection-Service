@@ -1,4 +1,4 @@
-from app.main.util.fileUtils import encode, itemIterator
+from app.main.util.fileUtils import itemIterator
 from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.semanticWordLists import listOfVectorWords
@@ -14,17 +14,21 @@ from typing import Text
 
 class DocumentHandlerDocx(DocumentHandler):
 
-    def __init__(self, path: str, destiny: str = ""):
-        super().__init__(path, destiny=destiny)
+    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
+        super().__init__(path, destiny=destiny, anonymizationFunction=anonymizationFunction)
         self.document = docx.Document(self.path)
 
     def documentsProcessing(self):
         def updateDocx(regex:str, text:Text) -> Text:
             regexName = re.compile(regex)
-            return regexName.sub(lambda match: encode(match.group()), text)
+            return regexName.sub(lambda match: self.anonymizationFunction(match.group()), text)
+
+        if not self.anonymizationFunction:
+            return
+            
         data              = []
         maxLength         = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-        listNames,idCards = self.giveListNames()
+        listNames,idCards = self.extractData()
         listNames         = list(set(listNames))
         listNames.sort(
                 key     = lambda value: len(value),
@@ -47,7 +51,7 @@ class DocumentHandlerDocx(DocumentHandler):
                         intial     = numberRange
                     block.text = updateDocx('|'.join(data[intial:]), block.text)
                 else:
-                    block.text = regexName.sub(lambda match: encode(match.group()), block.text)
+                    block.text = regexName.sub(lambda match: self.anonymizationFunction(match.group()), block.text)
             elif isinstance(block, Table):
                 for row in block.rows:
                     for cell in row.cells:
@@ -58,13 +62,13 @@ class DocumentHandlerDocx(DocumentHandler):
                                 intial = numberRange
                             cell.text = updateDocx('|'.join(data[intial:]), cell.text)
                         else:
-                            cell.text = regexName.sub(lambda match: encode(match.group()), cell.text)
+                            cell.text = regexName.sub(lambda match: self.anonymizationFunction(match.group()), cell.text)
 
             else:
                 continue
         self.document.save(self.destiny)
 
-    def giveListNames(self) -> tuple:
+    def extractData(self) -> tuple:
         lastKey    = []
         listNames  = []
         listIdCard = []

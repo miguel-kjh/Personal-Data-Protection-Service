@@ -1,5 +1,4 @@
 from app.main.service.DocumentHandler import DocumentHandler
-from app.main.util.fileUtils import markInHtml,encode
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.heuristicMeasures import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.util.semanticWordLists import listOfVectorWords
@@ -83,20 +82,15 @@ class TokenizerHtml:
 
 class DocumentHandlerHtml(DocumentHandler):
 
-    def __init__(self, path: Text, destiny: str = ""):
-        super().__init__(path, destiny=destiny)
+    def __init__(self, path: Text, destiny: str = "", anonymizationFunction = None):
+        super().__init__(path, destiny=destiny, anonymizationFunction=anonymizationFunction)
         with open(self.path, "r", encoding="utf8") as f:
             self.soup  = BeautifulSoup(f.read(), "lxml")
         self.regexName = []
 
-    def _locateNames(self, sentence):
+    def _processEntities(self, sentence):
         for regex in self.regexName:
-            sentence = re.compile(regex).sub(lambda match: markInHtml(match.group()), sentence)
-        return sentence
-
-    def _encodeNames(self, sentence):
-        for regex in self.regexName:
-            sentence = re.compile(regex).sub(lambda match: encode(match.group()), sentence)
+            sentence = re.compile(regex).sub(lambda match: self.anonymizationFunction(match.group()), sentence)
         return sentence
 
     def _buildRegex(self, data):
@@ -111,22 +105,12 @@ class DocumentHandlerHtml(DocumentHandler):
 
 
     def documentsProcessing(self):
-        formatter = HTMLFormatter(self._encodeNames)
-        listNames,idCards = self.giveListNames()
-        listNames = list(set(listNames))
-        listNames.sort(
-                key     = lambda value: len(value),
-                reverse = True
-            )
-        data = []
-        data[len(data):],data[len(data):] = listNames,idCards
-        self._buildRegex(data)
-        with open(self.destiny, "w") as f:
-            f.write(self.soup.prettify(formatter=formatter))
-    
-    def documentTagger(self):
-        formatter = HTMLFormatter(self._locateNames)
-        listNames,idCards = self.giveListNames()
+        
+        if not self.anonymizationFunction:
+            return
+
+        formatter = HTMLFormatter(self._processEntities)
+        listNames,idCards = self.extractData()
         listNames = list(set(listNames))
         listNames.sort(
                 key     = lambda value: len(value),
@@ -138,7 +122,7 @@ class DocumentHandlerHtml(DocumentHandler):
         with open(self.destiny, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
-    def giveListNames(self) -> tuple:
+    def extractData(self) -> tuple:
         def cleanPicker():
             if not picker.isEmpty():
                 listNames[len(listNames):] = picker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)

@@ -1,5 +1,4 @@
 from app.main.service.DocumentHandler import DocumentHandler
-from app.main.util.fileUtils import encode
 from app.main.service.languageBuilder import LanguageBuilder
 from app.main.util.heuristicMeasures import MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 
@@ -8,28 +7,19 @@ import re
 
 class DocumentHandlerTxt(DocumentHandler):
 
-    def modifyLine(self, line: str, data: list) -> str:
-        if not data:
-            return line
-        newLine = ""
-        index   = 0
-        for ent in data:
-            newLine += line[index:ent['star_char']] + encode(ent['name'])
-            index    = ent['end_char']
-        if index <= len(line) - 1:
-            newLine += line[index:]
-        return newLine
-
     def documentsProcessing(self):
         def updateTxt(regex:str, text:Text) -> Text:
             regexName = re.compile(regex)
-            return regexName.sub(lambda match: encode(match.group()), text)
+            return regexName.sub(lambda match: self.anonymizationFunction(match.group()), text)
+
+        if not self.anonymizationFunction:
+            return
 
         with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
             data              = []
             fileText          = str(file.read())
             maxLength         = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-            listNames,idCards = self.giveListNames()
+            listNames,idCards = self.extractData()
             listNames = list(set(listNames))
             listNames.sort(
                     key     = lambda value: len(value),
@@ -49,7 +39,7 @@ class DocumentHandlerTxt(DocumentHandler):
 
                 
 
-    def giveListNames(self) -> tuple:
+    def extractData(self) -> tuple:
         listNames = []
         idCards   = []
         with open(self.path, 'r',encoding='utf8') as file:

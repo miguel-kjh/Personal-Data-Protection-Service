@@ -7,6 +7,7 @@ from ..service.LogService import updateDelete, saveLog
 from ..service.languageBuilder import LanguageBuilder
 from ..service.CreateDocumentHandler import getCreatorDocumentHandler
 from ..util.RequestEvaluator import RequestEvaluator
+from ..util.anonymizationFunctions import encode,markInHtml
 import os
 
 api = NameSearchDto.api
@@ -48,7 +49,8 @@ class Encode(Resource):
             creator = getCreatorDocumentHandler(
                 os.path.join(path, evaluator.fakeFilename),
                 evaluator.filetype,
-                os.path.join(path, nameOfNewDocument)
+                os.path.join(path, nameOfNewDocument),
+                encode
             )
             dh = creator.create()
             dh.documentsProcessing()
@@ -69,7 +71,7 @@ class Encode(Resource):
 
 
 @api.route('/file/extract-data/json')
-class ListNames(Resource):
+class extractDataJson(Resource):
     @api.doc('give a list of name in the document')
     def post(self):
         evaluator = RequestEvaluator(request)
@@ -87,7 +89,7 @@ class ListNames(Resource):
                 evaluator.filetype
             )
             dh = creator.create()
-            names,idCards = dh.giveListNames()
+            names,idCards = dh.extractData()
             updateDelete(publicId, True)
             return {
                        "error": None,
@@ -100,7 +102,7 @@ class ListNames(Resource):
 
 
 @api.route('/file/extract-data/zip')
-class CsvFile(Resource):
+class extractDataZip(Resource):
     @api.doc('return a zip folder with all data found grouped in CSV files')
     def post(self):
         evaluator = RequestEvaluator(request)
@@ -164,10 +166,11 @@ class TargetHtml(Resource):
             creator = getCreatorDocumentHandler(
                 os.path.join(path, evaluator.fakeFilename),
                 evaluator.filetype,
-                os.path.join(path, nameOfNewDocument)
+                os.path.join(path, nameOfNewDocument),
+                markInHtml
             )
             dh = creator.create()
-            dh.documentTagger()
+            dh.documentsProcessing()
             updateDelete(publicId, True)
             publicId = saveLog(
                 {
@@ -177,6 +180,7 @@ class TargetHtml(Resource):
                     'filetype': evaluator.filetype
                 }
             )
+            print("hola")
             fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
             updateDelete(publicId, True)
             return fileSend

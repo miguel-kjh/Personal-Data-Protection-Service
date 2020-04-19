@@ -10,18 +10,19 @@ from app.main.util.envNames import UPLOAD_FOLDER
 
 class DocumentHandler:
 
-    def __init__(self, path: str, destiny: str = ""):
-        self.path       = path
-        self.destiny    = destiny
-        self.dataSearch = PersonalDataSearchByEntities()
+    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
+        self.path                  = path
+        self.destiny               = destiny
+        self.dataSearch            = PersonalDataSearchByEntities()
+        self.anonymizationFunction = anonymizationFunction
 
     def documentsProcessing(self):
         pass
 
     def createDataZipFolder(self):
-        self._createZip(*self.giveListNames())
+        self._createZip(*self.extractData())
 
-    def giveListNames(self) -> tuple:
+    def extractData(self) -> tuple:
         pass
 
     def _saveInZipFile(self, zipf:zipfile.ZipFile, filename:str,nameColum:str, collection:list):

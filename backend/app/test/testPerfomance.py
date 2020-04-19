@@ -1,16 +1,13 @@
 from app.test.base import BaseTestCase
 from app.main.service.CreateDocumentHandler import getCreatorDocumentHandler
 from app.main.service.languageBuilder import LanguageBuilder
+from app.test.fileVariables import pathTexts,pathTables,pathWeb
 
 import unittest
 import json 
 import numpy as np
 import pandas as pd
 
-
-pathTables = 'app/test/data/tablas/tabla'
-pathTexts  = 'app/test/data/textos/carta'
-pathWeb    = 'app/test/data/web/web'
 
 
 class ConfidenceMatrixBuilder:
@@ -90,7 +87,7 @@ class TestPerfomanceTables(BaseTestCase):
                 data = json.load(file)
             creator        = getCreatorDocumentHandler(pathTables + "%s.xls" %(index),'xls')
             dh             = creator.create()
-            listNames,_    = dh.giveListNames()
+            listNames,_    = dh.extractData()
 
             builder.countHinst(listNames,data['names'])
             print(pathTables + "%s.xls" %(index), ":", len(listNames), "names")
@@ -109,7 +106,7 @@ class TestPerfomanceTexts(BaseTestCase):
 
             creator        = getCreatorDocumentHandler(pathTexts + "%s.txt" %(index),'txt')
             dh             = creator.create()
-            listNames,_    = dh.giveListNames()
+            listNames,_    = dh.extractData()
             print(pathTexts + "%s.txt" %(index), ":", len(listNames), "names")
             builder.countHinst(listNames,data['names'])
         print(builder.getData())
@@ -127,7 +124,7 @@ class TestPerfomanceWeb(BaseTestCase):
 
             creator        = getCreatorDocumentHandler(pathWeb + "%s.html" %(index),'html')
             dh             = creator.create()
-            listNames,_    = dh.giveListNames()
+            listNames,_    = dh.extractData()
 
             builder.countHinst(listNames,data['names'])
             print(pathWeb + "%s.html" %(index), ":", len(listNames), "names")

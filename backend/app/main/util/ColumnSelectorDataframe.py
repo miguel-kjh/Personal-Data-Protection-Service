@@ -1,12 +1,13 @@
-from app.main.util.semanticWordLists import listOfVectorWords
+from app.main.util.semanticWordLists  import listOfVectorWords
 from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.heuristicMeasures import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+from app.main.util.heuristicMeasures  import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+
 import pandas as pd
 
 
 class typeOfColumn:
     def __init__(self, key:str, isName:bool):
-        self.key = key
+        self.key    = key
         self.isName = isName
 
 class ColumnSelectorDataFrame:

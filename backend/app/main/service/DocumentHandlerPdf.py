@@ -1,22 +1,24 @@
 from app.main.service.DocumentHandler import DocumentHandler
-import app.main.service.pdf_redactor as pdf_redactor
 from app.main.util.dataPickerInTables import DataPickerInTables
-from app.main.util.fileUtils import encode,readPdf
-from app.main.util.semanticWordLists import listOfVectorWords
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+from app.main.util.fileUtils          import readPdf
+from app.main.util.semanticWordLists  import listOfVectorWords
+from app.main.util.heuristicMeasures  import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.service.languageBuilder import LanguageBuilder
+import app.main.service.pdf_redactor  as pdf_redactor
+
 
 from datetime import datetime
+from typing   import Text
 import re
 import tabula
-from typing import Text
     
 
 class DocumentHandlerPdf(DocumentHandler):
 
-    def __init__(self, path: str, destiny: str = ""):
-        super().__init__(path, destiny=destiny)
-        self.options = pdf_redactor.RedactorOptions()
+    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
+        super().__init__(path, destiny=destiny, anonymizationFunction = anonymizationFunction)
+        self.options                  = pdf_redactor.RedactorOptions()
+        self.options.xmp_filters      = [lambda xml: None]
         self.options.metadata_filters = {
             "Title": [lambda value: value],
 
@@ -25,7 +27,6 @@ class DocumentHandlerPdf(DocumentHandler):
 
             "DEFAULT": [lambda value: None],
         }
-        self.options.xmp_filters = [lambda xml: None]
 
     def getPersonalDataInTables(self, tables:list, listNames:list, idCards: list, lastKey) -> list:
         for table in tables:
@@ -69,7 +70,7 @@ class DocumentHandlerPdf(DocumentHandler):
         for card in cards:
             idCards.append(card['name'])
 
-    def giveListNames(self) -> tuple:
+    def extractData(self) -> tuple:
         listNames = []
         idCards   = []
         lastKey   = []
@@ -83,25 +84,27 @@ class DocumentHandlerPdf(DocumentHandler):
             self.options.content_filters = [
                 (
                     re.compile(regex),
-                    lambda m: encode(m.group())
+                    lambda m: self.anonymizationFunction(m.group())
                 )
             ]
             pdf_redactor.redactor(self.options, self.path, self.destiny)
             self.path = self.destiny
+
+        if not self.anonymizationFunction:
+            return
         
-        maxLength = 4000
-        listNames,idCards = self.giveListNames()
+        maxLength = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+        listNames,idCards = self.extractData()
         if not listNames and not idCards:
             pdf_redactor.redactor(self.options, self.path, self.destiny)
             return
         listNames = list(set(listNames))
         listNames.sort(
-                key=lambda value: len(value),
-                reverse=True
+                key     = lambda value: len(value),
+                reverse = True
             )
-        data = []
-        data[len(data):] = listNames
-        data[len(data):] = idCards
+        data                              = []
+        data[len(data):],data[len(data):] = listNames,idCards
         if len(data) > maxLength:
             intial = 0
             for numberRange in range(maxLength,len(data),maxLength):

@@ -1,14 +1,13 @@
-from app.main.service.DocumentHandler import DocumentHandler
+from app.main.service.DocumentHandler      import DocumentHandler
 from app.main.util.ColumnSelectorDataframe import ColumnSelectorDataFrame
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
-from app.main.util.fileUtils import encode
+from app.main.util.heuristicMeasures       import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 
 import pandas as pd
 
 
 class DocumentHandlerSpreadsheets(DocumentHandler):
-    def __init__(self, path: str, destiny: str = ""):
-        super().__init__(path, destiny=destiny)
+    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
+        super().__init__(path, destiny=destiny, anonymizationFunction = anonymizationFunction)
         self.selector = ColumnSelectorDataFrame()
 
     def save(self):
@@ -16,11 +15,11 @@ class DocumentHandlerSpreadsheets(DocumentHandler):
 
 class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
 
-    def __init__(self, path: str, destiny: str = ""):
-        super().__init__(path, destiny=destiny)
+    def __init__(self, path: str, destiny: str = "", anonymizationFunction=None):
+        super().__init__(path, destiny=destiny, anonymizationFunction=anonymizationFunction)
         self.sheets = pd.read_excel(path,sheet_name=None)
 
-    def giveListNames(self) -> tuple:
+    def extractData(self) -> tuple:
         listNames = []
         idCards   = []
         for table in self.sheets:
@@ -37,18 +36,22 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
         return listNames,idCards
 
     def documentsProcessing(self):
+
+        if not self.anonymizationFunction:
+            return
+
         for table in self.sheets:
             for typeColumn in self.selector.getPossibleColumnsNames(self.sheets[table]):
                 if typeColumn.isName:
                     dfNotNull = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
                     countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                     if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                        self.sheets[table][typeColumn.key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
+                        self.sheets[table][typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
                 else:
                     idCards = list(
                         filter(lambda idCards: self.dataSearch.isDni(idCards),self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()])
                     )
-                    self.sheets[table][typeColumn.key].replace({str(idCard): encode(str(idCard)) for idCard in idCards}, inplace=True)
+                    self.sheets[table][typeColumn.key].replace({str(idCard): self.anonymizationFunction(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()
     
     def save(self):
@@ -59,16 +62,16 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
 
 class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
 
-    def __init__(self, path: str, destiny: str = ""):
-        super().__init__(path, destiny=destiny)
+    def __init__(self, path: str, destiny: str = "",anonymizationFunction=None):
+        super().__init__(path, destiny=destiny, anonymizationFunction=anonymizationFunction)
         self.df = pd.read_csv(path)
 
-    def giveListNames(self) -> tuple:
+    def extractData(self) -> tuple:
         listNames = []
         idCards   = []
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
             if typeColumn.isName:
-                dfNotNull = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
+                dfNotNull   = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
                 countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     listNames[len(listNames):] = dfNotNull
@@ -79,17 +82,20 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
         return listNames,idCards
 
     def documentsProcessing(self):
+        if not self.anonymizationFunction:
+            return
+
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
             if typeColumn.isName:
-                dfNotNull = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
+                dfNotNull   = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
                 countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
-                    self.df[typeColumn.key].replace({str(name): encode(str(name)) for name in dfNotNull}, inplace=True)
+                    self.df[typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
             else:
                 idCards = list(
                     filter(lambda idCards: self.dataSearch.isDni(idCards),self.df[typeColumn.key][self.df[typeColumn.key].notnull()])
                 )
-                self.df[typeColumn.key].replace({str(idCard): encode(str(idCard)) for idCard in idCards}, inplace=True)
+                self.df[typeColumn.key].replace({str(idCard): self.anonymizationFunction(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()
 
 

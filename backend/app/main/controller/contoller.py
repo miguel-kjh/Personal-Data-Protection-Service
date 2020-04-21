@@ -1,18 +1,22 @@
+from ..util.NameSearchDto            import NameSearchDto
+from ..util.envNames                 import VERSION, UPLOAD_FOLDER, path
+from ..service.LogService            import updateDelete, saveLog
+from ..service.languageBuilder       import LanguageBuilder
+from ..service.CreateDocumentHandler import getCreatorDocumentHandler
+from ..util.RequestEvaluator         import RequestEvaluator
+from ..util.anonymizationFunctions   import encode,markInHtml
+
+
 from flask import request, send_from_directory
 from flask_restplus import Resource
 
-from ..util.NameSearchDto import NameSearchDto
-from ..util.envNames import VERSION, UPLOAD_FOLDER, path
-from ..service.LogService import updateDelete, saveLog
-from ..service.languageBuilder import LanguageBuilder
-from ..service.CreateDocumentHandler import getCreatorDocumentHandler
-from ..util.RequestEvaluator import RequestEvaluator
 import os
 
 api = NameSearchDto.api
 
+# Load model before a conections
 lb = LanguageBuilder()
-#lb.defineNameEntity()  # Load model before a conections
+lb.defineRulesOfNames()
 
 
 @api.route("/")
@@ -37,8 +41,8 @@ class Encode(Resource):
         if evaluator.isRequestSuccesfull():
             publicId = saveLog(
                 {
-                    'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'name'    : evaluator.fakeFilename,
+                    'folder'  : UPLOAD_FOLDER,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -47,15 +51,16 @@ class Encode(Resource):
             creator = getCreatorDocumentHandler(
                 os.path.join(path, evaluator.fakeFilename),
                 evaluator.filetype,
-                os.path.join(path, nameOfNewDocument)
+                os.path.join(path, nameOfNewDocument),
+                encode
             )
             dh = creator.create()
             dh.documentsProcessing()
             updateDelete(publicId, True)
             publicId = saveLog(
                 {
-                    'name': nameOfNewDocument,
-                    'folder': UPLOAD_FOLDER,
+                    'name'    : nameOfNewDocument,
+                    'folder'  : UPLOAD_FOLDER,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -68,15 +73,15 @@ class Encode(Resource):
 
 
 @api.route('/file/extract-data/json')
-class ListNames(Resource):
+class extractDataJson(Resource):
     @api.doc('give a list of name in the document')
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
             publicId = saveLog(
                 {
-                    'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'name'    : evaluator.fakeFilename,
+                    'folder'  : UPLOAD_FOLDER,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -86,12 +91,12 @@ class ListNames(Resource):
                 evaluator.filetype
             )
             dh = creator.create()
-            names,idCards = dh.giveListNames()
+            names,idCards = dh.extractData()
             updateDelete(publicId, True)
             return {
-                       "error": None,
+                       "error"  : None,
                        "success": True,
-                       "Names": names,
+                       "Names"  : names,
                        "IdCards": idCards
                    }
         else:
@@ -99,7 +104,7 @@ class ListNames(Resource):
 
 
 @api.route('/file/extract-data/zip')
-class CsvFile(Resource):
+class extractDataZip(Resource):
     @api.doc('return a zip folder with all data found grouped in CSV files')
     def post(self):
         evaluator = RequestEvaluator(request)
@@ -163,10 +168,11 @@ class TargetHtml(Resource):
             creator = getCreatorDocumentHandler(
                 os.path.join(path, evaluator.fakeFilename),
                 evaluator.filetype,
-                os.path.join(path, nameOfNewDocument)
+                os.path.join(path, nameOfNewDocument),
+                markInHtml
             )
             dh = creator.create()
-            dh.documentTagger()
+            dh.documentsProcessing()
             updateDelete(publicId, True)
             publicId = saveLog(
                 {

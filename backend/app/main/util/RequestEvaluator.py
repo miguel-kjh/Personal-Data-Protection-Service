@@ -8,12 +8,12 @@ import os
 
 class RequestEvaluator:
     def __init__(self, request:Request):
-        self.request = request
-        self.filename = None
+        self.request      = request
+        self.filename     = None
         self.fakeFilename = None
-        self.success = False
-        self.error = None
-        self.filetype = ""
+        self.success      = False
+        self.error        = None
+        self.filetype     = ""
     
     def isRequestSuccesfull(self) -> bool:
         if 'file' not in self.request.files:
@@ -29,15 +29,17 @@ class RequestEvaluator:
         if not (file and allowedFile(file.filename)):
             self.error = "Allowed file types are %s" % (','.join(ALLOWED_EXTENSIONS))
             return self.success
+        
         self.filetype = giveTypeOfFile(file.filename)
         self.fakeFilename = giveFileNameUnique(self.filetype)
         file.save(os.path.join(UPLOAD_FOLDER, self.fakeFilename))
         self.success = True
+
         return self.success
 
     def giveResponse(self) -> dict:
         return {
-            "filename": self.filename,
-            "success": self.success,
-            "error": self.error
+            "filename" : self.filename,
+            "success"  : self.success,
+            "error"    : self.error
         }

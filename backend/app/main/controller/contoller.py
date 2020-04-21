@@ -1,13 +1,15 @@
+from ..util.NameSearchDto            import NameSearchDto
+from ..util.envNames                 import VERSION, UPLOAD_FOLDER, path
+from ..service.LogService            import updateDelete, saveLog
+from ..service.languageBuilder       import LanguageBuilder
+from ..service.CreateDocumentHandler import getCreatorDocumentHandler
+from ..util.RequestEvaluator         import RequestEvaluator
+from ..util.anonymizationFunctions   import encode,markInHtml
+
+
 from flask import request, send_from_directory
 from flask_restplus import Resource
 
-from ..util.NameSearchDto import NameSearchDto
-from ..util.envNames import VERSION, UPLOAD_FOLDER, path
-from ..service.LogService import updateDelete, saveLog
-from ..service.languageBuilder import LanguageBuilder
-from ..service.CreateDocumentHandler import getCreatorDocumentHandler
-from ..util.RequestEvaluator import RequestEvaluator
-from ..util.anonymizationFunctions import encode,markInHtml
 import os
 
 api = NameSearchDto.api
@@ -39,8 +41,8 @@ class Encode(Resource):
         if evaluator.isRequestSuccesfull():
             publicId = saveLog(
                 {
-                    'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'name'    : evaluator.fakeFilename,
+                    'folder'  : UPLOAD_FOLDER,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -57,8 +59,8 @@ class Encode(Resource):
             updateDelete(publicId, True)
             publicId = saveLog(
                 {
-                    'name': nameOfNewDocument,
-                    'folder': UPLOAD_FOLDER,
+                    'name'    : nameOfNewDocument,
+                    'folder'  : UPLOAD_FOLDER,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -78,8 +80,8 @@ class extractDataJson(Resource):
         if evaluator.isRequestSuccesfull():
             publicId = saveLog(
                 {
-                    'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'name'    : evaluator.fakeFilename,
+                    'folder'  : UPLOAD_FOLDER,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -92,9 +94,9 @@ class extractDataJson(Resource):
             names,idCards = dh.extractData()
             updateDelete(publicId, True)
             return {
-                       "error": None,
+                       "error"  : None,
                        "success": True,
-                       "Names": names,
+                       "Names"  : names,
                        "IdCards": idCards
                    }
         else:
@@ -180,7 +182,6 @@ class TargetHtml(Resource):
                     'filetype': evaluator.filetype
                 }
             )
-            print("hola")
             fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
             updateDelete(publicId, True)
             return fileSend

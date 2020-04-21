@@ -1,6 +1,6 @@
-from app.main.service.DocumentHandler import DocumentHandler
+from app.main.service.DocumentHandler      import DocumentHandler
 from app.main.util.ColumnSelectorDataframe import ColumnSelectorDataFrame
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+from app.main.util.heuristicMeasures       import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
 
 import pandas as pd
 
@@ -71,7 +71,7 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
         idCards   = []
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
             if typeColumn.isName:
-                dfNotNull = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
+                dfNotNull   = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
                 countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     listNames[len(listNames):] = dfNotNull
@@ -87,7 +87,7 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
 
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
             if typeColumn.isName:
-                dfNotNull = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
+                dfNotNull   = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
                 countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     self.df[typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)

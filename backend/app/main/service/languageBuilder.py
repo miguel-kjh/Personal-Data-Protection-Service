@@ -2,7 +2,7 @@ from app.main.util.heuristicMeasures import MINIMAL_UPPER_CHAR_DENSITY
 
 import spacy
 from spacy.pipeline import EntityRuler
-from spacy.matcher import Matcher
+from spacy.matcher  import Matcher
 
 
 class Singleton(type):
@@ -24,15 +24,17 @@ class LanguageBuilder(metaclass=Singleton):
 
         self.matcher = Matcher(self.nlp.vocab)
         patterNotContext = [
-                {'POS': 'PROPN', 'OP': '+'}, {"IS_PUNCT": True}, {'POS': 'PROPN', 'OP': '+'}
+                {'POS'      : 'PROPN', 'OP': '+'}, 
+                {"IS_PUNCT" : True}, 
+                {'POS'      : 'PROPN', 'OP': '+'}
             ]
         self.matcher.add("withoutContext", None, patterNotContext)
 
     def defineRulesOfNames(self):
         names      = [
-            {'POS': 'PROPN', 'OP': '+'},
+            {'POS' : 'PROPN', 'OP': '+'},
             {'TEXT': {'REGEX': 'de|del|-|el|los|de todos los'}, 'OP': '?'},
-            {'POS': 'PROPN', 'OP': '*'}
+            {'POS' : 'PROPN', 'OP': '*'}
         ]
         ruler      = EntityRuler(self.nlpRules)
         self.label = "NAME"
@@ -46,10 +48,16 @@ class LanguageBuilder(metaclass=Singleton):
         """
         Only use this funtion when used a md or lg models
         """
-        if not text.strip(): return 0.0
+        if not text.strip(): 
+            return 0.0
+
         doc = self.vectorialSpace(text)
-        if not doc.vector_norm: return False
+
+        if not doc.vector_norm: 
+            return False
+
         docToCompare = self.vectorialSpace(textToCompare)
+
         return doc.similarity(docToCompare)
 
     def getlanguage(self):
@@ -67,7 +75,7 @@ class LanguageBuilder(metaclass=Singleton):
     def hasContex(self, text: str) -> bool:
         if not text:
             return False
-        doc = self.nlpRules(text)
+        doc     = self.nlpRules(text)
         matches = self.matcher(doc)
         return not ((bool(matches) and matches[-1][2] == len(doc)) 
         or (sum(char.isupper() for char in text)+1)/len(text) > MINIMAL_UPPER_CHAR_DENSITY)

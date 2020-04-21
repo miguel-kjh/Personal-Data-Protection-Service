@@ -1,22 +1,24 @@
 from app.main.service.DocumentHandler import DocumentHandler
-import app.main.service.pdf_redactor as pdf_redactor
 from app.main.util.dataPickerInTables import DataPickerInTables
-from app.main.util.fileUtils import readPdf
-from app.main.util.semanticWordLists import listOfVectorWords
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+from app.main.util.fileUtils          import readPdf
+from app.main.util.semanticWordLists  import listOfVectorWords
+from app.main.util.heuristicMeasures  import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.service.languageBuilder import LanguageBuilder
+import app.main.service.pdf_redactor  as pdf_redactor
+
 
 from datetime import datetime
+from typing   import Text
 import re
 import tabula
-from typing import Text
     
 
 class DocumentHandlerPdf(DocumentHandler):
 
     def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
         super().__init__(path, destiny=destiny, anonymizationFunction = anonymizationFunction)
-        self.options = pdf_redactor.RedactorOptions()
+        self.options                  = pdf_redactor.RedactorOptions()
+        self.options.xmp_filters      = [lambda xml: None]
         self.options.metadata_filters = {
             "Title": [lambda value: value],
 
@@ -25,7 +27,6 @@ class DocumentHandlerPdf(DocumentHandler):
 
             "DEFAULT": [lambda value: None],
         }
-        self.options.xmp_filters = [lambda xml: None]
 
     def getPersonalDataInTables(self, tables:list, listNames:list, idCards: list, lastKey) -> list:
         for table in tables:

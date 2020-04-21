@@ -1,11 +1,11 @@
-from typing import Text
 from app.main.service.personalDataSearch import PersonalDataSearch
-from app.main.util.fileUtils import isDni
-from app.main.util.heuristicMeasures import ERROR_RANGE_PERCENTAGE_DB
-from app.main.service.languageBuilder import LanguageBuilder
+from app.main.util.fileUtils             import isDni
+from app.main.util.heuristicMeasures     import ERROR_RANGE_PERCENTAGE_DB
+from app.main.service.languageBuilder    import LanguageBuilder
 
-import re
 from nltk.tokenize import sent_tokenize
+from typing        import Text
+import re
 
 
 
@@ -20,6 +20,7 @@ class PersonalDataSearchByRules(PersonalDataSearch):
         listNames = []
         idCards   = []
         nextLen   = 0
+
         for tokenText in sent_tokenize(text.replace('—', ',') ,language='spanish'):
             doc = self.nlp(tokenText)
             listNames[len(listNames):] = self.selectNames([
@@ -27,8 +28,10 @@ class PersonalDataSearchByRules(PersonalDataSearch):
                 for ent in doc.ents if ent.label_ == self.label
             ])
             nextLen += len(tokenText) + 1
+        
         idCards = [
             {"name": idCard.group(), "star_char": idCard.start(), "end_char": idCard.end()}
             for idCard in list(filter(lambda x: isDni(x.group()) , re.finditer(self.regexIdCards,text)))
         ]
+        
         return (listNames,idCards)

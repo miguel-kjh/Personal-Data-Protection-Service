@@ -1,15 +1,15 @@
 from app.main.service.DocumentHandler import DocumentHandler
 from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.heuristicMeasures import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-from app.main.util.semanticWordLists import listOfVectorWords
+from app.main.util.heuristicMeasures  import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+from app.main.util.semanticWordLists  import listOfVectorWords
 from app.main.util.dataPickerInTables import DataPickerInTables
 
 import re
 import pandas as pd
-from bs4 import BeautifulSoup
+from bs4           import BeautifulSoup
 from bs4.formatter import HTMLFormatter
-from enum import Enum,unique
-from typing import Text
+from enum          import Enum,unique
+from typing        import Text
 
 @unique
 class TableToken(Enum):
@@ -19,7 +19,7 @@ class TableToken(Enum):
 
 class TokenHtml:
         def __init__(self,listOfText:list,isTable:TableToken):
-            self.text = listOfText
+            self.text    = listOfText
             self.isTable = isTable
 
 class TokenizerHtml:

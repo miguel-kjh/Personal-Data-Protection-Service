@@ -1,6 +1,6 @@
 from app.main.service.DocumentHandler import DocumentHandler
 from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.heuristicMeasures import MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+from app.main.util.heuristicMeasures  import MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 
 from typing import Text
 import re

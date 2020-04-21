@@ -1,17 +1,16 @@
-import uuid
-
-from app.main import db
+from app.main               import db
 from app.main.model.fileLog import FileLog
 
+import uuid
 
 def saveLog(data: dict):
     publicId = str(uuid.uuid4())
     log = FileLog(
-        publicId=publicId,
-        name=data['name'],
-        folder=data['folder'],
-        isDelete=data['isdelete'],
-        filetype=data['filetype']
+        publicId = publicId,
+        name     = data['name'],
+        folder   = data['folder'],
+        isDelete = data['isdelete'],
+        filetype = data['filetype']
     )
     commit(log)
     return publicId
@@ -30,7 +29,7 @@ def getFileToDelete():
 
 
 def updateDelete(public_id: str, boolean: bool):
-    log = FileLog.query.filter_by(publicId=public_id).first()
+    log          = FileLog.query.filter_by(publicId=public_id).first()
     log.isDelete = boolean
     db.session.commit()
 

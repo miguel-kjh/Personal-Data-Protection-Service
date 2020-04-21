@@ -1,14 +1,17 @@
 
+from app.main.service.personalDataSearchByEntities  import PersonalDataSearchByEntities
+from app.main.service.personalDataSearchByRules     import PersonalDataSearchByRules
+from app.main.util.envNames                         import UPLOAD_FOLDER
+
+
 import pandas as pd
 import os
 import zipfile
 
-from app.main.service.personalDataSearchByEntities import PersonalDataSearchByEntities
-from app.main.service.personalDataSearchByRules import PersonalDataSearchByRules
-from app.main.util.envNames import UPLOAD_FOLDER
+from abc import ABC, abstractmethod
 
 
-class DocumentHandler:
+class DocumentHandler(ABC):
 
     def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
         self.path                  = path
@@ -16,12 +19,14 @@ class DocumentHandler:
         self.dataSearch            = PersonalDataSearchByEntities()
         self.anonymizationFunction = anonymizationFunction
 
+    @abstractmethod
     def documentsProcessing(self):
         pass
 
     def createDataZipFolder(self):
         self._createZip(*self.extractData())
 
+    @abstractmethod
     def extractData(self) -> tuple:
         pass
 

@@ -1,13 +1,13 @@
-from app.main.util.envNames import ALLOWED_EXTENSIONS
+from app.main.util.envNames          import ALLOWED_EXTENSIONS
 from app.main.util.semanticWordLists import lettersOfDni
 
 from datetime import datetime
 
-from docx.document import Document as _Document
+from docx.document            import Document as _Document
 from docx.oxml.text.paragraph import CT_P
-from docx.oxml.table import CT_Tbl
-from docx.table import _Cell, Table, _Row
-from docx.text.paragraph import Paragraph
+from docx.oxml.table          import CT_Tbl
+from docx.table               import _Cell, Table, _Row
+from docx.text.paragraph      import Paragraph
 
 import io
 import pdfplumber
@@ -29,9 +29,6 @@ def giveTypeOfFile(filename: str):
 
 
 def giveFileNameUnique(fileType: str) -> str:
-    # filename = filename + str(datetime.now().timestamp())
-    # sha = hashlib.sha256(filename.encode())
-    # return sha.hexdigest() + "." + fileType
     return str(datetime.now().timestamp()).replace(".", "") + "." + fileType
 
 def itemIterator(parent):
@@ -99,9 +96,6 @@ def normalizeUnicode(string: str) -> str:
     result = unidecode(string)
     return ''.join(['ñ' if index in letersÑ else char for index,char in enumerate(result)])
     
-    
-    
-
 
 MAX_NAME_OF_QUERY = 4000
 def generateWordsAsString(words:list) -> str:

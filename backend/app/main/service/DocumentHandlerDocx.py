@@ -1,13 +1,13 @@
-from app.main.util.fileUtils import itemIterator
-from app.main.util.heuristicMeasures import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.semanticWordLists import listOfVectorWords
-from app.main.util.dataPickerInTables import DataPickerInTables
-from app.main.service.DocumentHandler import DocumentHandler
+from app.main.util.fileUtils           import itemIterator
+from app.main.util.heuristicMeasures   import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+from app.main.service.languageBuilder  import LanguageBuilder
+from app.main.util.semanticWordLists   import listOfVectorWords
+from app.main.util.dataPickerInTables  import DataPickerInTables
+from app.main.service.DocumentHandler  import DocumentHandler
 
 import docx
 from docx.text.paragraph import Paragraph
-from docx.table import Table
+from docx.table          import Table
 
 import re
 from typing import Text

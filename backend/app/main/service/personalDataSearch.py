@@ -1,12 +1,12 @@
 from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.heuristicMeasures import ERROR_RANGE_PERCENTAGE_DB
-from app.main.util.fileUtils import isDni,normalizeUnicode,generateWordsAsString
+from app.main.util.heuristicMeasures  import ERROR_RANGE_PERCENTAGE_DB
+from app.main.util.fileUtils          import isDni,normalizeUnicode,generateWordsAsString
 
+from abc       import ABC, abstractmethod
+from typing    import Text
+from itertools import chain
 import sqlite3 as lite
 import re
-from abc import ABC, abstractmethod
-from typing import Text
-from itertools import chain
 
 class PersonalDataSearch(ABC):
     def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB, namesByRules:bool = False):
@@ -22,7 +22,11 @@ class PersonalDataSearch(ABC):
 
     def _convertName(self,name:str) -> list:
         normalizeName = normalizeUnicode(str(name)).upper()
-        words = list(filter(lambda n: n not in self.keywords, normalizeName.replace('-', ' ').replace(',','').replace('\'','').split()))
+        words         = list(
+            filter(
+                lambda n: n not in self.keywords, normalizeName.replace('-', ' ').replace(',','').replace('\'','').split()
+                )
+            )
         return words
 
     def _checkNameInSubset(self,name:list, nameSubset:list) -> bool:
@@ -39,14 +43,15 @@ class PersonalDataSearch(ABC):
         
         for strName in generateWordsAsString(list(set(words))):
             try:
-                sentence = "select distinct names from names where names in %s;" % (strName)
-                senteceResult  = self.connection.query(sentence)
+                sentence                     = "select distinct names from names where names in %s;" % (strName)
+                senteceResult                = self.connection.query(sentence)
                 nameSubset[len(nameSubset):] = [queryResult[0] for queryResult in senteceResult.fetchall()]
-                sentence = "select distinct surnames from surnames where surnames in %s;" % (strName)
-                senteceResult  = self.connection.query(sentence)
+                sentence                     = "select distinct surnames from surnames where surnames in %s;" % (strName)
+                senteceResult                = self.connection.query(sentence)
                 nameSubset[len(nameSubset):] = [queryResult[0] for queryResult in senteceResult.fetchall()]
             except lite.OperationalError as identifier:
                 print(identifier)
+
         finalNames = list(
             filter(
                 lambda name: self._checkNameInSubset(name,nameSubset), listNames
@@ -56,18 +61,20 @@ class PersonalDataSearch(ABC):
 
     def checkNameInDB(self, fullName: str) -> bool:
         countWordsInName = 0
-        countWordsInDB = 0
-        normalizeName = normalizeUnicode(fullName).upper()
+        countWordsInDB   = 0
+        normalizeName    = normalizeUnicode(fullName).upper()
+
         for name in normalizeName.replace('-', ' ').replace(',','').split():
             if name not in self.keywords:
                 countWordsInName += 1
                 try:
-                    sentence = "select (select count(*) from surnames where surnames= '%s') OR" \
-                               " (select count(*) from names  where names='%s');" % (name, name)
-                    senteceResult = self.connection.query(sentence)
+                    sentence        = "select (select count(*) from surnames where surnames= '%s') OR" \
+                                      " (select count(*) from names  where names='%s');" % (name, name)
+                    senteceResult   = self.connection.query(sentence)
                     countWordsInDB += 1 if senteceResult.fetchone()[0] == 1 else 0
                 except lite.OperationalError as identifier:
                     print(identifier)
+
         return countWordsInName > 0 and countWordsInDB / countWordsInName > self.errorRange
 
     def isName(self, fullName: str) -> bool:
@@ -86,7 +93,10 @@ class PersonalDataSearch(ABC):
         )
 
     def isDni(self, idCard: str) -> bool:
-        match = list(filter(lambda x: isDni(x.group()) , re.finditer(r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w',str(idCard))))
+        match = list(
+            filter(lambda x: isDni(x.group()) , re.finditer(r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w',str(idCard))
+            )
+        )
         return len(match) == 1 and match[0].group() == idCard
 
     @abstractmethod
@@ -98,7 +108,7 @@ class SpanishNamesDB:
 
     def __init__(self):
         self.connection = lite.connect("spanish_names")
-        self.cursor = self.connection.cursor()
+        self.cursor     = self.connection.cursor()
 
     def query(self, query: str):
         return self.cursor.execute(query)

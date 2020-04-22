@@ -9,16 +9,11 @@ import sqlite3 as lite
 import re
 
 class PersonalDataSearch(ABC):
-    def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB, namesByRules:bool = False):
-        if not namesByRules :
-            self.nlp = LanguageBuilder().getlanguage()
-        else: 
-            self.nlp = LanguageBuilder().getlanguageByRules()
-        
-        self.keywords              = ["DE", "DEL", "EL", "LOS", "TODOS", "Y"]
-        self.errorRange            = errorRange
-        self.connection            = SpanishNamesDB()
-        self.regexIdCards          = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'
+    def __init__(self):
+        self.keywords     = ["DE", "DEL", "EL", "LOS", "TODOS", "Y"]
+        self.errorRange   = ERROR_RANGE_PERCENTAGE_DB
+        self.connection   = SpanishNamesDB()
+        self.regexIdCards = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'
 
     def _convertName(self,name:str) -> list:
         normalizeName = normalizeUnicode(str(name)).upper()

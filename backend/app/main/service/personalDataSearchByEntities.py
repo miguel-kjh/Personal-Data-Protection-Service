@@ -1,5 +1,6 @@
 from app.main.service.personalDataSearch import PersonalDataSearch
 from app.main.util.fileUtils             import isDni
+from app.main.service.languageBuilder    import LanguageBuilder
 
 from nltk.tokenize import sent_tokenize
 from typing        import Text
@@ -8,6 +9,10 @@ import re
 
 
 class PersonalDataSearchByEntities(PersonalDataSearch):
+
+    def __init__(self):
+        super().__init__()
+        self.nlp = LanguageBuilder().getlanguage()
 
     def searchPersonalData(self, text: Text) -> tuple:
         listNames = []

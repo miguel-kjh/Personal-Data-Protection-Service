@@ -1,6 +1,5 @@
 from app.main.service.personalDataSearch import PersonalDataSearch
 from app.main.util.fileUtils             import isDni
-from app.main.util.heuristicMeasures     import ERROR_RANGE_PERCENTAGE_DB
 from app.main.service.languageBuilder    import LanguageBuilder
 
 from nltk.tokenize import sent_tokenize
@@ -11,10 +10,10 @@ import re
 
 class PersonalDataSearchByRules(PersonalDataSearch):
 
-    def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB):
-        super().__init__(errorRange=errorRange,namesByRules=True)
+    def __init__(self):
+        super().__init__()
         self.label = LanguageBuilder().getLabelNameOfRules()
-        
+        self.nlp   = LanguageBuilder().getlanguageByRules()
 
     def searchPersonalData(self, text: Text) -> tuple:
         listNames = []

@@ -65,6 +65,8 @@ class TestSearchTextByEnt(BaseTestCase):
         self.assertTrue(personalDataSearchByEnt.isDni("54.09.41.10l"))
         self.assertTrue(personalDataSearchByEnt.isDni("54.09 41 10 L"))
         self.assertTrue(personalDataSearchByEnt.isDni("54 09 41 10L"))
+        self.assertTrue(personalDataSearchByEnt.isDni("54.09-41 10 L"))
+        self.assertTrue(personalDataSearchByEnt.isDni("54 09 41-10L"))
         self.assertTrue(personalDataSearchByEnt.isDni("54094110 L"))
         self.assertTrue(personalDataSearchByEnt.isDni("54094110\tL"))
         self.assertTrue(personalDataSearchByEnt.isDni("54094110         L"))

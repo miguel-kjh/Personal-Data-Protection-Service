@@ -80,11 +80,8 @@ def readPdf(path:str) -> Text:
         return
 
 def isDni(dni:str) -> bool:
-    number = re.search(r'\d{2}.?\d{2}.?\d{2}.?\d{2}', dni)
-    if not number:
-        return False
     number = ''.join(filter(str.isdigit, dni))
-    if lettersOfDni[int(number) % 23] != dni[-1].upper():
+    if not number or lettersOfDni[int(number) % 23] != dni[-1].upper():
         return False
     
     return True

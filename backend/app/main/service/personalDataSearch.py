@@ -13,7 +13,7 @@ class PersonalDataSearch(ABC):
         self.keywords     = ["DE", "DEL", "EL", "LOS", "TODOS", "Y"]
         self.errorRange   = ERROR_RANGE_PERCENTAGE_DB
         self.connection   = SpanishNamesDB()
-        self.regexIdCards = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'
+        self.regexIdCards = r'\d{2}([\.-]?|\s*)\d{2}([\.-]?|\s*)\d{2}([\.-]?|\s*)\d{2}\s*\w'
 
     def _convertName(self,name:str) -> list:
         normalizeName = normalizeUnicode(str(name)).upper()
@@ -89,7 +89,7 @@ class PersonalDataSearch(ABC):
 
     def isDni(self, idCard: str) -> bool:
         match = list(
-            filter(lambda x: isDni(x.group()) , re.finditer(r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w',str(idCard))
+            filter(lambda x: isDni(x.group()) , re.finditer(self.regexIdCards,str(idCard))
             )
         )
         return len(match) == 1 and match[0].group() == idCard

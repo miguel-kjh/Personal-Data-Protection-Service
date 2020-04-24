@@ -1,8 +1,11 @@
 from app.main.service.DocumentHandler      import DocumentHandler
 from app.main.util.ColumnSelectorDataframe import ColumnSelectorDataFrame
 from app.main.util.heuristicMeasures       import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES
+from app.main.util.heuristicMeasures       import MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY
+from app.main.util.heuristicMeasures       import SAMPLE_DATA_TO_CHOOSE_NAMES
 
 import pandas as pd
+from random import sample 
 
 
 class DocumentHandlerSpreadsheets(DocumentHandler):
@@ -24,14 +27,17 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
         idCards   = []
         for table in self.sheets:
             for typeColumn in self.selector.getPossibleColumnsNames(self.sheets[table]):
+                dfNotNull  = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
                 if typeColumn.isName:
-                    dfNotNull = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
-                    if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                    auxdf = dfNotNull
+                    if len(dfNotNull) > MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY:
+                        auxdf = sample(list(dfNotNull),round(len(dfNotNull) * SAMPLE_DATA_TO_CHOOSE_NAMES))
+                    countOfName = self.selector.columnSearch(auxdf,self.dataSearch.checkNamesInDB)
+                    if countOfName / len(auxdf) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         listNames[len(listNames):] = dfNotNull
                 else:
                     idCards[len(idCards):] = list(
-                        filter(lambda idCards: self.dataSearch.isDni(idCards),self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()])
+                        filter(lambda idCards: self.dataSearch.isDni(idCards),dfNotNull)
                     )
         return listNames,idCards
 
@@ -42,14 +48,17 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
 
         for table in self.sheets:
             for typeColumn in self.selector.getPossibleColumnsNames(self.sheets[table]):
+                dfNotNull = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
                 if typeColumn.isName:
-                    dfNotNull = self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()]
-                    countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
-                    if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                    auxdf = dfNotNull
+                    if len(dfNotNull) > MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY:
+                        auxdf = sample(list(dfNotNull),round(len(dfNotNull) * SAMPLE_DATA_TO_CHOOSE_NAMES))
+                    countOfName = self.selector.columnSearch(auxdf,self.dataSearch.checkNamesInDB)
+                    if countOfName / len(auxdf) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         self.sheets[table][typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
                 else:
                     idCards = list(
-                        filter(lambda idCards: self.dataSearch.isDni(idCards),self.sheets[table][typeColumn.key][self.sheets[table][typeColumn.key].notnull()])
+                        filter(lambda idCards: self.dataSearch.isDni(idCards),dfNotNull)
                     )
                     self.sheets[table][typeColumn.key].replace({str(idCard): self.anonymizationFunction(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()
@@ -70,14 +79,17 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
         listNames = []
         idCards   = []
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
+            dfNotNull   = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
             if typeColumn.isName:
-                dfNotNull   = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
-                countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
-                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                auxdf = dfNotNull
+                if len(dfNotNull) > MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY:
+                    auxdf = sample(list(dfNotNull),round(len(dfNotNull) * SAMPLE_DATA_TO_CHOOSE_NAMES))
+                countOfName = self.selector.columnSearch(auxdf,self.dataSearch.checkNamesInDB)
+                if countOfName / len(auxdf) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     listNames[len(listNames):] = dfNotNull
             else:
                 idCards[len(idCards):] = list(
-                    filter(lambda idCards: self.dataSearch.isDni(idCards),self.df[typeColumn.key][self.df[typeColumn.key].notnull()])
+                    filter(lambda idCards: self.dataSearch.isDni(idCards),dfNotNull)
                 )
         return listNames,idCards
 
@@ -86,14 +98,17 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
             return
 
         for typeColumn in self.selector.getPossibleColumnsNames(self.df):
+            dfNotNull   = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
             if typeColumn.isName:
-                dfNotNull   = self.df[typeColumn.key][self.df[typeColumn.key].notnull()]
+                auxdf = dfNotNull
+                if len(dfNotNull) > MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY:
+                    auxdf = sample(list(dfNotNull),round(len(dfNotNull) * SAMPLE_DATA_TO_CHOOSE_NAMES))
                 countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     self.df[typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
             else:
                 idCards = list(
-                    filter(lambda idCards: self.dataSearch.isDni(idCards),self.df[typeColumn.key][self.df[typeColumn.key].notnull()])
+                    filter(lambda idCards: self.dataSearch.isDni(idCards),dfNotNull)
                 )
                 self.df[typeColumn.key].replace({str(idCard): self.anonymizationFunction(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()

@@ -10,7 +10,9 @@ from docx.text.paragraph import Paragraph
 from docx.table          import Table
 
 import re
+import itertools
 from typing import Text
+
 
 class DocumentHandlerDocx(DocumentHandler):
 
@@ -107,7 +109,12 @@ class DocumentHandlerDocx(DocumentHandler):
                     for cell in nameRow:
                         namePicker.addName(rowText.index(cell), cell)
 
-                    listIdCard[len(listIdCard):] = list(filter(lambda cell: self.dataSearch.isDni(cell), filter(lambda cell: cell not in nameRow, rowText)))
+                    listIdCard[len(listIdCard):] = list(
+                        itertools.chain.from_iterable(
+                            map(lambda cell: self.dataSearch.giveIdCards(cell), 
+                            filter(lambda cell: cell not in nameRow, rowText))
+                        )
+                    )
                     
                 listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
             else:

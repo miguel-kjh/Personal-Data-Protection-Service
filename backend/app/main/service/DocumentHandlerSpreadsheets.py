@@ -5,7 +5,8 @@ from app.main.util.heuristicMeasures       import MAXIMUM_NUMBER_OF_POSSIBLE_NAM
 from app.main.util.heuristicMeasures       import SAMPLE_DATA_TO_CHOOSE_NAMES
 
 import pandas as pd
-from random import sample 
+from random import sample
+import itertools
 
 
 class DocumentHandlerSpreadsheets(DocumentHandler):
@@ -37,7 +38,7 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
                         listNames[len(listNames):] = dfNotNull
                 else:
                     idCards[len(idCards):] = list(
-                        filter(lambda idCards: self.dataSearch.isDni(idCards),dfNotNull)
+                        itertools.chain.from_iterable(map(lambda idCards: self.dataSearch.giveIdCards(idCards),dfNotNull))
                     )
         return listNames,idCards
 
@@ -58,7 +59,7 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
                         self.sheets[table][typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
                 else:
                     idCards = list(
-                        filter(lambda idCards: self.dataSearch.isDni(idCards),dfNotNull)
+                        itertools.chain.from_iterable(map(lambda idCards: self.dataSearch.giveIdCards(idCards),dfNotNull))
                     )
                     self.sheets[table][typeColumn.key].replace({str(idCard): self.anonymizationFunction(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()
@@ -89,7 +90,7 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
                     listNames[len(listNames):] = dfNotNull
             else:
                 idCards[len(idCards):] = list(
-                    filter(lambda idCards: self.dataSearch.isDni(idCards),dfNotNull)
+                    itertools.chain.from_iterable(map(lambda idCards: self.dataSearch.giveIdCards(idCards),dfNotNull))
                 )
         return listNames,idCards
 
@@ -108,7 +109,7 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
                     self.df[typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
             else:
                 idCards = list(
-                    filter(lambda idCards: self.dataSearch.isDni(idCards),dfNotNull)
+                    itertools.chain.from_iterable(map(lambda idCards: self.dataSearch.giveIdCards(idCards),dfNotNull))
                 )
                 self.df[typeColumn.key].replace({str(idCard): self.anonymizationFunction(str(idCard)) for idCard in idCards}, inplace=True)
         self.save()

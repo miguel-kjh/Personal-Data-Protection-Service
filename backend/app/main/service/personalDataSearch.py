@@ -87,12 +87,11 @@ class PersonalDataSearch(ABC):
             )
         )
 
-    def isDni(self, idCard: str) -> bool:
-        match = list(
-            filter(lambda x: isDni(x.group()) , re.finditer(self.regexIdCards,str(idCard))
+    def giveIdCards(self, string: str) -> list:
+        match = map(
+                lambda x: x.group(), re.finditer(self.regexIdCards,str(string))
             )
-        )
-        return len(match) == 1 and match[0].group() == idCard
+        return list(filter(lambda idCard: isDni(idCard), match))
 
     @abstractmethod
     def searchPersonalData(self, text: Text) -> tuple:

@@ -1,6 +1,8 @@
 import requests
 import time
 import sys
+import statistics
+
 
 iterations   = 10
 listaNames   = 'http://127.0.0.1:5000/search/file/extract-data/json'
@@ -33,20 +35,27 @@ def test_time():
             df["text_%i" %index].append(takeMesure(file,encode,iterations) * 1000)
         pd.DataFrame(df, columns=df.keys()).to_csv(fileCsvName, index=False)
 
+def getStatistics(data:list) -> list:
+    return [sum(data),  statistics.mean(data),  statistics.stdev(data)]
+
+def getMesure(filename:str, ext:str) -> list:
+    nIter = 101
+    return [takeMesure("%s%i.%s" %(filename,(iteration % 10)+1,ext),encode,1) for iteration in range(1,nIter)]
+
 def get_time() -> dict:
-    nIter   = 100
-    txt     = sum([takeMesure(text   + "10.txt",encode,1)  for _ in range(nIter)])
-    pdf     = sum([takeMesure(text   + "10.pdf",encode,1)  for _ in range(nIter)])
-    docx    = sum([takeMesure(text   + "10.docx",encode,1) for _ in range(nIter)])
-    xls     = sum([takeMesure(tables + "9.xls",encode,1)   for _ in range(nIter)])
-    html    = sum([takeMesure(web + "2.html",encode,1)     for _ in range(nIter)])
+    
+    txt     = getMesure(text,'txt')
+    pdf     = getMesure(text,'pdf')
+    docx    = getMesure(text,'docx')
+    xls     = getMesure(tables,'xls')
+    html    = getMesure(web,'html')
 
     df =  {
-        "txt"  : [txt,  txt/nIter],
-        "pdf"  : [pdf,  pdf/nIter],
-        "docx" : [docx, docx/nIter],
-        "xls"  : [xls,  xls/nIter],
-        "html" : [html,  html/nIter],
+        "txt"  : getStatistics(txt),
+        "pdf"  : getStatistics(pdf),
+        "docx" : getStatistics(docx),
+        "xls"  : getStatistics(xls),
+        "html" : getStatistics(html),
     }
     pd.DataFrame(df, columns=df.keys()).to_csv('times.csv', index=False)
     return df

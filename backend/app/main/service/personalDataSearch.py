@@ -79,14 +79,6 @@ class PersonalDataSearch(ABC):
         
         return self.checkNameInDB(fullName)
 
-    def selectNames(self, names: list) -> list:
-        selectedNames = self.checkNamesInDB([name['name'] for name in names])
-        return list(
-            filter(
-                lambda name: name['name'] in selectedNames,names
-            )
-        )
-
     def giveIdCards(self, string: str) -> list:
         match = map(
                 lambda x: x.group(), re.finditer(self.regexIdCards,str(string))

@@ -139,9 +139,7 @@ class DocumentHandlerHtml(DocumentHandler):
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:
                 if LanguageBuilder().hasContex(token.text[0]):
-                    names,cards = self.dataSearch.searchPersonalData(token.text[0])
-                    listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
-                    idCards[len(idCards):]     = [card['name'] for card in cards]
+                    listNames[len(listNames):],idCards[len(idCards):]  = self.dataSearch.searchPersonalData(token.text[0])
                 elif self.dataSearch.isName(token.text[0]):
                     listNames.append(token.text[0])
                 cleanPicker()

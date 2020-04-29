@@ -69,11 +69,7 @@ class DocumentHandlerPdf(DocumentHandler):
             filter(lambda words: words not in textWithContext and self.dataSearch.isName(words), textSplit)
         )
         
-        names,cards = self.dataSearch.searchPersonalData(' '.join(textWithContext))
-        for name in names:
-            listNames.append(name['name'].strip("\n"))
-        for card in cards:
-            idCards.append(card['name'])
+        listNames[len(listNames):],idCards[len(idCards):] = self.dataSearch.searchPersonalData(' '.join(textWithContext))
 
     def extractData(self) -> tuple:
         listNames = []

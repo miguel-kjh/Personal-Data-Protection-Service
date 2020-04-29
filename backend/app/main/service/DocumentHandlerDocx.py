@@ -77,17 +77,11 @@ class DocumentHandlerDocx(DocumentHandler):
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    names,idCards = self.dataSearch.searchPersonalData(block.text)
-                    if names:
-                        listNames[len(listNames):]   = [name['name'] for name in names]
-                    if idCards:
-                        listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
+                    listNames[len(listNames):],listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text)
                 elif self.dataSearch.isName(block.text):
                     listNames.append(block.text.strip())
                 else:
-                    _,idCards = self.dataSearch.searchPersonalData(block.text)
-                    if idCards:
-                        listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
+                    _,listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text)
             elif isinstance(block, Table):
                 namePicker = DataPickerInTables()
                 for index, row in enumerate(block.rows):

@@ -15,37 +15,19 @@ textForTest = {
 personalDataSearchByRul = PersonalDataSearchByRules()
 class TestSearchTextByRul(BaseTestCase):
 
-    def test_start_end_char_name_rules(self):
-        dictionatyOfNames,_ = personalDataSearchByRul.searchPersonalData(textForTest["simple"])
-        self.assertNotEqual(dictionatyOfNames, [])
-        self.assertEqual(dictionatyOfNames[0]["star_char"], textForTest["simple"].find("Miguel"))
-        self.assertEqual(dictionatyOfNames[0]["end_char"], textForTest["simple"].find("Miguel") + len("Miguel"))
-
-        dictionatyOfNames,_ = personalDataSearchByRul.searchPersonalData(textForTest["twoSent"])
-        self.assertNotEqual(dictionatyOfNames, [])
-        
-        self.assertEqual(dictionatyOfNames[0]["star_char"], textForTest["twoSent"].find("Daniel"))
-        self.assertEqual(dictionatyOfNames[0]["end_char"], textForTest["twoSent"].find("Daniel") + len("Daniel"))
-        
-        self.assertEqual(dictionatyOfNames[1]["star_char"], textForTest["twoSent"].find("José"))
-        self.assertEqual(dictionatyOfNames[1]["end_char"], textForTest["twoSent"].find("José") + len("José"))
-
-        self.assertEqual(dictionatyOfNames[2]["star_char"], textForTest["twoSent"].find("Miguel"))
-        self.assertEqual(dictionatyOfNames[2]["end_char"], textForTest["twoSent"].find("Miguel") + len("Miguel"))
-        
-
+    
     def test_simple_look_for_names_by_searchNamesText_rules(self):
         dictionatyOfNames,_ = personalDataSearchByRul.searchPersonalData(textForTest["simple"])
         self.assertNotEqual(dictionatyOfNames, [])
         self.assertEqual(len(dictionatyOfNames), 1)
-        self.assertEqual(dictionatyOfNames[0]["name"], "Miguel")
+        self.assertEqual(dictionatyOfNames[0], "Miguel")
 
     def test_normal_look_for_names_by_searchNamesText_rules(self):
         dictionatyOfNames,_ = personalDataSearchByRul.searchPersonalData(textForTest["normal"])
         self.assertNotEqual(dictionatyOfNames, [])
         self.assertEqual(len(dictionatyOfNames), 2)
-        self.assertEqual(dictionatyOfNames[0]["name"], "Gregorio")
-        self.assertEqual(dictionatyOfNames[1]["name"], "Julio Cesar")
+        self.assertEqual(dictionatyOfNames[0], "Gregorio")
+        self.assertEqual(dictionatyOfNames[1], "Julio Cesar")
 
     def test_hard_look_for_names_by_searchNamesText_rules(self):
         dictionatyOfNames,_ = personalDataSearchByRul.searchPersonalData(textForTest["hard"])
@@ -54,7 +36,7 @@ class TestSearchTextByRul(BaseTestCase):
         ]
         self.assertEqual(len(dictionatyOfNames), len(names))
         for index, name in enumerate(names):
-            self.assertEqual(dictionatyOfNames[index]["name"], name)
+            self.assertEqual(dictionatyOfNames[index], name)
 
 
 if __name__ == '__main__':

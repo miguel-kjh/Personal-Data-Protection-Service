@@ -1,16 +1,12 @@
 NAMES,MATCHES,REAL MARCHES,TYPE
-Hidalgo,2,0,False Positive
-Notario,1,0,False Positive
-León,1,0,False Positive
-Lucia Antonia Sánchez Vargas de,1,0,False Positive
-Gobierno del,2,0,False Positive
+Mendieta Castro,1,0,False Positive
+Guadalupe Sánchez Vargas,1,0,False Positive
+Sr Jesús Fernández Fuentes,1,0,False Positive
+María,1,0,False Positive
+Notario No 4997,1,0,False Positive
 Señor,1,0,False Positive
-Viernes,1,0,False Positive
-José Martínez Tabarra de,1,0,False Positive
-María Antonieta Mendieta Castro,2,3,False Negative
-Javier,0,1,False Negative
-Gonzales Mendieta,0,1,False Negative
-Lucia Antonia Sánchez Vargas,0,1,False Negative
+María Antonieta Mendieta Castro,1,3,False Negative
 Jesús Fernández Fuentes,1,2,False Negative
+María de Guadalupe Sánchez Vargas,0,1,False Negative
+Lucía,1,2,False Negative
 Urbina Reciba,0,1,False Negative
-José Martínez Tabarra,2,3,False Negative

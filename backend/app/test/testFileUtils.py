@@ -58,6 +58,14 @@ class TestFileUtils(BaseTestCase):
         self.assertTrue(isDni("43-29-48.81 A"))
         self.assertTrue(isDni("43    29 48  81     a"))
 
+    def test_replace_unnecessary_characters(self):
+        self.assertEqual(replaceUnnecessaryCharacters(""), "")
+        self.assertEqual(replaceUnnecessaryCharacters("d"), "d")
+        self.assertEqual(replaceUnnecessaryCharacters("MIguel"),  "MIguel")
+        self.assertEqual(replaceUnnecessaryCharacters("d[fedew"), "dfedew")
+        self.assertEqual(replaceUnnecessaryCharacters("Carmen Muchada(s"), "Carmen Muchadas")
+        self.assertEqual(replaceUnnecessaryCharacters("d[fe()[]de|||w"), "dfedew")
+
 
 if __name__ == '__main__':
     unittest.main()

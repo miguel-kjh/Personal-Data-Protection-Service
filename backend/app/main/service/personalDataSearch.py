@@ -27,7 +27,7 @@ class PersonalDataSearch(ABC):
     def _checkNameInSubset(self,name:list, nameSubset:list) -> bool:
         if not name: return False
         namesFound = list(filter(lambda n: n in nameSubset, name))
-        return len(namesFound)/len(name) > self.errorRange
+        return len(namesFound)/len(name) >= self.errorRange
 
 
     def checkNamesInDB(self, names:list) -> list:

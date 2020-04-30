@@ -91,10 +91,7 @@ class DocumentHandlerHtml(DocumentHandler):
 
     def _processEntities(self, sentence):
         for regex in self.regexName:
-            try:
-                sentence = re.compile(regex).sub(lambda match: self.anonymizationFunction(match.group()), sentence)
-            except Exception:
-                continue
+            sentence = re.compile(regex).sub(lambda match: self.anonymizationFunction(match.group()), sentence)
         return sentence
 
     def _buildRegex(self, data):

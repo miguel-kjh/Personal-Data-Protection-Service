@@ -1,6 +1,7 @@
 from app.main.service.personalDataSearch import PersonalDataSearch
 from app.main.util.fileUtils             import isDni
 from app.main.service.languageBuilder    import LanguageBuilder
+from app.main.util.fileUtils             import replaceUnnecessaryCharacters
 
 from nltk.tokenize import sent_tokenize
 from typing        import Text
@@ -17,12 +18,12 @@ class PersonalDataSearchByRules(PersonalDataSearch):
 
     def searchPersonalData(self, text: Text) -> tuple:
         listNames = []
-        idCards   = []
 
         for tokenText in sent_tokenize(text.replace('—', ',') ,language='spanish'):
             doc = self.nlp(tokenText)
             listNames[len(listNames):] = self.checkNamesInDB([
-                ent.text for ent in doc.ents
+                replaceUnnecessaryCharacters(ent.text.strip('\n'))
+                for ent in doc.ents
             ])
         
         idCards = [

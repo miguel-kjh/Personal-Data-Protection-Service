@@ -106,3 +106,6 @@ def generateWordsAsString(words:list) -> str:
             intial = numberRange
     
         yield "('" + '\',\''.join(words[intial:]) + "')"
+
+def replaceUnnecessaryCharacters(text:str) -> str:
+    return re.sub(r'\(|\)|\[|\]|\|', '', text)

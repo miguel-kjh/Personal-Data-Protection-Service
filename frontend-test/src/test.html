@@ -1,0 +1,132 @@
+<html>  
+<head>  
+    <title>upload</title>  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="style.scss">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+</head>  
+<body>  
+    <nav class="navbar navbar-expand-sm bg-dark navbar-dark fixed-top">
+        <a class="navbar-brand" href="#"><img src="resourse/icons8-cargar-documento-de-enlace-40.png" alt="Icono"></a>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#Section1">Información</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#Section2">Anonimizar</a>
+          </li>
+        </ul>
+    </nav>
+    <div id = "Section1" class="jumbotron container info">
+        <h1 class="display-4">Hello, world!</h1>
+        <p class="lead">Lorem ipsum dolor sit amet consectetur adipiscing elit dignissim integer augue tincidunt ultrices rhoncus vel, 
+        tortor vestibulum porta cum pharetra etiam viverra curabitur porttitor lacus in quis nec. Quisque morbi volutpat 
+        viverra nam urna felis purus nibh, erat etiam pretium nullam facilisis maecenas at. Condimentum at faucibus fringilla pharetra quam,
+        curae consequat tortor quisque mollis mauris, conubia donec diam pellentesque.
+        Phasellus per feugiat tempor cursus est bibendum himenaeos, nostra fames ac tempus sapien class quis suscipit,
+        hac aenean ridiculus non ultricies maecenas.</p> 
+        <p class="lead">Torquent posuere libero diam sem himenaeos eleifend ultricies integer at fames, proin
+        donec vivamus magna facilisi turpis aptent sapien porta, platea luctus a elementum massa habitasse mollis tristique feugiat.
+        Dictum mattis erat vulputate sociis odio vestibulum auctor, non varius hendrerit gravida libero tempus leo accumsan,
+        aliquam convallis venenatis cum viverra in. Elementum facilisi nulla felis
+        nam posuere convallis maecenas tortor, a ullamcorper et non risus eu nunc, eget penatibus mattis suspendisse pretium habitasse cubilia. Nulla eros elementum ornare natoque varius viverra arcu
+        feugiat taciti aenean nunc cras lobortis scelerisque ut, cubilia nisi gravida metus ridiculus sociis morbi vitae sodales quis curae dictumst vulputate imperdiet.</p>
+        <p class="lead">Torquent posuere libero diam sem himenaeos eleifend ultricies integer at fames, proin
+        donec vivamus magna facilisi turpis aptent sapien porta, platea luctus a elementum massa habitasse mollis tristique feugiat.
+        Dictum mattis erat vulputate sociis odio vestibulum auctor, non varius hendrerit gravida libero tempus leo accumsan,
+        aliquam convallis venenatis cum viverra in. Elementum facilisi nulla felis
+        nam posuere convallis maecenas tortor, a ullamcorper et non risus eu nunc, eget penatibus mattis suspendisse pretium habitasse cubilia. Nulla eros elementum ornare natoque varius viverra arcu
+        feugiat taciti aenean nunc cras lobortis scelerisque ut, cubilia nisi gravida metus ridiculus sociis morbi vitae sodales quis curae dictumst vulputate imperdiet.</p>
+        <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+    </div>
+    <div id="Section2" class="container">
+        <h2>Anonimización</h2>
+        <form id="formId" action = "" method = "post" enctype="multipart/form-data"> 
+          <div class="row">
+            <div class="col-sm-10">
+              <div class="custom-file">
+                <input type="file" name="file" class="custom-file-input" id="customFile"/>
+                <label class="custom-file-label" for="customFile">Choose file</label>
+              </div>
+            </div>
+            <div class="col-sm-2">
+              <button type="submit" class="btn btn-primary upload">
+                <!--<img src="resourse/icons8-subir-a-la-nube-50.png" alt="upload">-->
+                Upload
+              </button> 
+            </div>
+          </div> 
+        </form>
+        <div>
+            <select id="sel" name="cars" class="custom-select">
+                <option value="1" selected>lista de datos</option>
+                <option value="2">Anonimización</option>
+                <option value="3">Zip data</option>
+                <option value="4">Etiquetar html</option>
+            </select>
+        </div>
+    </div>
+    <div class="mt-5 pt-5 pb-5 footer">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-5 col-xs-12 about-company">
+              <h2>Heading</h2>
+              <p class="pr-5 text-white-50">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac ante mollis quam tristique convallis </p>
+              <p><a href="#"><i class="fa fa-facebook-square mr-1"></i></a><a href="#"><i class="fa fa-linkedin-square"></i></a></p>
+            </div>
+            <div class="col-lg-3 col-xs-12 links">
+              <h4 class="mt-lg-0 mt-sm-3">Links</h4>
+                <ul class="m-0 p-0">
+                  <li>- <a href="#">Lorem ipsum</a></li>
+                  <li>- <a href="#">Nam mauris velit</a></li>
+                  <li>- <a href="#">Etiam vitae mauris</a></li>
+                  <li>- <a href="#">Fusce scelerisque</a></li>
+                  <li>- <a href="#">Sed faucibus</a></li>
+                  <li>- <a href="#">Mauris efficitur nulla</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-xs-12 location">
+              <h4 class="mt-lg-0 mt-sm-4">Location</h4>
+              <p>22, Lorem ipsum dolor, consectetur adipiscing</p>
+              <p class="mb-0"><i class="fa fa-phone mr-3"></i>(541) 754-3010</p>
+              <p><i class="fa fa-envelope-o mr-3"></i>info@hsdf.com</p>
+            </div>
+          </div>
+          <div class="row mt-5">
+            <div class="col copyright">
+              <p class=""><small class="text-white-50">© 2019. All Rights Reserved.</small></p>
+            </div>
+          </div>
+        </div>
+        </div>
+    <script>
+        $(document).ready(function () {
+            let server = "http://127.0.0.1:5000"
+            setInterval(setTime, 5);
+            function setTime() {
+                switch ($("#sel").val()) {
+                    case "1":
+                        $('#formId').attr('action', server+'/search/file/extract-data/json'); 
+                        break;
+                    case "2":
+                        $('#formId').attr('action', server+'/search/file/encode');
+                        break;
+                    case "3":
+                        $('#formId').attr('action', server+'/search/file/extract-data/zip');       
+                        break;
+                    default:
+                        $('#formId').attr('action', server+'/search/file/tagger-html');    
+                }
+            }
+            $(".custom-file-input").on("change", function() {
+                var fileName = $(this).val().split("\\").pop();
+                $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
+            });
+        });
+    </script>  
+</body>  
+</html>  

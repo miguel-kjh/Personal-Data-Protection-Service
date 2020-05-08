@@ -46,9 +46,7 @@ class DocumentHandlerTxt(DocumentHandler):
             for line in file:
                 line = line[0:len(line)-1]
                 if LanguageBuilder().hasContex(line):
-                    data                       = self.dataSearch.searchPersonalData(line)
-                    listNames[len(listNames):] = [name['name'] for name in data[0]]
-                    idCards[len(idCards):]     = [idCard['name'] for idCard in data[1]]
+                    listNames[len(listNames):],idCards[len(idCards):] = self.dataSearch.searchPersonalData(line)
                 elif self.dataSearch.isName(line):
                     listNames.append(line)
         return listNames,idCards

@@ -1,5 +1,8 @@
 from app.test.base import BaseTestCase
 from app.main.util.dataPickerInTables import DataPickerInTables
+from app.main.util.heuristicMeasures  import MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY
+from app.main.util.heuristicMeasures  import SAMPLE_DATA_TO_CHOOSE_NAMES
+
 
 import unittest
 
@@ -37,6 +40,17 @@ class TestPicker(BaseTestCase):
         self.assertEquals(picker.isEmpty(), False)
         picker.clear()
         self.assertEquals(picker.isEmpty(), True)
+
+    def test_names_method(self):
+        picker = DataPickerInTables()
+        picker.addIndexColumn(1)
+        picker.addName(1,"Eugenio")
+        picker.addName(1,"Maria")
+        self.assertEqual(picker._getNamesSample(1), ['Eugenio', 'Maria'])
+        for _ in range(MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY):
+            picker.addName(1,"Miguel")
+        self.assertEqual(len(picker._getNamesSample(1)), round(len(picker.picker[1]['names'])*SAMPLE_DATA_TO_CHOOSE_NAMES))
+
 
 if __name__ == '__main__':
     unittest.main()

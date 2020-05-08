@@ -35,6 +35,7 @@ class Version(Resource):
 
 @api.route("/file/encode")
 class Encode(Resource):
+
     @api.doc('return a file with names encoded')
     def post(self):
         evaluator = RequestEvaluator(request)

@@ -17,38 +17,19 @@ textForTest = {
 
 
 class TestSearchTextByEnt(BaseTestCase):
-    
-    def test_start_end_char_name(self):
-        dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["simple"])
-        self.assertNotEqual(dictionatyOfNames, [])
-        self.assertEqual(dictionatyOfNames[0]["star_char"], textForTest["simple"].find("Miguel"))
-        self.assertEqual(dictionatyOfNames[0]["end_char"], textForTest["simple"].find("Miguel") + len("Miguel"))
-
-        dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["twoSent"])
-        self.assertNotEqual(dictionatyOfNames, [])
-        
-        self.assertEqual(dictionatyOfNames[0]["star_char"], textForTest["twoSent"].find("Daniel"))
-        self.assertEqual(dictionatyOfNames[0]["end_char"], textForTest["twoSent"].find("Daniel") + len("Daniel"))
-        
-        self.assertEqual(dictionatyOfNames[1]["star_char"], textForTest["twoSent"].find("José"))
-        self.assertEqual(dictionatyOfNames[1]["end_char"], textForTest["twoSent"].find("José") + len("José"))
-
-        self.assertEqual(dictionatyOfNames[2]["star_char"], textForTest["twoSent"].find("Miguel"))
-        self.assertEqual(dictionatyOfNames[2]["end_char"], textForTest["twoSent"].find("Miguel") + len("Miguel"))
-        
 
     def test_simple_look_for_names_by_searchNamesText(self):
         dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["simple"])
         self.assertNotEqual(dictionatyOfNames, [])
         self.assertEqual(len(dictionatyOfNames), 1)
-        self.assertEqual(dictionatyOfNames[0]["name"], "Miguel")
+        self.assertEqual(dictionatyOfNames[0], "Miguel")
 
     def test_normal_look_for_names_by_searchNamesText(self):
         dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["normal"])
         self.assertNotEqual(dictionatyOfNames, [])
         self.assertEqual(len(dictionatyOfNames), 2)
-        self.assertEqual(dictionatyOfNames[0]["name"], "Gregorio")
-        self.assertEqual(dictionatyOfNames[1]["name"], "Julio Cesar")
+        self.assertEqual(dictionatyOfNames[0], "Gregorio")
+        self.assertEqual(dictionatyOfNames[1], "Julio Cesar")
 
     def test_hard_look_for_names_by_searchNamesText(self):
         dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["hard"])
@@ -57,23 +38,26 @@ class TestSearchTextByEnt(BaseTestCase):
         ]
         self.assertEqual(len(dictionatyOfNames), len(names))
         for index, name in enumerate(names):
-            self.assertEqual(dictionatyOfNames[index]["name"], name)
+            self.assertEqual(dictionatyOfNames[index], name)
 
     def test_isDni(self):
-        self.assertTrue(personalDataSearchByEnt.isDni("54094110L"))
-        self.assertTrue(personalDataSearchByEnt.isDni("54094110l"))
-        self.assertTrue(personalDataSearchByEnt.isDni("54.09.41.10l"))
-        self.assertTrue(personalDataSearchByEnt.isDni("54.09 41 10 L"))
-        self.assertTrue(personalDataSearchByEnt.isDni("54 09 41 10L"))
-        self.assertTrue(personalDataSearchByEnt.isDni("54094110 L"))
-        self.assertTrue(personalDataSearchByEnt.isDni("54094110\tL"))
-        self.assertTrue(personalDataSearchByEnt.isDni("54094110         L"))
-        self.assertTrue(personalDataSearchByEnt.isDni("43294881\t\tA"))
-        self.assertFalse(personalDataSearchByEnt.isDni("54094110 hola L"))
-        self.assertFalse(personalDataSearchByEnt.isDni("43294884A"))
-        self.assertTrue(personalDataSearchByEnt.isDni("54094110\nL"))
-        self.assertFalse(personalDataSearchByEnt.isDni("example"))
-        self.assertFalse(personalDataSearchByEnt.isDni(""))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54094110L"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54094110l"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54.09.41.10l"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54.09 41 10 L"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54 09 41 10L"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54.09-41 10 L"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54 09 41-10L"))
+        self.assertEqual(personalDataSearchByEnt.giveIdCards("54 09 41-10L wde 54.09-41 10 L"), ["54 09 41-10L","54.09-41 10 L"])
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54094110 L"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54094110\tL"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54094110         L"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("43294881\t\tA"))
+        self.assertFalse(personalDataSearchByEnt.giveIdCards("54094110 hola L"))
+        self.assertFalse(personalDataSearchByEnt.giveIdCards("43294884A"))
+        self.assertTrue(personalDataSearchByEnt.giveIdCards("54094110\nL"))
+        self.assertFalse(personalDataSearchByEnt.giveIdCards("example"))
+        self.assertFalse(personalDataSearchByEnt.giveIdCards(""))
 
     def test_isName(self):
         self.assertTrue(personalDataSearchByEnt.isName("Miguel"))
@@ -82,22 +66,6 @@ class TestSearchTextByEnt(BaseTestCase):
         self.assertFalse(personalDataSearchByEnt.isName(""))
         self.assertFalse(personalDataSearchByEnt.isName("MIguel9 Medina"))
         self.assertFalse(personalDataSearchByEnt.isName("estoy aqui"))
-
-    def test_selectedName(self):
-        self.assertEqual(personalDataSearchByEnt.selectNames([{"name": "", "star_char": 0, "end_char": 0}]), [])
-        self.assertEqual(personalDataSearchByEnt.selectNames([]), [])
-        self.assertEqual(personalDataSearchByEnt.selectNames(
-            [{"name": "Miguel", "star_char": 0, "end_char": 0}]),
-            [{"name": "Miguel", "star_char": 0, "end_char": 0}])
-        self.assertEqual(personalDataSearchByEnt.selectNames(
-            [{"name": "Miguel Ángel Medina Ramírez", "star_char": 0, "end_char": 0}, 
-            {"name": "Paco Guerra", "star_char": 0, "end_char": 0}]), 
-            [{"name": "Miguel Ángel Medina Ramírez", "star_char": 0, "end_char": 0}, 
-            {"name": "Paco Guerra", "star_char": 0, "end_char": 0}])
-        self.assertEqual(personalDataSearchByEnt.selectNames(
-            [{"name": "Miguel Ángel Medina Ramírez", "star_char": 0, "end_char": 0}, 
-            {"name": "ff Guefffrra", "star_char": 0, "end_char": 0}]), 
-            [{"name": "Miguel Ángel Medina Ramírez", "star_char": 0, "end_char": 0}])
 
     def test_check_data_in_DB_name(self):
         self.assertEqual(personalDataSearchByEnt.checkNamesInDB([""]), [])

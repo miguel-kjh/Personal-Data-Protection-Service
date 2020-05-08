@@ -10,7 +10,7 @@ import app.main.service.pdf_redactor  as pdf_redactor
 from datetime import datetime
 from typing   import Text
 import re
-import tabula
+import itertools
     
 
 class DocumentHandlerPdf(DocumentHandler):
@@ -49,7 +49,12 @@ class DocumentHandlerPdf(DocumentHandler):
                 for cell in nameRow:
                     namePicker.addName(row.index(cell), cell)
 
-                idCards[len(idCards):] = list(filter(lambda cell: self.dataSearch.isDni(cell), filter(lambda cell: cell not in nameRow, row)))
+                idCards[len(idCards):] = list(
+                        itertools.chain.from_iterable(
+                            map(lambda cell: self.dataSearch.giveIdCards(cell), 
+                            filter(lambda cell: cell not in nameRow, row))
+                        )
+                    )
                 
             listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)  
         return lastKey    
@@ -64,11 +69,7 @@ class DocumentHandlerPdf(DocumentHandler):
             filter(lambda words: words not in textWithContext and self.dataSearch.isName(words), textSplit)
         )
         
-        names,cards = self.dataSearch.searchPersonalData(' '.join(textWithContext))
-        for name in names:
-            listNames.append(name['name'].strip("\n"))
-        for card in cards:
-            idCards.append(card['name'])
+        listNames[len(listNames):],idCards[len(idCards):] = self.dataSearch.searchPersonalData(' '.join(textWithContext))
 
     def extractData(self) -> tuple:
         listNames = []

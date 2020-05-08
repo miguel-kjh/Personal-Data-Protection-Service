@@ -41,6 +41,31 @@ class TestFileUtils(BaseTestCase):
         self.assertEquals(normalizeUnicode("ñ"*5), "ñ"*5)
         self.assertEquals(normalizeUnicode(""), "")
 
+    def test_isDni(self):
+        self.assertFalse(isDni(""))
+        self.assertFalse(isDni("hola"))
+        self.assertFalse(isDni("43294881B"))
+        self.assertFalse(isDni("43294881\t\tB"))
+        self.assertFalse(isDni("43.29.48.81b"))
+        self.assertFalse(isDni("43-29-48-81B"))
+        self.assertFalse(isDni("43-29-48.81 B"))
+        self.assertFalse(isDni("43    29 48  81     B"))
+
+        self.assertTrue(isDni("43294881A"))
+        self.assertTrue(isDni("43294881\t\tA"))
+        self.assertTrue(isDni("43.29.48.81a"))
+        self.assertTrue(isDni("43-29-48-81A"))
+        self.assertTrue(isDni("43-29-48.81 A"))
+        self.assertTrue(isDni("43    29 48  81     a"))
+
+    def test_replace_unnecessary_characters(self):
+        self.assertEqual(replaceUnnecessaryCharacters(""), "")
+        self.assertEqual(replaceUnnecessaryCharacters("d"), "d")
+        self.assertEqual(replaceUnnecessaryCharacters("MIguel"),  "MIguel")
+        self.assertEqual(replaceUnnecessaryCharacters("d[fedew"), "dfedew")
+        self.assertEqual(replaceUnnecessaryCharacters("Carmen Muchada(s"), "Carmen Muchadas")
+        self.assertEqual(replaceUnnecessaryCharacters("d[fe()[]de|||w"), "dfedew")
+
 
 if __name__ == '__main__':
     unittest.main()

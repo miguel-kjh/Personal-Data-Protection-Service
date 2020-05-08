@@ -6,6 +6,7 @@ from app.main.util.dataPickerInTables import DataPickerInTables
 
 import re
 import pandas as pd
+import itertools
 from bs4           import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 from enum          import Enum,unique
@@ -135,9 +136,7 @@ class DocumentHandlerHtml(DocumentHandler):
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:
                 if LanguageBuilder().hasContex(token.text[0]):
-                    names,cards = self.dataSearch.searchPersonalData(token.text[0])
-                    listNames[len(listNames):] = [name['name'].replace("\n", "") for name in names]
-                    idCards[len(idCards):]     = [card['name'] for card in cards]
+                    listNames[len(listNames):],idCards[len(idCards):]  = self.dataSearch.searchPersonalData(token.text[0])
                 elif self.dataSearch.isName(token.text[0]):
                     listNames.append(token.text[0])
                 cleanPicker()
@@ -155,7 +154,12 @@ class DocumentHandlerHtml(DocumentHandler):
                         picker.addName(index,token.text[index])
                     except IndexError:
                         continue
-                for index,token in enumerate(token.text):
-                    if not index in picker.getIndexesColumn() and self.dataSearch.isDni(token):
-                        idCards.append(token)
+                idCards[len(idCards):] = list(
+                    itertools.chain.from_iterable(
+                        map(
+                            lambda id: self.dataSearch.giveIdCards(id), 
+                            [text for index,text in enumerate(token.text) if not index in picker.getIndexesColumn()]
+                        )
+                    )
+                )
         return listNames,idCards

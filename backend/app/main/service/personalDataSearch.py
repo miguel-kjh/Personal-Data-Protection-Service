@@ -9,16 +9,11 @@ import sqlite3 as lite
 import re
 
 class PersonalDataSearch(ABC):
-    def __init__(self, errorRange: float = ERROR_RANGE_PERCENTAGE_DB, namesByRules:bool = False):
-        if not namesByRules :
-            self.nlp = LanguageBuilder().getlanguage()
-        else: 
-            self.nlp = LanguageBuilder().getlanguageByRules()
-        
-        self.keywords              = ["DE", "DEL", "EL", "LOS", "TODOS", "Y"]
-        self.errorRange            = errorRange
-        self.connection            = SpanishNamesDB()
-        self.regexIdCards          = r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w'
+    def __init__(self):
+        self.keywords     = ["DE", "DEL", "EL", "LOS", "TODOS", "Y"]
+        self.errorRange   = ERROR_RANGE_PERCENTAGE_DB
+        self.connection   = SpanishNamesDB()
+        self.regexIdCards = r'\d{2}([\.-]?|\s*)\d{2}([\.-]?|\s*)\d{2}([\.-]?|\s*)\d{2}\s*\w'
 
     def _convertName(self,name:str) -> list:
         normalizeName = normalizeUnicode(str(name)).upper()
@@ -32,7 +27,7 @@ class PersonalDataSearch(ABC):
     def _checkNameInSubset(self,name:list, nameSubset:list) -> bool:
         if not name: return False
         namesFound = list(filter(lambda n: n in nameSubset, name))
-        return len(namesFound)/len(name) > self.errorRange
+        return len(namesFound)/len(name) >= self.errorRange
 
 
     def checkNamesInDB(self, names:list) -> list:
@@ -84,20 +79,11 @@ class PersonalDataSearch(ABC):
         
         return self.checkNameInDB(fullName)
 
-    def selectNames(self, names: list) -> list:
-        selectedNames = self.checkNamesInDB([name['name'] for name in names])
-        return list(
-            filter(
-                lambda name: name['name'] in selectedNames,names
+    def giveIdCards(self, string: str) -> list:
+        match = map(
+                lambda x: x.group(), re.finditer(self.regexIdCards,str(string))
             )
-        )
-
-    def isDni(self, idCard: str) -> bool:
-        match = list(
-            filter(lambda x: isDni(x.group()) , re.finditer(r'\d{2}.?\d{2}.?\d{2}.?\d{2}\s*\w',str(idCard))
-            )
-        )
-        return len(match) == 1 and match[0].group() == idCard
+        return list(filter(lambda idCard: isDni(idCard), match))
 
     @abstractmethod
     def searchPersonalData(self, text: Text) -> tuple:

@@ -10,7 +10,9 @@ from docx.text.paragraph import Paragraph
 from docx.table          import Table
 
 import re
+import itertools
 from typing import Text
+
 
 class DocumentHandlerDocx(DocumentHandler):
 
@@ -75,17 +77,11 @@ class DocumentHandlerDocx(DocumentHandler):
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    names,idCards = self.dataSearch.searchPersonalData(block.text)
-                    if names:
-                        listNames[len(listNames):]   = [name['name'] for name in names]
-                    if idCards:
-                        listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
+                    listNames[len(listNames):],listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text)
                 elif self.dataSearch.isName(block.text):
                     listNames.append(block.text.strip())
                 else:
-                    _,idCards = self.dataSearch.searchPersonalData(block.text)
-                    if idCards:
-                        listIdCard[len(listIdCard):] = [idCard['name'] for idCard in idCards]
+                    _,listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text)
             elif isinstance(block, Table):
                 namePicker = DataPickerInTables()
                 for index, row in enumerate(block.rows):
@@ -107,7 +103,12 @@ class DocumentHandlerDocx(DocumentHandler):
                     for cell in nameRow:
                         namePicker.addName(rowText.index(cell), cell)
 
-                    listIdCard[len(listIdCard):] = list(filter(lambda cell: self.dataSearch.isDni(cell), filter(lambda cell: cell not in nameRow, rowText)))
+                    listIdCard[len(listIdCard):] = list(
+                        itertools.chain.from_iterable(
+                            map(lambda cell: self.dataSearch.giveIdCards(cell), 
+                            filter(lambda cell: cell not in nameRow, rowText))
+                        )
+                    )
                     
                 listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
             else:

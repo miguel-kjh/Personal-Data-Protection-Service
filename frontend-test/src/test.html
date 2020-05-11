@@ -20,7 +20,7 @@
         </ul>
     </nav>
     <div id = "Section1" class="jumbotron container info">
-        <h1 class="display-4">Hello, world!</h1>
+        <h1 class="display-4">Servicio de Anonimización y Extración de datos Personales</h1>
         <p class="lead">Lorem ipsum dolor sit amet consectetur adipiscing elit dignissim integer augue tincidunt ultrices rhoncus vel, 
         tortor vestibulum porta cum pharetra etiam viverra curabitur porttitor lacus in quis nec. Quisque morbi volutpat 
         viverra nam urna felis purus nibh, erat etiam pretium nullam facilisis maecenas at. Condimentum at faucibus fringilla pharetra quam,
@@ -45,6 +45,32 @@
     </div>
     <div id="Section2" class="container">
         <h2>Anonimización</h2>
+        <hr/>
+        <div class="row">
+          <div class="col-4">
+            <div class="list-group" id="list-tab" role="tablist">
+              <a class="list-group-item list-group-item-action active" id="list-rules-list" data-toggle="list" href="#list-rules" role="tab" aria-controls="rules">Normas</a>
+              <a class="list-group-item list-group-item-action" id="list-op-list" data-toggle="list" href="#list-op" role="tab" aria-controls="op">Operaciones</a>
+              <a class="list-group-item list-group-item-action" id="list-data-list" data-toggle="list" href="#list-data" role="tab" aria-controls="data">Datos</a>
+            </div>
+          </div>
+          <div class="col-8">
+            <div class="tab-content" id="nav-tabContent">
+              <div class="tab-pane fade show active" id="list-rules" role="tabpanel" aria-labelledby="list-rules-list">
+                El servidor está programado para soportar documentos de cualquier tamaño, 
+                siempre y cuando estos sean pdf,docx,txt,csv,archivos excel o html.
+              </div>
+              <div class="tab-pane fade" id="list-op" role="tabpanel" aria-labelledby="list-op-list">
+                Todas las operaciones devuelve el documento o algún archivo para descargar.
+              </div>
+              <div class="tab-pane fade" id="list-data" role="tabpanel" aria-labelledby="list-data-list">
+                Nos compormetemos a no hacer uso de datos ni de información relativa a los documentos enviados,
+                cumpliendo con la ley organica de protección de datos.
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
         <form id="formId" action = "" method = "post" enctype="multipart/form-data"> 
           <div class="row">
             <div class="col-sm-10">
@@ -55,17 +81,16 @@
             </div>
             <div class="col-sm-2">
               <button type="submit" class="btn btn-primary upload">
-                <!--<img src="resourse/icons8-subir-a-la-nube-50.png" alt="upload">-->
                 Upload
-              </button> 
+              </button>
             </div>
-          </div> 
+          </div>
         </form>
         <div>
             <select id="sel" name="cars" class="custom-select">
-                <option value="1" selected>lista de datos</option>
+                <option value="1" selected>Extraer datos en formato json</option>
                 <option value="2">Anonimización</option>
-                <option value="3">Zip data</option>
+                <option value="3">Extraer datos en archivo zip</option>
                 <option value="4">Etiquetar html</option>
             </select>
         </div>

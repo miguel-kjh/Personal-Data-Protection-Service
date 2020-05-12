@@ -1,0 +1,136 @@
+<html lang="es">  
+<head>  
+    <title>upload</title>  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.scss') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename= 'js/script.js') }}"></script>
+</head>  
+<body>  
+    <nav class="navbar navbar-expand-sm navbar-dark fixed-top">
+        <a class="navbar-brand" href="#"><img src="{{ url_for('static', filename= 'fonts/icons8-cargar-documento-de-enlace-40.png') }}" alt="Icono"></a>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="#Section1">Información</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#Section2">Anonimizar</a>
+          </li>
+        </ul>
+    </nav>
+    <div id = "Section1" class="jumbotron container info">
+        <h1 class="display-4">Servicio de Anonimización y Extración de datos Personales</h1>
+        <p class="lead">Lorem ipsum dolor sit amet consectetur adipiscing elit dignissim integer augue tincidunt ultrices rhoncus vel, 
+        tortor vestibulum porta cum pharetra etiam viverra curabitur porttitor lacus in quis nec. Quisque morbi volutpat 
+        viverra nam urna felis purus nibh, erat etiam pretium nullam facilisis maecenas at. Condimentum at faucibus fringilla pharetra quam,
+        curae consequat tortor quisque mollis mauris, conubia donec diam pellentesque.
+        Phasellus per feugiat tempor cursus est bibendum himenaeos, nostra fames ac tempus sapien class quis suscipit,
+        hac aenean ridiculus non ultricies maecenas.</p> 
+        <p class="lead">Torquent posuere libero diam sem himenaeos eleifend ultricies integer at fames, proin
+        donec vivamus magna facilisi turpis aptent sapien porta, platea luctus a elementum massa habitasse mollis tristique feugiat.
+        Dictum mattis erat vulputate sociis odio vestibulum auctor, non varius hendrerit gravida libero tempus leo accumsan,
+        aliquam convallis venenatis cum viverra in. Elementum facilisi nulla felis
+        nam posuere convallis maecenas tortor, a ullamcorper et non risus eu nunc, eget penatibus mattis suspendisse pretium habitasse cubilia. Nulla eros elementum ornare natoque varius viverra arcu
+        feugiat taciti aenean nunc cras lobortis scelerisque ut, cubilia nisi gravida metus ridiculus sociis morbi vitae sodales quis curae dictumst vulputate imperdiet.</p>
+        <p class="lead">Torquent posuere libero diam sem himenaeos eleifend ultricies integer at fames, proin
+        donec vivamus magna facilisi turpis aptent sapien porta, platea luctus a elementum massa habitasse mollis tristique feugiat.
+        Dictum mattis erat vulputate sociis odio vestibulum auctor, non varius hendrerit gravida libero tempus leo accumsan,
+        aliquam convallis venenatis cum viverra in. Elementum facilisi nulla felis
+        nam posuere convallis maecenas tortor, a ullamcorper et non risus eu nunc, eget penatibus mattis suspendisse pretium habitasse cubilia. Nulla eros elementum ornare natoque varius viverra arcu
+        feugiat taciti aenean nunc cras lobortis scelerisque ut, cubilia nisi gravida metus ridiculus sociis morbi vitae sodales quis curae dictumst vulputate imperdiet.</p>
+        <hr class="my-4">
+        <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
+        <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+    </div>
+    <div id="Section2" class="container">
+        <h2>Anonimización</h2>
+        <hr/>
+        <div class="row">
+          <div class="col-4">
+            <div class="list-group" id="list-tab" role="tablist">
+              <a class="list-group-item list-group-item-action active" id="list-rules-list" data-toggle="list" href="#list-rules" role="tab" aria-controls="rules">Normas</a>
+              <a class="list-group-item list-group-item-action" id="list-op-list" data-toggle="list" href="#list-op" role="tab" aria-controls="op">Operaciones</a>
+              <a class="list-group-item list-group-item-action" id="list-data-list" data-toggle="list" href="#list-data" role="tab" aria-controls="data">Datos</a>
+            </div>
+          </div>
+          <div class="col-8">
+            <div class="tab-content" id="nav-tabContent">
+              <div class="tab-pane fade show active" id="list-rules" role="tabpanel" aria-labelledby="list-rules-list">
+                El servidor está programado para soportar documentos de cualquier tamaño, 
+                siempre y cuando estos sean pdf,docx,txt,csv,archivos excel o html.
+              </div>
+              <div class="tab-pane fade" id="list-op" role="tabpanel" aria-labelledby="list-op-list">
+                Todas las operaciones devuelve el documento o algún archivo para descargar.
+              </div>
+              <div class="tab-pane fade" id="list-data" role="tabpanel" aria-labelledby="list-data-list">
+                Nos compormetemos a no hacer uso de datos ni de información relativa a los documentos enviados,
+                cumpliendo con la ley organica de protección de datos.
+              </div>
+            </div>
+          </div>
+        </div>
+        <br>
+        <form id="formId" method = "post" enctype="multipart/form-data"> 
+          <div class="row">
+            <div class="col-sm-10">
+              <div class="custom-file">
+                <input type="file" name="file" class="custom-file-input" id="customFile"/>
+                <label class="custom-file-label" for="customFile">Choose file</label>
+              </div>
+            </div>
+            <div class="col-sm-2">
+              <button type="submit" class="btn btn-primary upload">
+                Upload
+              </button>
+            </div>
+          </div>
+        </form>
+        <div>
+            <select id="sel" name="cars" class="custom-select">
+                <option value="1" selected>Extraer datos en formato json</option>
+                <option value="2">Anonimización</option>
+                <option value="3">Extraer datos en archivo zip</option>
+                <option value="4">Etiquetar html</option>
+            </select>
+        </div>
+    </div>
+    <div class="mt-5 pt-5 pb-5 footer">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-5 col-xs-12 about-company">
+              <h2>Heading</h2>
+              <p class="pr-5 text-white-50">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nullam ac ante mollis quam tristique convallis </p>
+              <p><a href="#"><i class="fa fa-facebook-square mr-1"></i></a><a href="#"><i class="fa fa-linkedin-square"></i></a></p>
+            </div>
+            <div class="col-lg-3 col-xs-12 links">
+              <h4 class="mt-lg-0 mt-sm-3">Links</h4>
+                <ul class="m-0 p-0">
+                  <li>- <a href="#">Lorem ipsum</a></li>
+                  <li>- <a href="#">Nam mauris velit</a></li>
+                  <li>- <a href="#">Etiam vitae mauris</a></li>
+                  <li>- <a href="#">Fusce scelerisque</a></li>
+                  <li>- <a href="#">Sed faucibus</a></li>
+                  <li>- <a href="#">Mauris efficitur nulla</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-xs-12 location">
+              <h4 class="mt-lg-0 mt-sm-4">Location</h4>
+              <p>22, Lorem ipsum dolor, consectetur adipiscing</p>
+              <p class="mb-0"><i class="fa fa-phone mr-3"></i>(541) 754-3010</p>
+              <p><i class="fa fa-envelope-o mr-3"></i>info@hsdf.com</p>
+            </div>
+          </div>
+          <div class="row mt-5">
+            <div class="col copyright">
+              <p class=""><small class="text-white-50">© 2020. All Rights Reserved.</small></p>
+            </div>
+          </div>
+        </div>
+        </div>
+    <script>
+        
+    </script>  
+</body>  
+</html>  

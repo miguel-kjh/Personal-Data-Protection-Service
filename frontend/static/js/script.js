@@ -4,7 +4,7 @@ $(document).ready(function () {
     function setTime() {
         switch ($("#sel").val()) {
             case "1":
-                $('#formId').attr('action', server+'/search/file/extract-data/json'); 
+                $('#formId').attr('action', server+'/search/file/extract-data/json-file'); 
                 break;
             case "2":
                 $('#formId').attr('action', server+'/search/file/encode');

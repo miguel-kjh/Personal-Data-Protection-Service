@@ -103,6 +103,43 @@ class extractDataJson(Resource):
         else:
             return evaluator.giveResponse(), 400
 
+@api.route('/file/extract-data/json-file')
+class extractDataJsonFile(Resource):
+    @api.doc('return a json file with all data found')
+    def post(self):
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
+            publicId = saveLog(
+                {
+                    'name': evaluator.fakeFilename,
+                    'folder': UPLOAD_FOLDER,
+                    'isdelete': False,
+                    'filetype': evaluator.filetype
+                }
+            )
+            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".json")
+            creator = getCreatorDocumentHandler(
+                os.path.join(path, evaluator.fakeFilename),
+                evaluator.filetype,
+                os.path.join(path, nameOfNewDocument)
+            )
+            dh = creator.create()
+            dh.createDataJsonFile()
+            updateDelete(publicId, True)
+            publicId = saveLog(
+                {
+                    'name': nameOfNewDocument,
+                    'folder': UPLOAD_FOLDER,
+                    'isdelete': False,
+                    'filetype': evaluator.filetype
+                }
+            )
+            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
+            updateDelete(publicId, True)
+            return fileSend
+        else:
+            return evaluator.giveResponse(), 400
+
 
 @api.route('/file/extract-data/zip')
 class extractDataZip(Resource):

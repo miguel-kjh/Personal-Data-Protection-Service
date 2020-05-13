@@ -14,9 +14,9 @@ from abc import ABC, abstractmethod
 
 class DocumentHandler(ABC):
 
-    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
+    def __init__(self, path: str, outfile: str = "", anonymizationFunction = None):
         self.path                  = path
-        self.destiny               = destiny
+        self.outfile               = outfile
         self.dataSearch            = PersonalDataSearchByEntities()
         self.anonymizationFunction = anonymizationFunction
 
@@ -30,7 +30,7 @@ class DocumentHandler(ABC):
     def createDataJsonFile(self):
         names,idCards = self.extractData()
         data          = {"Names":names,"IdCards":idCards}
-        with open(self.destiny,'w') as outfile:
+        with open(self.outfile,'w') as outfile:
             json.dump(data,outfile)
 
 
@@ -46,7 +46,7 @@ class DocumentHandler(ABC):
             os.remove(filename)
 
     def _createZip(self, listNames: list, idCards: list):
-        zipf = zipfile.ZipFile(self.destiny, 'w', zipfile.ZIP_DEFLATED)
+        zipf = zipfile.ZipFile(self.outfile, 'w', zipfile.ZIP_DEFLATED)
         if listNames:
             filename = os.path.join(UPLOAD_FOLDER,"names.csv")
             self._saveInZipFile(zipf,filename,"Names", listNames)

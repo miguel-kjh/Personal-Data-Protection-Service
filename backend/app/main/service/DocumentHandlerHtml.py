@@ -83,8 +83,8 @@ class TokenizerHtml:
 
 class DocumentHandlerHtml(DocumentHandler):
 
-    def __init__(self, path: Text, destiny: str = "", anonymizationFunction = None):
-        super().__init__(path, destiny=destiny, anonymizationFunction=anonymizationFunction)
+    def __init__(self, path: Text, outfile: str = "", anonymizationFunction = None):
+        super().__init__(path, outfile=outfile, anonymizationFunction=anonymizationFunction)
         with open(self.path, "r", encoding="utf8") as f:
             self.soup  = BeautifulSoup(f.read(), "lxml")
         self.regexName = []
@@ -120,7 +120,7 @@ class DocumentHandlerHtml(DocumentHandler):
         data = []
         data[len(data):],data[len(data):] = listNames,idCards
         self._buildRegex(data)
-        with open(self.destiny, "w") as f:
+        with open(self.outfile, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
     def extractData(self) -> tuple:

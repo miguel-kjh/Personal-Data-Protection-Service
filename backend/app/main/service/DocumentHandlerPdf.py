@@ -15,8 +15,8 @@ import itertools
 
 class DocumentHandlerPdf(DocumentHandler):
 
-    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
-        super().__init__(path, destiny=destiny, anonymizationFunction = anonymizationFunction)
+    def __init__(self, path: str, outfile: str = "", anonymizationFunction = None):
+        super().__init__(path, outfile=outfile, anonymizationFunction = anonymizationFunction)
         self.options                  = pdf_redactor.RedactorOptions()
         self.options.xmp_filters      = [lambda xml: None]
         self.options.metadata_filters = {
@@ -88,8 +88,8 @@ class DocumentHandlerPdf(DocumentHandler):
                     lambda m: self.anonymizationFunction(m.group())
                 )
             ]
-            pdf_redactor.redactor(self.options, self.path, self.destiny)
-            self.path = self.destiny
+            pdf_redactor.redactor(self.options, self.path, self.outfile)
+            self.path = self.outfile
 
         if not self.anonymizationFunction:
             return
@@ -97,7 +97,7 @@ class DocumentHandlerPdf(DocumentHandler):
         maxLength = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
         listNames,idCards = self.extractData()
         if not listNames and not idCards:
-            pdf_redactor.redactor(self.options, self.path, self.destiny)
+            pdf_redactor.redactor(self.options, self.path, self.outfile)
             return
         listNames = list(set(listNames))
         listNames.sort(

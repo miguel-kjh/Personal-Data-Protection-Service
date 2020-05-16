@@ -11,6 +11,7 @@ from bs4           import BeautifulSoup
 from bs4.formatter import HTMLFormatter
 from enum          import Enum,unique
 from typing        import Text
+import urllib3
 
 @unique
 class TableToken(Enum):
@@ -83,10 +84,15 @@ class TokenizerHtml:
 
 class DocumentHandlerHtml(DocumentHandler):
 
-    def __init__(self, path: Text, outfile: str = "", anonymizationFunction = None):
+    def __init__(self, path: Text, outfile: str = "", anonymizationFunction = None, isUrl = False):
         super().__init__(path, outfile=outfile, anonymizationFunction=anonymizationFunction)
-        with open(self.path, "r", encoding="utf8") as f:
-            self.soup  = BeautifulSoup(f.read(), "lxml")
+        if isUrl:
+            http = urllib3.PoolManager()
+            req  = http.request('GET', self.path)
+            self.soup = BeautifulSoup(req.data, "lxml")
+        else:
+            with open(self.path, "r", encoding="utf8") as f:
+                self.soup  = BeautifulSoup(f.read(), "lxml")
         self.regexName = []
 
     def _processEntities(self, sentence):

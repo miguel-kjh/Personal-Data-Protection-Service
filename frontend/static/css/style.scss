@@ -6,7 +6,7 @@ body {
     margin-top: 5%;
 }
 
-.upload{
+.file_upload{
     padding-left: 10%;
     padding-right: 10%;
 }
@@ -50,4 +50,13 @@ body {
 
 .upload_web{
   margin-top: 5%;
+}
+
+#alert{
+  color: rgb(255, 0, 0);
+  padding-top: 3%;
+}
+
+.error {
+  border: solid 2px #FF0000;  
 }

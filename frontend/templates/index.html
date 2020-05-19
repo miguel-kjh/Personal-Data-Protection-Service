@@ -42,15 +42,15 @@
               </ul>
             </div>
             <div class="tab-pane fade" id="list-op" role="tabpanel" aria-labelledby="list-op-list">
-              <form method="get" id="form_web">
+              <form method="get" id="form_web" onsubmit="return validateForm();">
                 <div class="input-group mb-3">
                   <div class="input-group-prepend">
                     <span class="input-group-text" id="basic-addon1">URL</span>
                   </div>
-                  <input type="text" class="form-control" placeholder="url" for="url" name="url" aria-label="url" aria-describedby="basic-addon1">
+                  <input type="text" class="form-control" placeholder="url" id="url_web" for="url" name="url" aria-label="url" aria-describedby="basic-addon1">
                 </div>
                 <div>     
-                  <select id="sel" name="op" for="op" class="custom-select">
+                  <select name="op" for="op" class="custom-select">
                       <option value="json" selected>Extraer datos en formato json</option>
                       <option value="encode">Anonimización</option>
                       <option value="zip">Extraer datos en archivo zip</option>
@@ -75,7 +75,7 @@
                     </div>
                   </div>
                   <div class="col-sm-2">
-                    <button type="submit" class="btn btn-primary upload">
+                    <button type="submit" class="btn btn-primary file_upload" >
                       Upload
                     </button>
                   </div>
@@ -89,6 +89,7 @@
                       <option value="4">Etiquetar html</option>
                   </select>
               </div>
+              <p id="alert"></p>
             </div>
           </div>
         </div>

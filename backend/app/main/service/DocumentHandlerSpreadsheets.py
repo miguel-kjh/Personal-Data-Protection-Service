@@ -10,8 +10,8 @@ import itertools
 
 
 class DocumentHandlerSpreadsheets(DocumentHandler):
-    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
-        super().__init__(path, destiny=destiny, anonymizationFunction = anonymizationFunction)
+    def __init__(self, path: str, outfile: str = "", anonymizationFunction = None):
+        super().__init__(path, outfile=outfile, anonymizationFunction = anonymizationFunction)
         self.selector = ColumnSelectorDataFrame()
 
     def save(self):
@@ -19,8 +19,8 @@ class DocumentHandlerSpreadsheets(DocumentHandler):
 
 class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
 
-    def __init__(self, path: str, destiny: str = "", anonymizationFunction=None):
-        super().__init__(path, destiny=destiny, anonymizationFunction=anonymizationFunction)
+    def __init__(self, path: str, outfile: str = "", anonymizationFunction=None):
+        super().__init__(path, outfile=outfile, anonymizationFunction=anonymizationFunction)
         self.sheets = pd.read_excel(path,sheet_name=None)
 
     def extractData(self) -> tuple:
@@ -65,15 +65,15 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
         self.save()
     
     def save(self):
-        writer = pd.ExcelWriter(self.destiny)
+        writer = pd.ExcelWriter(self.outfile)
         for sheetName in self.sheets:
             self.sheets[sheetName].to_excel(writer, sheet_name = sheetName, index=False)
         writer.save()
 
 class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
 
-    def __init__(self, path: str, destiny: str = "",anonymizationFunction=None):
-        super().__init__(path, destiny=destiny, anonymizationFunction=anonymizationFunction)
+    def __init__(self, path: str, outfile: str = "",anonymizationFunction=None):
+        super().__init__(path, outfile=outfile, anonymizationFunction=anonymizationFunction)
         self.df = pd.read_csv(path)
 
     def extractData(self) -> tuple:
@@ -116,4 +116,4 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
 
 
     def save(self):
-        self.df.to_csv(self.destiny, index=False)
+        self.df.to_csv(self.outfile, index=False)

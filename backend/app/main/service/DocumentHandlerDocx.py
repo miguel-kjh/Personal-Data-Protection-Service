@@ -16,8 +16,8 @@ from typing import Text
 
 class DocumentHandlerDocx(DocumentHandler):
 
-    def __init__(self, path: str, destiny: str = "", anonymizationFunction = None):
-        super().__init__(path, destiny=destiny, anonymizationFunction=anonymizationFunction)
+    def __init__(self, path: str, outfile: str = "", anonymizationFunction = None):
+        super().__init__(path, outfile=outfile, anonymizationFunction=anonymizationFunction)
         self.document = docx.Document(self.path)
 
     def documentsProcessing(self):
@@ -68,7 +68,7 @@ class DocumentHandlerDocx(DocumentHandler):
 
             else:
                 continue
-        self.document.save(self.destiny)
+        self.document.save(self.outfile)
 
     def extractData(self) -> tuple:
         lastKey    = []

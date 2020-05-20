@@ -15,7 +15,7 @@ class DocumentHandlerTxt(DocumentHandler):
         if not self.anonymizationFunction:
             return
 
-        with open(self.path, 'r', encoding='utf8') as file, open(self.destiny, 'w',encoding='utf8') as destiny:
+        with open(self.path, 'r', encoding='utf8') as file, open(self.outfile, 'w',encoding='utf8') as outfile:
             data              = []
             fileText          = str(file.read())
             maxLength         = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
@@ -34,7 +34,7 @@ class DocumentHandlerTxt(DocumentHandler):
                 fileText = updateTxt('|'.join(data[intial:]), fileText)
             else:
                 fileText = updateTxt('|'.join(data), fileText)
-            destiny.write(fileText)
+            outfile.write(fileText)
                 
 
                 

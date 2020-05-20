@@ -39,7 +39,7 @@ def itemIterator(parent):
     elif isinstance(parent, _Row):
         parent_elm = parent._tr
     else:
-        raise ValueError("something's not right")
+        raise ValueError("the Docx document have object what didn't implemented in the iterator")
     for child in parent_elm.iterchildren():
         if isinstance(child, CT_P):
             yield Paragraph(child, parent)

@@ -78,4 +78,4 @@ class LanguageBuilder(metaclass=Singleton):
         doc     = self.nlpRules(text)
         matches = self.matcher(doc)
         return not ((bool(matches) and matches[-1][2] == len(doc)) 
-        or (sum(char.isupper() for char in text)+1)/len(text) > MINIMAL_UPPER_CHAR_DENSITY)
+        or (sum(char.isupper() for char in text.replace(" ",''))+1)/len(text) > MINIMAL_UPPER_CHAR_DENSITY)

@@ -4,6 +4,7 @@ from ..service.LogService            import updateDelete, saveLog
 from ..service.languageBuilder       import LanguageBuilder
 from ..service.CreateDocumentHandler import getCreatorDocumentHandler
 from ..util.RequestEvaluator         import RequestEvaluator
+from ..util.fileUtils                import giveFileNameUnique
 from ..util.anonymizationFunctions   import encode,markInHtml
 
 
@@ -103,6 +104,43 @@ class extractDataJson(Resource):
         else:
             return evaluator.giveResponse(), 400
 
+@api.route('/file/extract-data/json-file')
+class extractDataJsonFile(Resource):
+    @api.doc('return a json file with all data found')
+    def post(self):
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
+            publicId = saveLog(
+                {
+                    'name': evaluator.fakeFilename,
+                    'folder': UPLOAD_FOLDER,
+                    'isdelete': False,
+                    'filetype': evaluator.filetype
+                }
+            )
+            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".json")
+            creator = getCreatorDocumentHandler(
+                os.path.join(path, evaluator.fakeFilename),
+                evaluator.filetype,
+                os.path.join(path, nameOfNewDocument)
+            )
+            dh = creator.create()
+            dh.createDataJsonFile()
+            updateDelete(publicId, True)
+            publicId = saveLog(
+                {
+                    'name': nameOfNewDocument,
+                    'folder': UPLOAD_FOLDER,
+                    'isdelete': False,
+                    'filetype': evaluator.filetype
+                }
+            )
+            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
+            updateDelete(publicId, True)
+            return fileSend
+        else:
+            return evaluator.giveResponse(), 400
+
 
 @api.route('/file/extract-data/zip')
 class extractDataZip(Resource):
@@ -188,3 +226,114 @@ class TargetHtml(Resource):
             return fileSend
         else:
             return evaluator.giveResponse(), 400
+
+
+@api.route('/file/operation-web')
+@api.param('url', 'Url form a web site')
+@api.param('op',  'Operation to a html file')
+class operationWeb(Resource):
+
+    def _json(self, url:str):
+        name    = giveFileNameUnique('json')
+        creator = getCreatorDocumentHandler(
+                url,
+                'html',
+                os.path.join(path, name),
+                isUrl=True
+        )
+        try:
+            dh = creator.create()
+            dh.createDataJsonFile()
+            publicId = saveLog(
+                {
+                    'name'    : name,
+                    'folder'  : UPLOAD_FOLDER,
+                    'isdelete': False,
+                    'filetype': 'json'
+                }
+            )
+            fileSend = send_from_directory(path, name, as_attachment=True)
+            updateDelete(publicId, True)
+            return fileSend
+        except Exception:
+            return {
+                "url": url,
+                "success" : False,
+                "error"   : "bad url"
+            }, 400
+
+    def _zip(self, url:str):
+        name    = giveFileNameUnique('zip')
+        creator = getCreatorDocumentHandler(
+                url,
+                'html',
+                os.path.join(path, name),
+                isUrl=True
+        )
+        try:
+            dh = creator.create()
+            dh.createDataZipFolder()
+            publicId = saveLog(
+                {
+                    'name'    : name,
+                    'folder'  : UPLOAD_FOLDER,
+                    'isdelete': False,
+                    'filetype': 'json'
+                }
+            )
+            fileSend = send_from_directory(path, name, as_attachment=True)
+            updateDelete(publicId, True)
+            return fileSend
+        except Exception:
+            return {
+                "url": url,
+                "success" : False,
+                "error"   : "bad url"
+            }, 400
+
+    def _encode(self,url:str, anonymizationFunction):
+        name  = giveFileNameUnique('html')
+        creator = getCreatorDocumentHandler(
+            url,
+            'html',
+            os.path.join(path, name),
+            encode,
+            isUrl=True
+        )
+        try:
+            dh = creator.create()
+            dh.documentsProcessing()
+            publicId = saveLog(
+                {
+                    'name'    : name,
+                    'folder'  : UPLOAD_FOLDER,
+                    'isdelete': False,
+                    'filetype': 'html'
+                }
+            )
+            fileSend = send_from_directory(path, name, as_attachment=True)
+            updateDelete(publicId, True)
+            return fileSend
+        except Exception:
+            return {
+                "url": url,
+                "success" : False,
+                "error"   : "bad url"
+            }, 400
+
+    def get(self):
+        url  = str(request.args['url']) 
+        op   = str(request.args['op'])
+        print(url,op)
+        if op == 'zip':
+            return self._zip(url)
+        elif op == 'json':
+            return self._json(url)
+        elif op == 'encode':
+            return self._encode(url, encode)
+        return {
+                "op"      : url,
+                "success" : False,
+                "error"   : "bad operation"
+            }, 400
+        

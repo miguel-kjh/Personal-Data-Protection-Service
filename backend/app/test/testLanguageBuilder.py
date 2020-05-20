@@ -12,6 +12,7 @@ class TestLanguageBuilder(BaseTestCase):
     def test_hasContex(self):
         self.assertTrue(LanguageBuilder().hasContex("Hola, que tal?"))
         self.assertFalse(LanguageBuilder().hasContex("MIGUEL"))
+        self.assertFalse(LanguageBuilder().hasContex("MIGUEL ÁNGEL"))
         self.assertFalse(LanguageBuilder().hasContex(""))
 
 if __name__ == '__main__':

@@ -9,7 +9,10 @@ from abc import ABC, abstractmethod
 
 
 
-def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = "", anonymizationFunction = None):
+def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = "", anonymizationFunction = None, isUrl:bool = False):
+    if isUrl:
+        return CreatorDocumentHandlerHtml(filename, destiny,anonymizationFunction, isUrl)
+
     if   typeFile == 'docx':
         return CreatorDocumentHandlerDocx(filename, destiny,anonymizationFunction)
     elif typeFile == 'pdf':
@@ -55,8 +58,12 @@ class CreatorDocumentHandlerCsv(CreatorDocumentHandler):
         return DocumentHandlerCsv(self.path, self.destiny,self.anonymizationFunction)
 
 class CreatorDocumentHandlerHtml(CreatorDocumentHandler):
+    def __init__(self,path: str, destiny: str, anonymizationFunction, isUrl = False):
+        super().__init__(path, destiny, anonymizationFunction)
+        self.isUrl = isUrl
+    
     def create(self) -> DocumentHandler:
-        return DocumentHandlerHtml(self.path, self.destiny,self.anonymizationFunction)
+        return DocumentHandlerHtml(self.path, self.destiny,self.anonymizationFunction,self.isUrl)
 
 class CreatorDocumentHandlerTxt(CreatorDocumentHandler):
     def create(self) -> DocumentHandler:

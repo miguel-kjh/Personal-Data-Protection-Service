@@ -1,0 +1,62 @@
+body {
+    background-color: #f2f7fb
+}
+
+.info{
+    margin-top: 5%;
+}
+
+.file_upload{
+    padding-left: 10%;
+    padding-right: 10%;
+}
+
+.navbar{
+  background: rgb(13, 18, 26);
+}
+
+.footer{
+    background: rgb(13, 18, 26);
+    color:white;
+    
+    .links{
+      ul {list-style-type: none;}
+      li a{
+        color: white;
+        transition: color .2s;
+        &:hover{
+          text-decoration:none;
+          color:#4180CB;
+          }
+      }
+    }  
+    .about-company{
+      i{font-size: 25px;}
+      a{
+        color:white;
+        transition: color .2s;
+        &:hover{color:#4180CB}
+      }
+    } 
+    .location{
+      i{font-size: 18px;}
+    }
+    .copyright p{border-top:1px solid rgba(255,255,255,.1);} 
+}
+
+.anonimizar{
+  margin-top: 5%;
+}
+
+.upload_web{
+  margin-top: 5%;
+}
+
+#alert{
+  color: rgb(255, 0, 0);
+  padding-top: 3%;
+}
+
+.error {
+  border: solid 2px #FF0000;  
+}

@@ -24,8 +24,8 @@ class DocumentHandler(ABC):
     def documentsProcessing(self):
         pass
 
-    def createDataZipFolder(self):
-        self._createZip(*self.extractData())
+    def createDataCsvFile(self):
+        self._createCsv(*self.extractData())
 
     def createDataJsonFile(self):
         names,idCards = self.extractData()
@@ -38,18 +38,12 @@ class DocumentHandler(ABC):
     def extractData(self) -> tuple:
         pass
 
-    def _saveInZipFile(self, zipf:zipfile.ZipFile, filename:str,nameColum:str, collection:list):
-        dataFrame = pd.DataFrame({nameColum:collection})
-        export    = dataFrame.to_csv(filename, index=None, header=True)
-        if not export:
-            zipf.write(filename)
-            os.remove(filename)
-
-    def _createZip(self, listNames: list, idCards: list):
-        zipf = zipfile.ZipFile(self.outfile, 'w', zipfile.ZIP_DEFLATED)
-        if listNames:
-            filename = os.path.join(UPLOAD_FOLDER,"names.csv")
-            self._saveInZipFile(zipf,filename,"Names", listNames)
-        if idCards:
-            filename = os.path.join(UPLOAD_FOLDER,"idCards.csv")
-            self._saveInZipFile(zipf,filename,"IdCards", idCards)
+    def _createCsv(self, listNames: list, idCards: list):
+        if len(listNames) < len(idCards):
+            listNames[len(listNames):] = [None]*(len(idCards)-len(listNames))
+        elif len(listNames) > len(idCards):
+            idCards[len(idCards):] = [None]*(len(listNames)-len(idCards))
+            
+        filename = os.path.join(UPLOAD_FOLDER,self.outfile)
+        dataFrame = pd.DataFrame({"Names":listNames, "Dni": idCards})
+        dataFrame.to_csv(filename, index=None, header=True)

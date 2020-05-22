@@ -15,7 +15,7 @@ $(document).ready(function () {
                 $('#formId').attr('action', server+'/search/file/encode');
                 break;
             case "3":
-                $('#formId').attr('action', server+'/search/file/extract-data/zip');       
+                $('#formId').attr('action', server+'/search/file/extract-data/csv');       
                 break;
             default:
                 $('#formId').attr('action', server+'/search/file/tagger-html');    
@@ -29,7 +29,7 @@ $(document).ready(function () {
             $('#alert').text("");
         } else {
             $('.file_upload').prop('disabled', true);
-            $('#alert').text("* Sola estan permitidos los siguientes formatos: txt, pdf, xls, docx, xlsx, xlsm, html y csv");
+            $('#alert').text("* Solo estan permitidos los siguientes formatos: txt, pdf, xls, docx, xlsx, xlsm, html y csv");
         }
     }
 

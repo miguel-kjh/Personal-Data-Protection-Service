@@ -142,9 +142,9 @@ class extractDataJsonFile(Resource):
             return evaluator.giveResponse(), 400
 
 
-@api.route('/file/extract-data/zip')
-class extractDataZip(Resource):
-    @api.doc('return a zip folder with all data found grouped in CSV files')
+@api.route('/file/extract-data/csv')
+class extractDataCsv(Resource):
+    @api.doc('return a csv files with all data founded')
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
@@ -156,14 +156,14 @@ class extractDataZip(Resource):
                     'filetype': evaluator.filetype
                 }
             )
-            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".zip")
+            nameOfNewDocument = evaluator.fakeFilename.replace('.' + evaluator.filetype, ".csv")
             creator = getCreatorDocumentHandler(
                 os.path.join(path, evaluator.fakeFilename),
                 evaluator.filetype,
                 os.path.join(path, nameOfNewDocument)
             )
             dh = creator.create()
-            dh.createDataZipFolder()
+            dh.createDataCsvFile()
             updateDelete(publicId, True)
             publicId = saveLog(
                 {
@@ -262,8 +262,8 @@ class operationWeb(Resource):
                 "error"   : "bad url"
             }, 400
 
-    def _zip(self, url:str):
-        name    = giveFileNameUnique('zip')
+    def _csv(self, url:str):
+        name    = giveFileNameUnique('csv')
         creator = getCreatorDocumentHandler(
                 url,
                 'html',
@@ -272,13 +272,13 @@ class operationWeb(Resource):
         )
         try:
             dh = creator.create()
-            dh.createDataZipFolder()
+            dh.createDataCsvFile()
             publicId = saveLog(
                 {
                     'name'    : name,
                     'folder'  : UPLOAD_FOLDER,
                     'isdelete': False,
-                    'filetype': 'json'
+                    'filetype': 'csv'
                 }
             )
             fileSend = send_from_directory(path, name, as_attachment=True)
@@ -297,7 +297,7 @@ class operationWeb(Resource):
             url,
             'html',
             os.path.join(path, name),
-            encode,
+            anonymizationFunction,
             isUrl=True
         )
         try:
@@ -325,12 +325,14 @@ class operationWeb(Resource):
         url  = str(request.args['url']) 
         op   = str(request.args['op'])
         print(url,op)
-        if op == 'zip':
-            return self._zip(url)
+        if op == 'csv':
+            return self._csv(url)
         elif op == 'json':
             return self._json(url)
         elif op == 'encode':
             return self._encode(url, encode)
+        elif op == 'target':
+            return self._encode(url, markInHtml)
         return {
                 "op"      : url,
                 "success" : False,

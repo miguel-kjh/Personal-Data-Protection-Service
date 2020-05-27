@@ -17,8 +17,15 @@ $(document).ready(function () {
             case "3":
                 $('#formId').attr('action', server+'/search/file/extract-data/csv');       
                 break;
-            default:
-                $('#formId').attr('action', server+'/search/file/tagger-html');    
+            case "4":
+                $('#formId').attr('action', server+'/search/file/tagger-html');
+                break;
+            case "5":
+                $('#formId').attr('action', server+'/search/file/disintegration');
+                break;
+            case "6":
+                $('#formId').attr('action', server+'/search/file/obfuscation');
+                break;
         }
     }
 

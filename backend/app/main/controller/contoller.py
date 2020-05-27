@@ -5,7 +5,7 @@ from ..service.languageBuilder       import LanguageBuilder
 from ..service.CreateDocumentHandler import getCreatorDocumentHandler
 from ..util.RequestEvaluator         import RequestEvaluator
 from ..util.fileUtils                import giveFileNameUnique
-from ..util.anonymizationFunctions   import encode,markInHtml
+from ..util.anonymizationFunctions   import encode,markInHtml,disintegration,dataObfuscation
 
 
 from flask import request, send_from_directory
@@ -33,15 +33,8 @@ class Version(Resource):
     def get(self):
         return {"version": VERSION}
 
-
-@api.route("/file/encode")
-class Encode(Resource):
-
-    @api.doc('return a file with names encoded')
-    def post(self):
-        evaluator = RequestEvaluator(request)
-        if evaluator.isRequestSuccesfull():
-            publicId = saveLog(
+def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOperation:str):
+    publicId = saveLog(
                 {
                     'name'    : evaluator.fakeFilename,
                     'folder'  : UPLOAD_FOLDER,
@@ -49,27 +42,58 @@ class Encode(Resource):
                     'filetype': evaluator.filetype
                 }
             )
-            nameOfNewDocument = "encode_" + evaluator.fakeFilename
-            creator = getCreatorDocumentHandler(
-                os.path.join(path, evaluator.fakeFilename),
-                evaluator.filetype,
-                os.path.join(path, nameOfNewDocument),
-                encode
-            )
-            dh = creator.create()
-            dh.documentsProcessing()
-            updateDelete(publicId, True)
-            publicId = saveLog(
-                {
-                    'name'    : nameOfNewDocument,
-                    'folder'  : UPLOAD_FOLDER,
-                    'isdelete': False,
-                    'filetype': evaluator.filetype
-                }
-            )
-            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+    nameOfNewDocument = '%s_%s' %(nameOperation, evaluator.fakeFilename)
+    creator = getCreatorDocumentHandler(
+        os.path.join(path, evaluator.fakeFilename),
+        evaluator.filetype,
+        os.path.join(path, nameOfNewDocument),
+        function
+    )
+    dh = creator.create()
+    dh.documentsProcessing()
+    updateDelete(publicId, True)
+    publicId = saveLog(
+        {
+            'name'    : nameOfNewDocument,
+            'folder'  : UPLOAD_FOLDER,
+            'isdelete': False,
+            'filetype': evaluator.filetype
+        }
+    )
+    fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
+    updateDelete(publicId, True)
+    return fileSend
+
+@api.route("/file/encode")
+class Anonimization(Resource):
+
+    @api.doc('return a file with names encoded')
+    def post(self):
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
+            return registerOperation(evaluator,encode, "anom")
+        else:
+            return evaluator.giveResponse(), 400
+
+@api.route("/file/disintegration")
+class Disintegration(Resource):
+
+    @api.doc('return a file with names encoded')
+    def post(self):
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
+            return registerOperation(evaluator,disintegration,"dis")
+        else:
+            return evaluator.giveResponse(), 400
+
+@api.route("/file/obfuscation")
+class Obfuscation(Resource):
+
+    @api.doc('return a file with names encoded')
+    def post(self):
+        evaluator = RequestEvaluator(request)
+        if evaluator.isRequestSuccesfull():
+            return registerOperation(evaluator,dataObfuscation,"ofus")
         else:
             return evaluator.giveResponse(), 400
 

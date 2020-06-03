@@ -16,25 +16,25 @@
             <a class="nav-link" href="#Section1">Información</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#Section2">Anonimizar</a>
+            <a class="nav-link" href="#Section2">Operaciones</a>
           </li>
         </ul>
     </nav>
     <div id="Section2" class="container anonimizar">
-      <h2>Anonimización</h2>
+      <h2>Operaciones</h2>
       <hr/>
       <div class="row">
         <div class="col-4">
           <div class="list-group" id="list-tab" role="tablist">
-            <a class="list-group-item list-group-item-action active" id="list-rules-list" data-toggle="list" href="#list-rules" role="tab" aria-controls="rules">Normas</a>
-            <a class="list-group-item list-group-item-action" id="list-data-list" data-toggle="list" href="#list-data" role="tab" aria-controls="data">Datos</a>
+            <a class="list-group-item list-group-item-action active" id="list-doc-list" data-toggle="list" href="#list-doc" role="tab" aria-controls="doc">Enviar Documento</a>
             <a class="list-group-item list-group-item-action" id="list-op-list" data-toggle="list" href="#list-op" role="tab" aria-controls="op">Enviar URL</a>
-            <a class="list-group-item list-group-item-action" id="list-doc-list" data-toggle="list" href="#list-doc" role="tab" aria-controls="doc">Enviar Documento</a>
+            <a class="list-group-item list-group-item-action" id="list-rules-list" data-toggle="list" href="#list-rules" role="tab" aria-controls="rules">Normas</a>
+            <a class="list-group-item list-group-item-action" id="list-data-list" data-toggle="list" href="#list-data" role="tab" aria-controls="data">Legislación</a>
           </div>
         </div>
         <div class="col-8">
           <div class="tab-content" id="nav-tabContent">
-            <div class="tab-pane fade show active" id="list-rules" role="tabpanel" aria-labelledby="list-rules-list">
+            <div class="tab-pane fade" id="list-rules" role="tabpanel" aria-labelledby="list-rules-list">
               <ul>
                 <li>El servidor está programado para soportar documentos de cualquier tamaño, 
                   siempre y cuando estos sean pdf,docx,txt,csv,archivos excel o html.</li>
@@ -53,7 +53,10 @@
                   <select name="op" for="op" class="custom-select">
                       <option value="json" selected>Extraer datos en formato json</option>
                       <option value="encode">Anonimización</option>
-                      <option value="zip">Extraer datos en archivo zip</option>
+                      <option value="csv">Extraer datos en formato csv</option>
+                      <option value="target">Etiquetar HTML</option>
+                      <option value="disgergation">Disgregación</option>
+                      <option value="ofuscation">Ofuscación</option>
                   </select>
                 </div>
                 <button type="submit" class="btn btn-primary upload_web">
@@ -65,7 +68,7 @@
               Nos compormetemos a no hacer uso de datos ni de información relativa a los documentos enviados,
               cumpliendo con la ley organica de protección de datos.
             </div>
-            <div class="tab-pane fade" id="list-doc" role="tabpanel" aria-labelledby="list-doc-list">
+            <div class="tab-pane fade show active" id="list-doc" role="tabpanel" aria-labelledby="list-doc-list">
               <form id="formId" method = "post" enctype="multipart/form-data"> 
                 <div class="row">
                   <div class="col-sm-10">
@@ -85,8 +88,10 @@
                   <select id="sel" name="cars" class="custom-select">
                       <option value="1" selected>Extraer datos en formato json</option>
                       <option value="2">Anonimización</option>
-                      <option value="3">Extraer datos en archivo zip</option>
+                      <option value="3">Extraer datos en archivo csv</option>
                       <option value="4">Etiquetar html</option>
+                      <option value="5">Disgregación</option>
+                      <option value="6">Ofuscación</option>
                   </select>
               </div>
               <p id="alert"></p>
@@ -100,27 +105,18 @@
       <hr/>
       <div class="jumbotron info">
           <h1 class="display-4">Servicio de Anonimización y Extración de datos Personales</h1>
-          <p class="lead">Lorem ipsum dolor sit amet consectetur adipiscing elit dignissim integer augue tincidunt ultrices rhoncus vel, 
-          tortor vestibulum porta cum pharetra etiam viverra curabitur porttitor lacus in quis nec. Quisque morbi volutpat 
-          viverra nam urna felis purus nibh, erat etiam pretium nullam facilisis maecenas at. Condimentum at faucibus fringilla pharetra quam,
-          curae consequat tortor quisque mollis mauris, conubia donec diam pellentesque.
-          Phasellus per feugiat tempor cursus est bibendum himenaeos, nostra fames ac tempus sapien class quis suscipit,
-          hac aenean ridiculus non ultricies maecenas.</p> 
-          <p class="lead">Torquent posuere libero diam sem himenaeos eleifend ultricies integer at fames, proin
-          donec vivamus magna facilisi turpis aptent sapien porta, platea luctus a elementum massa habitasse mollis tristique feugiat.
-          Dictum mattis erat vulputate sociis odio vestibulum auctor, non varius hendrerit gravida libero tempus leo accumsan,
-          aliquam convallis venenatis cum viverra in. Elementum facilisi nulla felis
-          nam posuere convallis maecenas tortor, a ullamcorper et non risus eu nunc, eget penatibus mattis suspendisse pretium habitasse cubilia. Nulla eros elementum ornare natoque varius viverra arcu
-          feugiat taciti aenean nunc cras lobortis scelerisque ut, cubilia nisi gravida metus ridiculus sociis morbi vitae sodales quis curae dictumst vulputate imperdiet.</p>
-          <p class="lead">Torquent posuere libero diam sem himenaeos eleifend ultricies integer at fames, proin
-          donec vivamus magna facilisi turpis aptent sapien porta, platea luctus a elementum massa habitasse mollis tristique feugiat.
-          Dictum mattis erat vulputate sociis odio vestibulum auctor, non varius hendrerit gravida libero tempus leo accumsan,
-          aliquam convallis venenatis cum viverra in. Elementum facilisi nulla felis
-          nam posuere convallis maecenas tortor, a ullamcorper et non risus eu nunc, eget penatibus mattis suspendisse pretium habitasse cubilia. Nulla eros elementum ornare natoque varius viverra arcu
-          feugiat taciti aenean nunc cras lobortis scelerisque ut, cubilia nisi gravida metus ridiculus sociis morbi vitae sodales quis curae dictumst vulputate imperdiet.</p>
+          <p class="lead">El objetivo que persigue este proyecto es el de eliminar o reducir al mínimo
+            los riesgos de identificación de los titulares de los datos personales en textos. Se trata de una
+            herramienta con la que se puede reducir los riesgos de identificación asociados a datos
+            personales en diferentes tipos de documentos. Es decir, se trata de un sistema
+            cuya entrada sean documentos (docx, pdf, txt, hojas de cálculos…) y la salida será la
+            ofuscación/disgregación/anonimización de datos personales, en este caso nombres
+            propios, apellidos y DNI. Se ha desarrollado aplicando técnicas de procesamiento de
+            lenguaje natural, y librerías de Python relacionadas con este ámbito. De la misma forma
+            se han utilizado herramientas aplicadas a la creación de servicios web.</p> 
           <hr class="my-4">
-          <p>It uses utility classes for typography and spacing to space content out within the larger container.</p>
-          <a class="btn btn-primary btn-lg" href="#" role="button">Learn more</a>
+          <p>En el siguiente enlace se muestra los contenidos de la ley organica de protección de datos</p>
+          <a class="btn btn-primary btn-lg" href="https://www.boe.es/eli/es/lo/2018/12/05/3" role="button">Learn more</a>
       </div>
     </div>
     <div class="mt-5 pt-5 pb-5 footer">

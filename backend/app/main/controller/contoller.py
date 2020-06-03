@@ -348,13 +348,16 @@ class operationWeb(Resource):
     def get(self):
         url  = str(request.args['url']) 
         op   = str(request.args['op'])
-        print(url,op)
         if op == 'csv':
             return self._csv(url)
         elif op == 'json':
             return self._json(url)
         elif op == 'encode':
             return self._encode(url, encode)
+        elif op == 'ofuscation':
+            return self._encode(url, dataObfuscation)
+        elif op == 'disgergation':
+            return self._encode(url, disintegration)
         elif op == 'target':
             return self._encode(url, markInHtml)
         return {

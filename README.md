@@ -32,7 +32,7 @@ localización de los datos.
 
 ## Frontend
 
-Tambien se propone un propuesta de frontend para que el usuario interactura con la API mediante una interfaz web.
+Tambien se propone una propuesta de frontend para que el usuario interactue con la API mediante una interfaz web.
 
 
 <p align="center">
@@ -46,7 +46,7 @@ Tambien se propone un propuesta de frontend para que el usuario interactura con 
   <img src="media/operations_law.png" alt="legislación">
 </p>
 <p align="center">
-  Figura 2: Mensaje de nuestro compromiso con 
+  Figura 2: Legislación
 </p>
 
 <p align="center">

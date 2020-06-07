@@ -70,6 +70,34 @@ Tambien se propone una propuesta de frontend para que el usuario interactue con 
   Figura 5: Descripción del servicio
 </p>
 
+## Ejecución
+
+Para ejecutar el proyecto se necesita tener instalado Python3.6, debido a que algunas dependencias no van bien con las recientes actualizaciones de Python al menos en el momento del desarrollo de este software.
+
+### Instalar Dependencias
+
+Ya sea en un entorno virtual o no, lo primero que se tiene que hacer es instalar las dependencias del archivo *requirements.txt*. Se puede hacer con pip o cualquier otro gestor de paquetes.
+
+```bash
+  git clone https://github.com/miguel-kjh/NameSearcher-WebService
+  cd NameSearcher-WebService/backend/
+  pip install -r requirements.txt
+```
+
+### Ejecutar el servicio para Windows, Mac o Linux
+
+```bash
+  python manage.py run  # Ejecuta el servicio
+  python manage.py test # Ejecuta las pruebas
+  python cleanDB.py     # Limpia la BD
+```
+
+Migrar la base de datos
+
+```bash
+  python manage.py db migrate --message 'new schema'
+  python manage.py db upgrade
+```
 
 ## License
 Licensed under the Apache License, Version 2.0. Copyright 2019 Miguel Ángel Medina Ramírez.

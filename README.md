@@ -86,17 +86,35 @@ Ya sea en un entorno virtual o no, lo primero que se tiene que hacer es instalar
 
 ### Ejecutar el servicio para Windows, Mac o Linux
 
+Por defecto se abre en el puerto 5000.
+
 ```bash
-  python manage.py run  # Ejecuta el servicio
-  python manage.py test # Ejecuta las pruebas
-  python cleanDB.py     # Limpia la BD
+  python backend/manage.py run  # Ejecuta el servicio
+  python backend/manage.py test # Ejecuta las pruebas
+  python backend/cleanDB.py     # Limpia la BD
 ```
 
-Migrar la base de datos
+### Migrar la base de datos
 
 ```bash
-  python manage.py db migrate --message 'new schema'
-  python manage.py db upgrade
+  python backend/manage.py db migrate --message 'new schema'
+  python backend/manage.py db upgrade
+```
+
+### Ejecutar el frontend para Windows, Mac o Linux
+
+Por defecto se abre en el puerto 5001.
+
+```bash
+  python frontend/run.py  # Ejecuta el frontend
+```
+
+### Usar ngrok para abrir el servicio
+El servicio se puede desplegar o poner en producción de muchas formas, pero
+ngrok nos ofrece un despliegue rápido y sencillo, tanto para http como para https.
+```bash
+  ngrok http 5000 # Abre la API a internet
+  ngrok http 5001 # Abre el frontend a internet
 ```
 
 ## License

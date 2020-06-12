@@ -60,9 +60,9 @@ def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOpe
             'filetype': evaluator.filetype
         }
     )
-    fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-    updateDelete(publicId, True)
-    return fileSend
+    #fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
+    #updateDelete(publicId, True)
+    return {"id":publicId, "fileType":evaluator.filetype}
 
 @api.route("/file/encode")
 class Anonimization(Resource):
@@ -159,9 +159,7 @@ class extractDataJsonFile(Resource):
                     'filetype': 'json'
                 }
             )
-            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            return {"id":publicId, "fileType":'json'}
         else:
             return evaluator.giveResponse(), 400
 
@@ -197,59 +195,10 @@ class extractDataCsv(Resource):
                     'filetype': 'csv'
                 }
             )
-            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            return {"id":publicId, "fileType":'csv'}
         else:
             return evaluator.giveResponse(), 400
 
-
-@api.route('/file/tagger-html')
-class TargetHtml(Resource):
-    @api.doc('return a html file with the names targeted with a mark')
-    def post(self):
-        evaluator = RequestEvaluator(request)
-        if evaluator.isRequestSuccesfull():
-            if evaluator.filetype != 'html':
-                filename = os.path.join(UPLOAD_FOLDER, evaluator.fakeFilename)
-                if os.path.exists(filename):
-                    os.remove(filename)
-                return {
-                           "filename": evaluator.filename,
-                           "success": False,
-                           "error": "this operation is aviable only for html file"
-                       }, 400
-            publicId = saveLog(
-                {
-                    'name': evaluator.fakeFilename,
-                    'folder': path,
-                    'isdelete': False,
-                    'filetype': evaluator.filetype
-                }
-            )
-            nameOfNewDocument = "mark_" + evaluator.fakeFilename
-            creator = getCreatorDocumentHandler(
-                os.path.join(path, evaluator.fakeFilename),
-                evaluator.filetype,
-                os.path.join(path, nameOfNewDocument),
-                markInHtml
-            )
-            dh = creator.create()
-            dh.documentsProcessing()
-            updateDelete(publicId, True)
-            publicId = saveLog(
-                {
-                    'name': nameOfNewDocument,
-                    'folder': path,
-                    'isdelete': False,
-                    'filetype': evaluator.filetype
-                }
-            )
-            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
-        else:
-            return evaluator.giveResponse(), 400
 
 @api.route('/file/download')
 @api.param('id', 'public id for a document')
@@ -290,9 +239,9 @@ class operationWeb(Resource):
                     'filetype': 'json'
                 }
             )
-            fileSend = send_from_directory(path, name, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            #fileSend = send_from_directory(path, name, as_attachment=True)
+            #updateDelete(publicId, True)
+            return {"id":publicId, "fileType":'json'}
         except Exception:
             return {
                 "url": url,
@@ -319,9 +268,9 @@ class operationWeb(Resource):
                     'filetype': 'csv'
                 }
             )
-            fileSend = send_from_directory(path, name, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            #fileSend = send_from_directory(path, name, as_attachment=True)
+            #updateDelete(publicId, True)
+            return {"id":publicId, "fileType":'csv'}
         except Exception:
             return {
                 "url": url,
@@ -349,9 +298,9 @@ class operationWeb(Resource):
                     'filetype': 'html'
                 }
             )
-            fileSend = send_from_directory(path, name, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            #fileSend = send_from_directory(path, name, as_attachment=True)
+            #updateDelete(publicId, True)
+            return {"id":publicId, "fileType":'html'}
         except Exception:
             return {
                 "url": url,

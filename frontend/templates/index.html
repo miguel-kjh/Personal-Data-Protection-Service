@@ -37,7 +37,7 @@
             <div class="tab-pane fade" id="list-rules" role="tabpanel" aria-labelledby="list-rules-list">
               <ul>
                 <li>El servidor está programado para soportar documentos de cualquier tamaño, 
-                  siempre y cuando estos sean pdf,docx,txt,csv,archivos excel o html.</li>
+                  siempre y cuando estos sean pdf,docx,txt,csv,archivos excel.</li>
                 <li>Todas las operaciones devuelven un fichero para descargar</li>
               </ul>
             </div>
@@ -50,7 +50,7 @@
                   <input type="text" class="form-control" placeholder="url" id="url_web" for="url" name="url" aria-label="url" aria-describedby="basic-addon1">
                 </div>
                 <div>     
-                  <select name="op" for="op" class="custom-select">
+                  <select name="op" for="op" id="op" class="custom-select">
                       <option value="json" selected>Extraer datos en formato json</option>
                       <option value="encode">Anonimización</option>
                       <option value="csv">Extraer datos en formato csv</option>
@@ -59,9 +59,14 @@
                       <option value="ofuscation">Ofuscación</option>
                   </select>
                 </div>
-                <button type="submit" class="btn btn-primary upload_web">
+                <button type="submit" id="html_upload" class="btn btn-primary upload_web">
                   Upload
                 </button>
+                <button id="getUrlButton" type="button" class="btn btn-primary upload_web">Descargar</button>
+                <div id="spinner_web" class="upload_web">
+                  <div class="spinner-border text-primary"></div>
+                  <p>Un momento, por favor...</p>
+                </div>
               </form>
             </div>
             <div class="tab-pane fade" id="list-data" role="tabpanel" aria-labelledby="list-data-list">
@@ -69,7 +74,7 @@
               cumpliendo con la ley organica de protección de datos.
             </div>
             <div class="tab-pane fade show active" id="list-doc" role="tabpanel" aria-labelledby="list-doc-list">
-              <form id="formId" method = "post" enctype="multipart/form-data"> 
+              <form id="formId" method = "post" enctype="multipart/form-data" onsubmit="return checkFileExtension();"> 
                 <div class="row">
                   <div class="col-sm-10">
                     <div class="custom-file">
@@ -89,19 +94,20 @@
                       <option value="1" selected>Extraer datos en formato json</option>
                       <option value="2">Anonimización</option>
                       <option value="3">Extraer datos en archivo csv</option>
-                      <option value="4">Etiquetar html</option>
-                      <option value="5">Disgregación</option>
-                      <option value="6">Ofuscación</option>
+                      <option value="4">Disgregación</option>
+                      <option value="5">Ofuscación</option>
                   </select>
               </div>
+              <div id="spinner">
+                <div class="spinner-border text-primary"></div>
+                <p>Un momento, por favor...</p>
+              </div>
+              <button id="getDocumentButton" type="button" class="btn btn-primary">Descargar</button>    
               <p id="alert"></p>
             </div>
           </div>
         </div>
       </div>
-  </div>
-  <div class="container">
-    <button id="getDocumentButton" type="button" class="btn btn-primary">descargar</button>    
   </div>
     <div id = "Section1" class="container info">
       <h2>Información</h2>

@@ -1,7 +1,7 @@
 from app.main.util.envNames          import ALLOWED_EXTENSIONS
 from app.main.util.semanticWordLists import lettersOfDni
 
-from datetime import datetime
+import uuid
 
 from docx.document            import Document as _Document
 from docx.oxml.text.paragraph import CT_P
@@ -29,7 +29,7 @@ def giveTypeOfFile(filename: str):
 
 
 def giveFileNameUnique(fileType: str) -> str:
-    return str(datetime.now().timestamp()).replace(".", "") + "." + fileType
+    return str(uuid.uuid4()).replace(".", "") + "." + fileType
 
 def itemIterator(parent):
     if isinstance(parent, _Document):

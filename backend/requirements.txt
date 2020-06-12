@@ -1,4 +1,3 @@
-tabula-py
 pandas
 beautifulsoup4==4.8.0
 bs4==0.0.1
@@ -25,7 +24,9 @@ lazr.uri==1.0.3
 lazy-object-proxy==1.3.1
 lxml==4.4.1
 murmurhash==1.0.2
-pdfminer.six
+pdfminer.six==20200104
+pdfminer3==2018.12.3.0
+pdfplumber==0.5.18
 pdfrw==0.4
 pyparsing==2.3.1
 PyPDF2==1.26.0

@@ -20,6 +20,11 @@ migrate = Migrate(app, db)
 
 manager.add_command('db', MigrateCommand)
 
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
+
 
 @manager.command
 def run():

@@ -1,6 +1,6 @@
 from ..util.NameSearchDto            import NameSearchDto
 from ..util.envNames                 import VERSION, UPLOAD_FOLDER, path
-from ..service.LogService            import updateDelete, saveLog
+from ..service.LogService            import updateDelete, saveLog, getByPublicId
 from ..service.languageBuilder       import LanguageBuilder
 from ..service.CreateDocumentHandler import getCreatorDocumentHandler
 from ..util.RequestEvaluator         import RequestEvaluator
@@ -37,7 +37,7 @@ def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOpe
     publicId = saveLog(
                 {
                     'name'    : evaluator.fakeFilename,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -55,7 +55,7 @@ def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOpe
     publicId = saveLog(
         {
             'name'    : nameOfNewDocument,
-            'folder'  : UPLOAD_FOLDER,
+            'folder'  : path,
             'isdelete': False,
             'filetype': evaluator.filetype
         }
@@ -107,7 +107,7 @@ class extractDataJson(Resource):
             publicId = saveLog(
                 {
                     'name'    : evaluator.fakeFilename,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -137,7 +137,7 @@ class extractDataJsonFile(Resource):
             publicId = saveLog(
                 {
                     'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -154,9 +154,9 @@ class extractDataJsonFile(Resource):
             publicId = saveLog(
                 {
                     'name': nameOfNewDocument,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
-                    'filetype': evaluator.filetype
+                    'filetype': 'json'
                 }
             )
             fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
@@ -175,7 +175,7 @@ class extractDataCsv(Resource):
             publicId = saveLog(
                 {
                     'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -192,9 +192,9 @@ class extractDataCsv(Resource):
             publicId = saveLog(
                 {
                     'name': nameOfNewDocument,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
-                    'filetype': evaluator.filetype
+                    'filetype': 'csv'
                 }
             )
             fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
@@ -222,7 +222,7 @@ class TargetHtml(Resource):
             publicId = saveLog(
                 {
                     'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -240,7 +240,7 @@ class TargetHtml(Resource):
             publicId = saveLog(
                 {
                     'name': nameOfNewDocument,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -250,6 +250,20 @@ class TargetHtml(Resource):
             return fileSend
         else:
             return evaluator.giveResponse(), 400
+
+@api.route('/file/download')
+@api.param('id', 'public id for a document')
+class getDocument(Resource):
+    @api.doc('get documento for download')
+    def get(self):
+        publicId  = str(request.args['id'])
+        docuemnt  = getByPublicId(publicId)
+        if docuemnt:
+            fileSend = send_from_directory(docuemnt.folder, docuemnt.name, as_attachment=True)
+            updateDelete(publicId, True)
+            return fileSend
+        else:
+            return {"error": "the documento with id %s does not exist" %(publicId)}, 400
 
 
 @api.route('/file/operation-web')
@@ -271,7 +285,7 @@ class operationWeb(Resource):
             publicId = saveLog(
                 {
                     'name'    : name,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': 'json'
                 }
@@ -300,7 +314,7 @@ class operationWeb(Resource):
             publicId = saveLog(
                 {
                     'name'    : name,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': 'csv'
                 }
@@ -330,7 +344,7 @@ class operationWeb(Resource):
             publicId = saveLog(
                 {
                     'name'    : name,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': 'html'
                 }

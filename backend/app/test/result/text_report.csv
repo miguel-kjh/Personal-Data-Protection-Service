@@ -7,10 +7,10 @@ Gobierno del,2,0,False Positive,text5
 Señor,1,0,False Positive,text6
 Viernes,1,0,False Positive,text8
 José Martínez Tabarra de,1,0,False Positive,text9
+Gonzales Mendieta,0,1,False Negative,text2
 María Antonieta Mendieta Castro,2,3,False Negative,text2
 Javier,0,1,False Negative,text2
-Gonzales Mendieta,0,1,False Negative,text2
-Lucia Antonia Sánchez Vargas,0,1,False Negative,text3
 Jesús Fernández Fuentes,1,2,False Negative,text3
+Lucia Antonia Sánchez Vargas,0,1,False Negative,text3
 Urbina Reciba,0,1,False Negative,text5
 José Martínez Tabarra,2,3,False Negative,text9

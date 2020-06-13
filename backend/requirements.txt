@@ -9,8 +9,14 @@ fastrlock==0.4
 favicon==0.7.0
 fbmessenger==6.0.0
 Flask==1.1.1
+Flask-Bcrypt==0.7.1
 Flask-Cors==3.0.8
+Flask-Migrate==2.5.2
+flask-restplus==0.13.0
+Flask-Script==2.0.6
 Flask-SocketIO==4.1.0
+Flask-SQLAlchemy==2.4.1
+Flask-Testing==0.7.1
 future==0.17.1
 h5py==2.9.0
 html5lib==1.0.1

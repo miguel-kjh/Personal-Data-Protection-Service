@@ -1,6 +1,6 @@
 from ..util.NameSearchDto            import NameSearchDto
 from ..util.envNames                 import VERSION, UPLOAD_FOLDER, path
-from ..service.LogService            import updateDelete, saveLog
+from ..service.LogService            import updateDelete, saveLog, getByPublicId
 from ..service.languageBuilder       import LanguageBuilder
 from ..service.CreateDocumentHandler import getCreatorDocumentHandler
 from ..util.RequestEvaluator         import RequestEvaluator
@@ -37,7 +37,7 @@ def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOpe
     publicId = saveLog(
                 {
                     'name'    : evaluator.fakeFilename,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -55,14 +55,12 @@ def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOpe
     publicId = saveLog(
         {
             'name'    : nameOfNewDocument,
-            'folder'  : UPLOAD_FOLDER,
+            'folder'  : path,
             'isdelete': False,
             'filetype': evaluator.filetype
         }
     )
-    fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-    updateDelete(publicId, True)
-    return fileSend
+    return {"id":publicId, "fileType":evaluator.filetype}
 
 @api.route("/file/encode")
 class Anonimization(Resource):
@@ -107,7 +105,7 @@ class extractDataJson(Resource):
             publicId = saveLog(
                 {
                     'name'    : evaluator.fakeFilename,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -137,7 +135,7 @@ class extractDataJsonFile(Resource):
             publicId = saveLog(
                 {
                     'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -154,14 +152,12 @@ class extractDataJsonFile(Resource):
             publicId = saveLog(
                 {
                     'name': nameOfNewDocument,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
-                    'filetype': evaluator.filetype
+                    'filetype': 'json'
                 }
             )
-            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            return {"id":publicId, "fileType":'json'}
         else:
             return evaluator.giveResponse(), 400
 
@@ -175,7 +171,7 @@ class extractDataCsv(Resource):
             publicId = saveLog(
                 {
                     'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
                     'filetype': evaluator.filetype
                 }
@@ -192,64 +188,29 @@ class extractDataCsv(Resource):
             publicId = saveLog(
                 {
                     'name': nameOfNewDocument,
-                    'folder': UPLOAD_FOLDER,
+                    'folder': path,
                     'isdelete': False,
-                    'filetype': evaluator.filetype
+                    'filetype': 'csv'
                 }
             )
-            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            return {"id":publicId, "fileType":'csv'}
         else:
             return evaluator.giveResponse(), 400
 
 
-@api.route('/file/tagger-html')
-class TargetHtml(Resource):
-    @api.doc('return a html file with the names targeted with a mark')
-    def post(self):
-        evaluator = RequestEvaluator(request)
-        if evaluator.isRequestSuccesfull():
-            if evaluator.filetype != 'html':
-                filename = os.path.join(UPLOAD_FOLDER, evaluator.fakeFilename)
-                if os.path.exists(filename):
-                    os.remove(filename)
-                return {
-                           "filename": evaluator.filename,
-                           "success": False,
-                           "error": "this operation is aviable only for html file"
-                       }, 400
-            publicId = saveLog(
-                {
-                    'name': evaluator.fakeFilename,
-                    'folder': UPLOAD_FOLDER,
-                    'isdelete': False,
-                    'filetype': evaluator.filetype
-                }
-            )
-            nameOfNewDocument = "mark_" + evaluator.fakeFilename
-            creator = getCreatorDocumentHandler(
-                os.path.join(path, evaluator.fakeFilename),
-                evaluator.filetype,
-                os.path.join(path, nameOfNewDocument),
-                markInHtml
-            )
-            dh = creator.create()
-            dh.documentsProcessing()
-            updateDelete(publicId, True)
-            publicId = saveLog(
-                {
-                    'name': nameOfNewDocument,
-                    'folder': UPLOAD_FOLDER,
-                    'isdelete': False,
-                    'filetype': evaluator.filetype
-                }
-            )
-            fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
+@api.route('/file/download')
+@api.param('id', 'public id for a document')
+class getDocument(Resource):
+    @api.doc('get documento for download')
+    def get(self):
+        publicId  = str(request.args['id'])
+        docuemnt  = getByPublicId(publicId)
+        if docuemnt:
+            fileSend = send_from_directory(docuemnt.folder, docuemnt.name, as_attachment=True)
             updateDelete(publicId, True)
             return fileSend
         else:
-            return evaluator.giveResponse(), 400
+            return {"error": "the documento with id %s does not exist" %(publicId)}, 400
 
 
 @api.route('/file/operation-web')
@@ -271,14 +232,12 @@ class operationWeb(Resource):
             publicId = saveLog(
                 {
                     'name'    : name,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': 'json'
                 }
             )
-            fileSend = send_from_directory(path, name, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            return {"id":publicId, "fileType":'json'}
         except Exception:
             return {
                 "url": url,
@@ -300,14 +259,12 @@ class operationWeb(Resource):
             publicId = saveLog(
                 {
                     'name'    : name,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': 'csv'
                 }
             )
-            fileSend = send_from_directory(path, name, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            return {"id":publicId, "fileType":'csv'}
         except Exception:
             return {
                 "url": url,
@@ -330,14 +287,12 @@ class operationWeb(Resource):
             publicId = saveLog(
                 {
                     'name'    : name,
-                    'folder'  : UPLOAD_FOLDER,
+                    'folder'  : path,
                     'isdelete': False,
                     'filetype': 'html'
                 }
             )
-            fileSend = send_from_directory(path, name, as_attachment=True)
-            updateDelete(publicId, True)
-            return fileSend
+            return {"id":publicId, "fileType":'html'}
         except Exception:
             return {
                 "url": url,

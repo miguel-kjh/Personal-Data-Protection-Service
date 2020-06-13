@@ -8,7 +8,7 @@ from app.main import create_app, db
 
 from app import blueprint
 
-app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
+app = create_app(os.getenv('BOILERPLATE_ENV') or 'prod')
 
 app.register_blueprint(blueprint)
 
@@ -19,6 +19,11 @@ manager = Manager(app)
 migrate = Migrate(app, db)
 
 manager.add_command('db', MigrateCommand)
+
+@app.after_request
+def after_request(response):
+    response.headers.add('Access-Control-Allow-Origin', '*')
+    return response
 
 
 @manager.command

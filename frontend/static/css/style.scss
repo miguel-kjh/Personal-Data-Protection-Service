@@ -57,6 +57,14 @@ body {
   padding-top: 3%;
 }
 
+#getDocumentButton, #spinner{
+  margin-top: 5%;
+}
+
+#titleModalError{
+  font-weight: bold;
+}
+
 .error {
   border: solid 2px #FF0000;  
 }

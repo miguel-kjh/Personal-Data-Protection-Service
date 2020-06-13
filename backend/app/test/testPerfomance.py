@@ -60,28 +60,33 @@ class ConfidenceMatrixBuilder:
             "False Negatives":self.falseNegatives 
         }
 
-    def _buildGarph(self, df:pd.DataFrame, yname, filename):
+    def _buildGarph(self, df:pd.DataFrame, yname, filename, nameTest):
+        bfn   = {nameTest+str(index):0 for index in range(1,11)}
+        bfp   = bfn.copy()
         block = df[(df["TYPE"] == 'False Negative') & (df["MATCHES"] == 0)].groupby('FILE').groups
-        block = {k:len(v) for k,v in block.items()}
+        for k,v in block.items():
+            bfn[k] = len(v)
+        print(bfn)
         plt.subplots_adjust(hspace=0.5)
 
         plt.subplot(211)
-        plt.bar(block.keys(), block.values(), align='center', alpha=0.5)
+        plt.bar(bfn.keys(), bfn.values(), align='center', alpha=0.5)
         plt.ylabel(yname)
         plt.title('False Negative')
 
         block = df[df["TYPE"] == 'False Positive'].groupby('FILE').groups
-        block = {k:len(v) for k,v in block.items()}
-
+        for k,v in block.items():
+            bfp[k] = len(v)
+        print(bfp)
         plt.subplot(212)
-        plt.bar(block.keys(), block.values(), align='center', alpha=0.5)
+        plt.bar(bfp.keys(), bfp.values(), align='center', alpha=0.5)
         plt.ylabel(yname)
         plt.title('False Positive')
 
         plt.savefig(filename)
         plt.close()
     
-    def saveReport(self,csvfile, imgfile):
+    def saveReport(self,csvfile, imgfile, nameTest):
         table = {"NAMES":[], "MATCHES":[], "REAL MARCHES": [], "TYPE": [], "FILE":[]}
         for name,matches,realMatches,file in self.listOfFalsePositives:
             table["NAMES"].append(name)
@@ -99,7 +104,7 @@ class ConfidenceMatrixBuilder:
         
         df = pd.DataFrame(table, columns=table.keys())
         df.to_csv(csvfile, index=False)
-        self._buildGarph(df,'count',imgfile)
+        self._buildGarph(df,'count',imgfile, nameTest)
 
 
     def getListOfFalseNegatives(self):
@@ -127,7 +132,7 @@ class TestPerfomanceTables(BaseTestCase):
             #print(pathTables + "%s.xls" %(index), ":", len(listNames), "names")
         print(builder.getData())
 
-        builder.saveReport('app/test/result/tables_report.csv', 'app/test/result/tables_report.jpg')
+        builder.saveReport('app/test/result/tables_report.csv', 'app/test/result/tables_report.jpg', 'tables')
 
 class TestPerfomanceTexts(BaseTestCase):
     def test_text(self):
@@ -145,7 +150,7 @@ class TestPerfomanceTexts(BaseTestCase):
             builder.countHinst(listNames,data['names'],"text%s" %(index))
         print(builder.getData())
         
-        builder.saveReport('app/test/result/text_report.csv','app/test/result/text_report.jpg')
+        builder.saveReport('app/test/result/text_report.csv','app/test/result/text_report.jpg', 'text')
 
 class TestPerfomanceWeb(BaseTestCase):
     def test_web(self):
@@ -164,7 +169,7 @@ class TestPerfomanceWeb(BaseTestCase):
             #print(pathWeb + "%s.html" %(index), ":", len(listNames), "names")
         print(builder.getData())
 
-        builder.saveReport('app/test/result/web_report.csv','app/test/result/web_report.jpg')
+        builder.saveReport('app/test/result/web_report.csv','app/test/result/web_report.jpg', 'web')
 
 def test_time_of_Model():
     entModel   = PersonalDataSearchByEntities()

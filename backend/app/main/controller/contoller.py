@@ -60,8 +60,6 @@ def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOpe
             'filetype': evaluator.filetype
         }
     )
-    #fileSend = send_from_directory(path, nameOfNewDocument, as_attachment=True)
-    #updateDelete(publicId, True)
     return {"id":publicId, "fileType":evaluator.filetype}
 
 @api.route("/file/encode")
@@ -239,8 +237,6 @@ class operationWeb(Resource):
                     'filetype': 'json'
                 }
             )
-            #fileSend = send_from_directory(path, name, as_attachment=True)
-            #updateDelete(publicId, True)
             return {"id":publicId, "fileType":'json'}
         except Exception:
             return {
@@ -268,8 +264,6 @@ class operationWeb(Resource):
                     'filetype': 'csv'
                 }
             )
-            #fileSend = send_from_directory(path, name, as_attachment=True)
-            #updateDelete(publicId, True)
             return {"id":publicId, "fileType":'csv'}
         except Exception:
             return {
@@ -298,8 +292,6 @@ class operationWeb(Resource):
                     'filetype': 'html'
                 }
             )
-            #fileSend = send_from_directory(path, name, as_attachment=True)
-            #updateDelete(publicId, True)
             return {"id":publicId, "fileType":'html'}
         except Exception:
             return {

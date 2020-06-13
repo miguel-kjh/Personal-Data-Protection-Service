@@ -42,6 +42,13 @@ $(document).ready(function () {
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
 
+    function createModalError(jqXHR,exception) {
+        error = getError(jqXHR,exception);
+        $('#titleModalError').html("OOps!!, algo salio mal ⛔️ ");
+        $('.modal-body').html(error.msg);
+        $('#modalError').modal('show');
+    }
+
 
     $("#getDocumentButton").on('click', function () {
         
@@ -86,7 +93,7 @@ $(document).ready(function () {
                     $("#getDocumentButton").hide();
                 },
                 error: function(jqXHR,exception) {
-                    alert(getError(jqXHR,exception))
+                    createModalError(jqXHR,exception);
                     $('.file_upload').prop('disabled', false);
                     $("#getDocumentButton").hide();
                 }
@@ -113,7 +120,7 @@ $(document).ready(function () {
                     $("#getUrlButton").hide();
                 },
                 error: function(jqXHR,exception) {
-                    alert(getError(jqXHR,exception))
+                    createModalError(jqXHR,exception);
                     $('#html_upload').prop('disabled', false);
                     $("#getUrlButton").hide();
                 }
@@ -138,7 +145,7 @@ $(document).ready(function () {
                     $("#getUrlButton").hide();
                 },
                 error: function(jqXHR,exception) {
-                    alert(getError(jqXHR,exception));
+                    createModalError(jqXHR,exception);
                     $('#html_upload').prop('disabled', false);
                     $("#getUrlButton").hide();
                 }
@@ -160,7 +167,7 @@ $(document).ready(function () {
                     $("#getUrlButton").hide();
                 },
                 error: function(jqXHR,exception) {
-                    alert(getError(jqXHR,exception));
+                    createModalError(jqXHR,exception);
                     $('#html_upload').prop('disabled', false);
                     $("#getUrlButton").hide();
                 }
@@ -191,14 +198,11 @@ $(document).ready(function () {
             {
                 id = data.id;
                 fileType = data.fileType;
-                console.log("Documento con exito!!!")
-                console.log(id)
-                console.log(fileType)
                 $("#getDocumentButton").show();
                 $("#spinner").hide();
             },
             error: function(jqXHR,exception){
-                alert(getError(jqXHR,exception))
+                createModalError(jqXHR,exception);
                 $("#spinner").hide();
                 $('.file_upload').prop('disabled', false);
             },
@@ -229,14 +233,11 @@ $(document).ready(function () {
             {
                 idUrl = data.id;
                 fileTypeUrl = data.fileType;
-                console.log("URL con exito!!!")
-                console.log(idUrl)
-                console.log(fileTypeUrl)
                 $("#getUrlButton").show();
                 $("#spinner_web").hide();
             },
             error: function(jqXHR,exception){
-                alert(getError(jqXHR,exception))
+                createModalError(jqXHR,exception);
                 $("#spinner_web").hide();
             }
         });
@@ -268,22 +269,23 @@ function checkFileExtension() {
 }
 
 function getError(jqXHR,exception){
-    let msg = '';
+    let error = {"code":-1, "msg":""} ;
     if (jqXHR.status === 0) {
-        msg = 'Not connect.\nVerify Network.';
+        error.msg = 'No estas concetado al servidor.\nVerifica tu conexión.';
     } else if (jqXHR.status == 404) {
-        msg = 'Requested page not found. [404]';
+        error.msg = 'Petición no procesada. [404]';
     } else if (jqXHR.status == 500) {
-        msg = 'Internal Server Error [500].';
+        error.msg = 'Error en servidor interno [500].';
     } else if (exception === 'parsererror') {
-        msg = 'Requested JSON parse failed.';
+        error.msg = 'El análisis JSON solicitado ha fallado.';
     } else if (exception === 'timeout') {
-        msg = 'Time out error.';
+        error.msg = 'Error de tiempo de espera.';
     } else if (exception === 'abort') {
-        msg = 'Ajax request aborted.';
+        error.msg = 'Solicitud abortada.';
     } else {
-        msg = 'Uncaught Error.\n' + jqXHR.responseText;
+        error.msg = 'Error no detectado.Vuelva ha intentarlo.';
     }
-    return msg;
+    error.code = jqXHR.status;
+    return error;
 }
 

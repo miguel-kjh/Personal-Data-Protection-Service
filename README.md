@@ -84,6 +84,14 @@ Ya sea en un entorno virtual o no, lo primero que se tiene que hacer es instalar
   pip install -r requirements.txt
 ```
 
+Este proyecto utiliza modelos de inteligencia artificial y algoritmos aplicados al procesamiento de lenguaje natural, por ello hay que descargarlos desde las dependencias de SpaCy y NLTK.
+
+```bash
+  python -m spacy download es_core_news_md
+  python -m nltk.downloader all
+```
+
+
 ### Ejecutar el servicio para Windows, Mac o Linux
 
 Por defecto se abre en el puerto 5000.

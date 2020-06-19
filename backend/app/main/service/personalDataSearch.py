@@ -5,8 +5,14 @@ from app.main.util.fileUtils          import isDni,normalizeUnicode,generateWord
 from abc       import ABC, abstractmethod
 from typing    import Text
 from itertools import chain
+from enum import Enum
 import sqlite3 as lite
 import re
+
+class PersonalData(Enum):
+    name = 1
+    idCards = 2
+    all = 3
 
 class PersonalDataSearch(ABC):
     def __init__(self):
@@ -86,7 +92,7 @@ class PersonalDataSearch(ABC):
         return list(filter(lambda idCard: isDni(idCard), match))
 
     @abstractmethod
-    def searchPersonalData(self, text: Text) -> tuple:
+    def searchPersonalData(self, text: Text, personalData:PersonalData = PersonalData.all) -> tuple:
         pass
 
 

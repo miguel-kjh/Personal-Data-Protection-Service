@@ -3,6 +3,7 @@ import unittest
 from app.test.base import BaseTestCase
 from app.main.service.personalDataSearchByEntities import PersonalDataSearchByEntities
 from app.main.service.personalDataSearchByRules import PersonalDataSearchByRules
+from app.main.service.personalDataSearch import PersonalData
 
 personalDataSearchByEnt = PersonalDataSearchByEntities()
 textForTest = {
@@ -39,6 +40,20 @@ class TestSearchTextByEnt(BaseTestCase):
         self.assertEqual(len(dictionatyOfNames), len(names))
         for index, name in enumerate(names):
             self.assertEqual(dictionatyOfNames[index], name)
+
+    def test_diferents_data_personal(self):
+        dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["simple"], PersonalData.name)
+        self.assertNotEqual(dictionatyOfNames, [])
+        self.assertEqual(len(dictionatyOfNames), 1)
+        self.assertEqual(dictionatyOfNames[0], "Miguel")
+        dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["simple"], PersonalData.idCards)
+        self.assertEqual(dictionatyOfNames, [])
+        dictionatyOfNames,idCards = personalDataSearchByEnt.searchPersonalData("43294881A", PersonalData.idCards)
+        self.assertNotEqual(idCards, [])
+        self.assertEqual(len(dictionatyOfNames), 0)
+        self.assertEqual(len(idCards), 1)
+        self.assertEqual(idCards[0], "43294881A")
+
 
     def test_isDni(self):
         self.assertTrue(personalDataSearchByEnt.giveIdCards("54094110L"))

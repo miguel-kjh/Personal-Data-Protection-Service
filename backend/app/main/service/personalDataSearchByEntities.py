@@ -1,4 +1,4 @@
-from app.main.service.personalDataSearch import PersonalDataSearch
+from app.main.service.personalDataSearch import PersonalDataSearch, PersonalData
 from app.main.util.fileUtils             import isDni
 from app.main.service.languageBuilder    import LanguageBuilder
 from app.main.util.fileUtils             import replaceUnnecessaryCharacters
@@ -15,7 +15,7 @@ class PersonalDataSearchByEntities(PersonalDataSearch):
         super().__init__()
         self.nlp = LanguageBuilder().getlanguage()
 
-    def searchPersonalData(self, text: Text) -> tuple:
+    def _getNames(self, text:Text):
         listNames = []
 
         for tokenText in sent_tokenize(text.replace('—', ',') ,language='spanish'):
@@ -25,9 +25,18 @@ class PersonalDataSearchByEntities(PersonalDataSearch):
                 for ent in doc.ents if ent.label_ == 'PER'
             ])
         
-        idCards = [
+        return listNames
+    
+    def _getIdCards(self, text:Text):
+        return [
             idCard.group()
             for idCard in list(filter(lambda x: isDni(x.group()) , re.finditer(self.regexIdCards,text)))
         ]
 
-        return (listNames,idCards)
+    def searchPersonalData(self, text: Text, personalData:PersonalData = PersonalData.all) -> tuple:
+        if personalData == PersonalData.name:
+            return (self._getNames(text), [])
+        elif personalData == PersonalData.idCards:
+            return ([], self._getIdCards(text))
+        elif personalData == PersonalData.all:
+            return (self._getNames(text), self._getIdCards(text))

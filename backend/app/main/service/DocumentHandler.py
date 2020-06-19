@@ -17,7 +17,7 @@ class DocumentHandler(ABC):
     def __init__(self, path: str, outfile: str = "", anonymizationFunction = None):
         self.path                  = path
         self.outfile               = outfile
-        self.dataSearch            = PersonalDataSearchByRules()
+        self.dataSearch            = PersonalDataSearchByEntities()
         self.anonymizationFunction = anonymizationFunction
 
     @abstractmethod

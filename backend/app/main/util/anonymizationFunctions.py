@@ -9,15 +9,18 @@ def markInHtml(text: str) -> str:
     return '<mark style="background: #7aecec;">' + text + '</mark>'
 
 def disintegration(text:str) -> str:
-    chars = list(text)
-    random.shuffle(chars)
-    return ''.join(chars)
-
-def dataObfuscation(text:str) -> str:
     if isDni(text):
         chars      = list(text)
         chars[0:3] = 3*'*'
         chars[7:]  = 2*'*'
+        return ''.join(chars)
+    else:
+        return encode(text)
+
+def dataObfuscation(text:str) -> str:
+    if isDni(text):
+        chars      = list(text)
+        chars[1:7] = 7*'*'
         return ''.join(chars)
     else:
         result = map(

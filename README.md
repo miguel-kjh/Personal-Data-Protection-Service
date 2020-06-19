@@ -1,4 +1,4 @@
-![Version](https://img.shields.io/badge/version-1.0-brightgreen.svg?style=flat-square)
+![Version](https://img.shields.io/badge/version-1.1-brightgreen.svg?style=flat-square)
 
 ## Autor
 Miguel Ángel Medina Ramírez <br>
@@ -124,6 +124,9 @@ ngrok nos ofrece un despliegue rápido y sencillo, tanto para http como para htt
   ngrok http 5000 # Abre la API a internet
   ngrok http 5001 # Abre el frontend a internet
 ```
+
+### Demo
+Se ha diseñado una demo de una posible aplicación del servicio, se puede probarla desde el siguiente [enlace](http://fibonation.ddns.net:5001/).
 
 ## License
 Licensed under the Apache License, Version 2.0. Copyright 2019 Miguel Ángel Medina Ramírez.

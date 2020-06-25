@@ -1,9 +1,10 @@
-from app.main.util.fileUtils           import itemIterator
-from app.main.util.heuristicMeasures   import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-from app.main.service.languageBuilder  import LanguageBuilder
-from app.main.util.semanticWordLists   import listOfVectorWords
-from app.main.util.dataPickerInTables  import DataPickerInTables
-from app.main.service.DocumentHandler  import DocumentHandler
+from app.main.util.fileUtils             import itemIterator
+from app.main.util.heuristicMeasures     import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES, MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+from app.main.service.languageBuilder    import LanguageBuilder
+from app.main.util.semanticWordLists     import listOfVectorWords
+from app.main.util.dataPickerInTables    import DataPickerInTables
+from app.main.service.DocumentHandler    import DocumentHandler
+from app.main.service.personalDataSearch import PersonalData
 
 import docx
 from docx.text.paragraph import Paragraph
@@ -20,7 +21,7 @@ class DocumentHandlerDocx(DocumentHandler):
         super().__init__(path, outfile=outfile, anonymizationFunction=anonymizationFunction)
         self.document = docx.Document(self.path)
 
-    def documentsProcessing(self):
+    def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
         def updateDocx(regex:str, text:Text) -> Text:
             regexName = re.compile(regex)
             return regexName.sub(lambda match: self.anonymizationFunction(match.group()), text)
@@ -30,7 +31,7 @@ class DocumentHandlerDocx(DocumentHandler):
             
         data              = []
         maxLength         = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-        listNames,idCards = self.extractData()
+        listNames,idCards = self.extractData(personalData)
         listNames         = list(set(listNames))
         listNames.sort(
                 key     = lambda value: len(value),
@@ -70,18 +71,18 @@ class DocumentHandlerDocx(DocumentHandler):
                 continue
         self.document.save(self.outfile)
 
-    def extractData(self) -> tuple:
+    def extractData(self,personalData=PersonalData.all) -> tuple:
         lastKey    = []
         listNames  = []
         listIdCard = []
         for block in itemIterator(self.document):
             if isinstance(block, Paragraph):
                 if LanguageBuilder().hasContex(block.text):
-                    listNames[len(listNames):],listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text)
-                elif self.dataSearch.isName(block.text):
+                    listNames[len(listNames):],listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text,personalData)
+                elif personalData != PersonalData.idCards and self.dataSearch.isName(block.text):
                     listNames.append(block.text.strip())
-                else:
-                    _,listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text)
+                elif personalData != PersonalData.name:
+                    _,listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text, PersonalData.idCards)
             elif isinstance(block, Table):
                 namePicker = DataPickerInTables()
                 for index, row in enumerate(block.rows):
@@ -110,7 +111,11 @@ class DocumentHandlerDocx(DocumentHandler):
                         )
                     )
                     
-                listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                if personalData != PersonalData.idCards:
+                     listNames[len(listNames):] = namePicker.getAllNames(
+                        self.dataSearch.checkNamesInDB,
+                        MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
+                    )
             else:
                 continue
         return listNames,listIdCard

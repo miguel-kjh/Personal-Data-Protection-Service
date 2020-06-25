@@ -1,5 +1,6 @@
-from app.main.util.heuristicMeasures import MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY
-from app.main.util.heuristicMeasures import SAMPLE_DATA_TO_CHOOSE_NAMES
+from app.main.util.heuristicMeasures     import MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY
+from app.main.util.heuristicMeasures     import SAMPLE_DATA_TO_CHOOSE_NAMES
+
 
 from collections import defaultdict
 from itertools import chain
@@ -30,19 +31,19 @@ class DataPickerInTables:
     def isColumnName(self, indexColumn: int) -> bool:
         return indexColumn in self.picker.keys()
 
-    def _getNamesSample(self, key:int) -> list:
+    def _getNamesSample(self, key: int) -> list:
         sampling = self.picker[key]["names"]
         if len(sampling) > MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY:
             sampling = sample(sampling,round(len(sampling) * SAMPLE_DATA_TO_CHOOSE_NAMES))
         return sampling
 
-    def isRealColumName(self, funtion:classmethod, indexColumn: int, threshold: float) -> bool:
+    def isRealColumName(self, funtion: classmethod, indexColumn: int, threshold: float) -> bool:
         sample = self._getNamesSample(indexColumn)
         return (self.isColumnName(indexColumn)
                 and len(self.picker[indexColumn]["names"]) > 0
                 and len(funtion(sample)) / len(sample) > threshold)
 
-    def getAllNames(self,funtion:classmethod, threshold: float) -> list:
+    def getAllNames(self,funtion: classmethod, threshold: float) -> list:
         return list(chain.from_iterable([
             dataName['names'] for (key, dataName) in self.picker.items() if
             len(dataName['names']) > 0 and 

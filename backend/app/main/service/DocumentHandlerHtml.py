@@ -1,8 +1,9 @@
-from app.main.service.DocumentHandler import DocumentHandler
-from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.heuristicMeasures  import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-from app.main.util.semanticWordLists  import listOfVectorWords
-from app.main.util.dataPickerInTables import DataPickerInTables
+from app.main.service.DocumentHandler    import DocumentHandler
+from app.main.service.languageBuilder    import LanguageBuilder
+from app.main.util.heuristicMeasures     import MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+from app.main.util.semanticWordLists     import listOfVectorWords
+from app.main.util.dataPickerInTables    import DataPickerInTables
+from app.main.service.personalDataSearch import PersonalData
 
 import re
 import pandas as pd
@@ -129,10 +130,13 @@ class DocumentHandlerHtml(DocumentHandler):
         with open(self.outfile, "w") as f:
             f.write(self.soup.prettify(formatter=formatter))
 
-    def extractData(self) -> tuple:
+    def extractData(self, personalData: PersonalData = PersonalData.all) -> tuple:
         def cleanPicker():
-            if not picker.isEmpty():
-                listNames[len(listNames):] = picker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+            if personalData != PersonalData.idCards and not picker.isEmpty():
+                listNames[len(listNames):] = picker.getAllNames(
+                    self.dataSearch.checkNamesInDB,
+                    MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS
+                )
                 picker.clear()
 
         listNames = []
@@ -142,11 +146,11 @@ class DocumentHandlerHtml(DocumentHandler):
         for token in tokenizer.getToken():
             if token.isTable == TableToken.NONE:
                 if LanguageBuilder().hasContex(token.text[0]):
-                    listNames[len(listNames):],idCards[len(idCards):]  = self.dataSearch.searchPersonalData(token.text[0])
-                elif self.dataSearch.isName(token.text[0]):
+                    listNames[len(listNames):],idCards[len(idCards):]  = self.dataSearch.searchPersonalData(token.text[0], personalData)
+                elif personalData != PersonalData.idCards and self.dataSearch.isName(token.text[0]):
                     listNames.append(token.text[0])
                 cleanPicker()
-            elif token.isTable == TableToken.HEAD:
+            elif token.isTable == TableToken.HEAD and personalData != PersonalData.idCards:
                 cleanPicker()
                 keys = list(filter(lambda text: list(
                         filter(lambda x:LanguageBuilder().semanticSimilarity(text,x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
@@ -160,12 +164,13 @@ class DocumentHandlerHtml(DocumentHandler):
                         picker.addName(index,token.text[index])
                     except IndexError:
                         continue
-                idCards[len(idCards):] = list(
-                    itertools.chain.from_iterable(
-                        map(
-                            lambda id: self.dataSearch.giveIdCards(id), 
-                            [text for index,text in enumerate(token.text) if not index in picker.getIndexesColumn()]
+                    if personalData != PersonalData.name:
+                        idCards[len(idCards):] = list(
+                            itertools.chain.from_iterable(
+                                map(
+                                    lambda id: self.dataSearch.giveIdCards(id), 
+                                    [text for index,text in enumerate(token.text) if not index in picker.getIndexesColumn()]
+                                )
+                            )
                         )
-                    )
-                )
         return listNames,idCards

@@ -1,4 +1,5 @@
 
+from app.main.service.personalDataSearch            import PersonalData
 from app.main.service.personalDataSearchByEntities  import PersonalDataSearchByEntities
 from app.main.service.personalDataSearchByRules     import PersonalDataSearchByRules
 from app.main.util.envNames                         import UPLOAD_FOLDER
@@ -21,7 +22,7 @@ class DocumentHandler(ABC):
         self.anonymizationFunction = anonymizationFunction
 
     @abstractmethod
-    def documentsProcessing(self):
+    def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
         pass
 
     def createDataCsvFile(self):
@@ -35,7 +36,7 @@ class DocumentHandler(ABC):
 
 
     @abstractmethod
-    def extractData(self) -> tuple:
+    def extractData(self, personalData: PersonalData = PersonalData.all) -> tuple:
         pass
 
     def _createCsv(self, listNames: list, idCards: list):

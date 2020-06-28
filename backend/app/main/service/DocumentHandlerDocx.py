@@ -89,8 +89,16 @@ class DocumentHandlerDocx(DocumentHandler):
                     rowText = [cell.text for cell in row.cells]
                     if index == 0:
                         lables = list(
-                            filter(lambda cell: list(filter(lambda x: LanguageBuilder().semanticSimilarity(cell,x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,listOfVectorWords)), rowText)
-                        )
+                                filter(lambda cell: 
+                                    list(
+                                        filter(lambda x: 
+                                            LanguageBuilder().semanticSimilarity(cell,x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
+                                            listOfVectorWords
+                                        )
+                                    ), 
+                                    rowText
+                                )
+                            )
                         key = list(map(lambda cell: rowText.index(cell),lables))
                         if not key:
                             key = lastKey
@@ -99,17 +107,19 @@ class DocumentHandlerDocx(DocumentHandler):
                             lastKey = key
                             namePicker.addIndexesColumn(key)
                             continue
-
+                
                     nameRow = list(filter(lambda cell: namePicker.isColumnName(rowText.index(cell)), rowText))
-                    for cell in nameRow:
-                        namePicker.addName(rowText.index(cell), cell)
-
-                    listIdCard[len(listIdCard):] = list(
-                        itertools.chain.from_iterable(
-                            map(lambda cell: self.dataSearch.giveIdCards(cell), 
-                            filter(lambda cell: cell not in nameRow, rowText))
+                    if personalData != PersonalData.idCards:
+                        for cell in nameRow:
+                            namePicker.addName(rowText.index(cell), cell)
+                    
+                    if personalData != PersonalData.name:
+                        listIdCard[len(listIdCard):] = list(
+                            itertools.chain.from_iterable(
+                                map(lambda cell: self.dataSearch.giveIdCards(cell), 
+                                filter(lambda cell: cell not in nameRow, rowText))
+                            )
                         )
-                    )
                     
                 if personalData != PersonalData.idCards:
                      listNames[len(listNames):] = namePicker.getAllNames(

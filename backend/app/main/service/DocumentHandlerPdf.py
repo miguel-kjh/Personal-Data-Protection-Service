@@ -46,8 +46,8 @@ class DocumentHandlerPdf(DocumentHandler):
                         namePicker.addIndexesColumn(key)
                         continue
                 
+                nameRow = list(filter(lambda cell: namePicker.isColumnName(row.index(cell)), row))
                 if personalData != PersonalData.idCards:
-                    nameRow = list(filter(lambda cell: namePicker.isColumnName(row.index(cell)), row))
                     for cell in nameRow:
                         namePicker.addName(row.index(cell), cell)
                     listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
@@ -64,15 +64,15 @@ class DocumentHandlerPdf(DocumentHandler):
 
     def getPersonalDataInTexts(self, text: Text, listNames: list, idCards: list, personalData: PersonalData):
 
-        textSplit          = text.split('\n')
-
         if personalData != PersonalData.idCards:
-            textWithContext    = list(filter(lambda sent: LanguageBuilder().hasContex(sent), textSplit))
+            textSplit = text.split('\n')
+            textWithContext = list(filter(lambda sent: LanguageBuilder().hasContex(sent), textSplit))
             listNames[len(listNames):] = list(
                 filter(lambda words: words not in textWithContext and self.dataSearch.isName(words), textSplit)
             )
-        
-        listNames[len(listNames):],idCards[len(idCards):] = self.dataSearch.searchPersonalData(' '.join(textWithContext), personalData)
+            listNames[len(listNames):],_ = self.dataSearch.searchPersonalData(' '.join(textWithContext), PersonalData.name)
+        if personalData != PersonalData.name:
+            _,idCards[len(idCards):] = self.dataSearch.searchPersonalData(' '.join(text), PersonalData.idCards)
 
     def extractData(self, personalData: PersonalData = PersonalData.all) -> tuple:
         listNames = []

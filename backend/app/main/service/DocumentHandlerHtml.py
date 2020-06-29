@@ -112,13 +112,13 @@ class DocumentHandlerHtml(DocumentHandler):
         self.regexName.append('|'.join(data[intial:]))
 
 
-    def documentsProcessing(self):
+    def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
         
         if not self.anonymizationFunction:
             return
 
         formatter = HTMLFormatter(self._processEntities)
-        listNames,idCards = self.extractData()
+        listNames,idCards = self.extractData(personalData)
         listNames = list(set(listNames))
         listNames.sort(
                 key     = lambda value: len(value),
@@ -164,13 +164,13 @@ class DocumentHandlerHtml(DocumentHandler):
                         picker.addName(index,token.text[index])
                     except IndexError:
                         continue
-                    if personalData != PersonalData.name:
-                        idCards[len(idCards):] = list(
-                            itertools.chain.from_iterable(
-                                map(
-                                    lambda id: self.dataSearch.giveIdCards(id), 
-                                    [text for index,text in enumerate(token.text) if not index in picker.getIndexesColumn()]
-                                )
+                if personalData != PersonalData.name:
+                    idCards[len(idCards):] = list(
+                        itertools.chain.from_iterable(
+                            map(
+                                lambda id: self.dataSearch.giveIdCards(id), 
+                                [text for index,text in enumerate(token.text) if not index in picker.getIndexesColumn()]
                             )
                         )
+                    )
         return listNames,idCards

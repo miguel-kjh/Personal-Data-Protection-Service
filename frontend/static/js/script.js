@@ -1,4 +1,4 @@
-const server     = "http://192.168.1.63:5000";
+const server     = "http://127.0.0.1:5000";
 const fileFormat = /^(txt|pdf|xls|docx|xlsx|xlsm|csv)$/;
 const urlRegex   = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
 let id = ""
@@ -14,24 +14,32 @@ $(document).ready(function () {
     $("#getDocumentButton").hide();
     $("#getUrlButton").hide();
 
+    function getTypeOfPersonalData() {
+        if ($('#names').is(":checked") && $('#idCards').is(":checked")) {
+            return "all";
+        }
+        if($('#names').is(":checked")) return "names";
+        if($('#idCards').is(":checked")) return "idCards";
+        return null;
+    }
 
-    function getUrlServer() {
+    function getUrlServer(personalData) {
         let url = "";
         switch ($("#sel").val()) {
             case "1":
-                url = server+'/search/file/extract-data/json-file';
+                url = server+'/search/file/extract-data/json-file?personalData='+personalData;
                 break;
             case "2":
-                url = server+'/search/file/encode';
+                url = server+'/search/file/encode?personalData='+personalData;
                 break;
             case "3":
-                url = server+'/search/file/extract-data/csv';
+                url = server+'/search/file/extract-data/csv?personalData='+personalData;
                 break;
             case "4":
-                url =  server+'/search/file/disintegration';
+                url = server+'/search/file/disintegration?personalData='+personalData;
                 break;
             case "5":
-                url =  server+'/search/file/obfuscation';
+                url = server+'/search/file/obfuscation?personalData='+personalData;
                 break;
         }
         return url;
@@ -45,7 +53,10 @@ $(document).ready(function () {
     function createModalError(jqXHR,exception) {
         error = getError(jqXHR,exception);
         $('#titleModalError').html("OOps!!, algo salio mal ⛔️ ");
-        $('.modal-body').html(error.msg);
+        $('.modal-body').html(
+            "<p>" + error.msg + "</p>" + 
+            "<p>Código de Error: " + error.code +  "</p>" 
+        );
         $('#modalError').modal('show');
     }
 
@@ -184,10 +195,18 @@ $(document).ready(function () {
             return;
         }
 
+        let personalData = getTypeOfPersonalData();
+        if (personalData == null) {
+            $('#alert').text("* Elige uno de los tipos de datos presentados");
+            return;
+        } else {
+            $('#alert').text("");
+        }
+
         $("#spinner").show();
         $('.file_upload').prop('disabled', true);
 
-        let url  = getUrlServer();
+        let url  = getUrlServer(personalData);
         let formData = new FormData(this);
     
         $.ajax({
@@ -221,11 +240,19 @@ $(document).ready(function () {
             return;
         }
 
+        let personalData = getTypeOfPersonalData();
+        if (personalData == null) {
+            $('#alert').text("* Elige uno de los tipos de datos presentados");
+            return;
+        } else {
+            $('#alert').text("");
+        }
+
         $("#spinner_web").show();
         $('#html_upload').prop('disabled', true);
 
-        let url  = server+'/search/file/operation-web?url='+$("#url_web").val()+"&op="+$("#op").val();
-        console.log(url);
+        let url  = server + '/search/file/operation-web?url=' +
+        $("#url_web").val() + "&op=" + $("#op").val() + "&personalData=" + personalData;
         $.ajax({
             type: "GET",
             url: url,
@@ -239,10 +266,10 @@ $(document).ready(function () {
             error: function(jqXHR,exception){
                 createModalError(jqXHR,exception);
                 $("#spinner_web").hide();
+                $('#html_upload').prop('disabled', false);
             }
         });
     });
-
 
 });
 

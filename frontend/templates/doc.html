@@ -1,0 +1,156 @@
+<html lang="es">  
+<head>  
+    <title>Servicio de protección de Datos</title>  
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename= 'css/style.scss') }}">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.4.1/js/bootstrap.min.js"></script>
+    <script src="{{ url_for('static', filename= 'js/script.js') }}"></script>
+</head>  
+<body>  
+    <nav class="navbar navbar-expand-sm navbar-dark fixed-top">
+        <a class="navbar-brand" href="#"><img src="{{ url_for('static', filename= 'fonts/icons8-cargar-documento-de-enlace-40.png') }}" alt="Icono"></a>
+        <ul class="navbar-nav">
+          <li class="nav-item">
+            <a class="nav-link" href="/">Enviar Documentos</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="/web">Tratar Paginas web.</a>
+          </li>
+        </ul>
+    </nav>
+    <div class="container anonimizar">
+      <h2>Operación</h2>
+      <hr/>
+      <form id="formId" method = "post" enctype="multipart/form-data" onsubmit="return checkFileExtension();"> 
+        <div class="custom-file">
+          <input type="file" name="file" class="custom-file-input" id="customFile"/>
+          <label class="custom-file-label" for="customFile">Choose file</label>
+        </div>
+        <div>
+          <select id="sel" name="cars" class="custom-select">
+              <option value="1" selected>Extraer datos en formato json</option>
+              <option value="2">Anonimización</option>
+              <option value="3">Extraer datos en archivo csv</option>
+              <option value="4">Disgregación</option>
+              <option value="5">Ofuscación</option>
+          </select>
+        </div>
+        <button type="submit" class="btn btn-primary file_upload" >
+          Upload
+        </button>
+        <div id="spinner">
+          <div class="spinner-border text-primary"></div>
+          <p>Un momento, por favor...</p>
+        </div>
+        <button id="getDocumentButton" type="button" class="btn btn-primary">Download</button>  
+      </form>  
+      <p id="alert"></p>
+      <div class="card">
+        <div class="card-header">
+          Elige el tipo de datos que quieres
+        </div>
+        <div class="card-body">
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="names">
+            <label class="custom-control-label" for="names">Nombres y Apellidos</label>
+          </div>
+          <div class="custom-control custom-switch">
+            <input type="checkbox" class="custom-control-input" id="idCards">
+            <label class="custom-control-label" for="idCards">Carnets de Identidad</label>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="container info">
+      <!-- Nav tabs -->
+        <ul class="nav nav-tabs">
+          <li class="nav-item">
+            <a class="nav-link active" data-toggle="tab" href="#home">Información</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#menu1">Legislación</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" data-toggle="tab" href="#menu2">Ayuda</a>
+          </li>
+        </ul>
+
+        <!-- Tab panes -->
+        <div class="tab-content">
+          <div id="home" class="container tab-pane active"><br>
+            <h3>Información</h3>
+            <p class="lead">El objetivo que persigue este proyecto es el de eliminar o reducir al mínimo
+            los riesgos de identificación de los titulares de los datos personales en textos. Se trata de una
+            herramienta con la que se puede reducir los riesgos de identificación asociados a datos
+            personales en diferentes tipos de documentos. Es decir, se trata de un sistema
+            cuya entrada sean documentos (docx, pdf, txt, hojas de cálculos…) y la salida será la
+            ofuscación/disgregación/anonimización de datos personales, en este caso nombres
+            propios, apellidos y DNI. Se ha desarrollado aplicando técnicas de procesamiento de
+            lenguaje natural, y librerías de Python relacionadas con este ámbito. De la misma forma
+            se han utilizado herramientas aplicadas a la creación de servicios web.</p> 
+          </div>
+          <div id="menu1" class="container tab-pane fade"><br>
+            <h3>Legislación</h3>
+            <p>Nos compormetemos a no hacer uso de datos ni de información relativa a los documentos enviados,
+             cumpliendo con la ley organica de protección de datos. </p>
+            <p>En el siguiente enlace se muestra los contenidos de la ley organica de protección de datos</p>
+            <a class="btn btn-primary btn-md"  target="_blank" href="https://www.boe.es/eli/es/lo/2018/12/05/3" role="button">Learn more</a>
+          </div>
+          <div id="menu2" class="container tab-pane fade"><br>
+            <h3>Ayuda</h3>
+            <p>El servidor está programado para soportar documentos de cualquier tamaño, siempre y cuando estos sean pdf,docx,txt,csv,archivos excel.
+            Todas las operaciones devuelven un fichero para descargar</p>
+          </div>
+        </div>
+    </div>
+    <div class="mt-5 pt-5 pb-5 footer">
+        <div class="container">
+          <div class="row">
+            <div class="col-lg-5 col-xs-12 about-company">
+              <h2>Información</h2>
+              <p class="pr-5 text-white-50">Projecto final de Carrera de la ULPGC, realizado por Miguel Ángel Medina Ramírez</p>
+              <p><a href="#"><i class="fa fa-facebook-square mr-1"></i></a><a href="#"><i class="fa fa-linkedin-square"></i></a></p>
+            </div>
+            <div class="col-lg-3 col-xs-12 links">
+              <h4 class="mt-lg-0 mt-sm-3">Links</h4>
+                <ul class="m-0 p-0">
+                  <li>- <a href="https://www.ulpgc.es/">ULPGC</a></li>
+                  <li>- <a href="https://github.com/miguel-kjh">Github</a></li>
+                  <li>- <a href="https://www.linkedin.com/in/miguel-%C3%A1ngel-medina-ram%C3%ADrez-22a129188/">Linkedin</a></li>
+                </ul>
+            </div>
+            <div class="col-lg-4 col-xs-12 location">
+              <h4 class="mt-lg-0 mt-sm-4">Localización</h4>
+              <p>Juan de Quesada, 30</p>
+              <p class="mb-0"><i class="fa fa-phone mr-3"></i>(541) 754-3010</p>
+              <p><i class="fa fa-envelope-o mr-3"></i>info@hsdf.com</p>
+            </div>
+          </div>
+          <div class="row mt-5">
+            <div class="col copyright">
+              <p class=""><small class="text-white-50">© 2020. All Rights Reserved.</small></p>
+            </div>
+          </div>
+        </div>
+        </div>
+        <!--Modal-->
+        <div class="modal fade" id="modalError" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+              <div class="modal-header">
+                <h5 class="modal-title" id="titleModalError">ddd</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                  <span aria-hidden="true">&times;</span>
+                </button>
+              </div>
+              <div class="modal-body"></div>
+              <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+              </div>
+            </div>
+          </div>
+        </div> 
+</body>  
+</html>  

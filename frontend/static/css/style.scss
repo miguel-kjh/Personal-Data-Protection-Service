@@ -6,9 +6,9 @@ body {
     margin-top: 5%;
 }
 
-.file_upload{
-    padding-left: 10%;
-    padding-right: 10%;
+#getDocumentButton{
+  margin-bottom: 2%;
+  margin-left: 1%;
 }
 
 .navbar{
@@ -48,8 +48,8 @@ body {
   margin-top: 5%;
 }
 
-.upload_web{
-  margin-top: 5%;
+.upload_web, .file_upload{
+  margin-top: 3%;
 }
 
 #alert{
@@ -63,6 +63,10 @@ body {
 
 #titleModalError{
   font-weight: bold;
+}
+
+#sel{
+  margin-top: 1%;
 }
 
 .error {

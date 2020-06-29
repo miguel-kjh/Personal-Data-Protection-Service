@@ -25,12 +25,12 @@ class DocumentHandler(ABC):
     def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
         pass
 
-    def createDataCsvFile(self):
-        self._createCsv(*self.extractData())
+    def createDataCsvFile(self, personalData: PersonalData = PersonalData.all):
+        self._createCsv(*self.extractData(personalData))
 
-    def createDataJsonFile(self):
-        names,idCards = self.extractData()
-        data          = {"Names":names,"IdCards":idCards}
+    def createDataJsonFile(self, personalData: PersonalData = PersonalData.all):
+        names,idCards = self.extractData(personalData)
+        data = {"Names":names,"IdCards":idCards}
         with open(self.outfile,'w') as outfile:
             json.dump(data,outfile)
 
@@ -45,6 +45,6 @@ class DocumentHandler(ABC):
         elif len(listNames) > len(idCards):
             idCards[len(idCards):] = [None]*(len(listNames)-len(idCards))
             
-        filename = os.path.join(UPLOAD_FOLDER,self.outfile)
+        filename  = os.path.join(UPLOAD_FOLDER,self.outfile)
         dataFrame = pd.DataFrame({"Names":listNames, "Dni": idCards})
         dataFrame.to_csv(filename, index=None, header=True)

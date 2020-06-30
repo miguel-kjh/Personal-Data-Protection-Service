@@ -111,24 +111,16 @@ Por defecto se abre en el puerto 5001.
   python frontend/run.py  # Ejecuta el frontend
 ```
 
-### Usar ngrok para abrir el servicio
-El servicio se puede desplegar o poner en producción de muchas formas, pero
-ngrok nos ofrece un despliegue rápido y sencillo, tanto para http como para https.
+## Usar gunicorn para abrir el servicio en producción
+Los comandos anteriores sirven para ejecutar y desplegar tanto el backend como el frontend desde el servidor que nos ofrece **Flask**, sin embargo este servidor no está optimizado para un entorno en producción. Por contra se recomiendo utilizar **Gunicorn**.
+**Gunicorn** es una herramienta que nos ofrece un entorno en producción para servidores web en python, además de que ya viene con las dependencias del proyecto.
 
 ```bash
-  ngrok http 5000 # Abre la API a internet
-  ngrok http 5001 # Abre el frontend a internet
+  gunicorn --bind ip_de_la_máquina:5000 manage:app --timeout 300 &  # Abre la API a internet
+  gunicorn --bind ip_de_la_máquina:5001 run:app & # Abre el frontend a internet
 ```
 
-### Usar gunicorn para abrir el servicio
-Gunicorn es una herramienta que nos ofrece un entorno en producción para servidores web en python.
-
-```bash
-  gunicorn --bind localhost:5000 manage:app --timeout 300 &  # Abre la API a internet
-  gunicorn --bind localhost:5001 run:app & # Abre el frontend a internet
-```
-
-### Demo
+## Demo
 Se ha diseñado una demo de una posible aplicación del servicio, se puede probarla desde el siguiente [enlace](http://fibonation.ddns.net:5001/).
 
 ## License

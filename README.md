@@ -34,9 +34,9 @@ tipo de operación de transformación o extracción de datos, y de devolver un a
 json o csv con los datos o el archivo html con las entidades transformadas.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
 
 - **/search/file/tagger-html:** El último endpoint se encarga de recoger ficheros html
-mediante POST y de devolverlos, pero marcados con los datos etiquetados. Este
+mediante POST y de devolverlos, pero marcados con los datos etiquetados. Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento. Este
 recurso está para tener una representación visual de la bondad del sistema en la
-localización de los datos.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
+localización de los datos.
 
 ## Frontend
 
@@ -82,7 +82,7 @@ Este proyecto utiliza modelos de inteligencia artificial y algoritmos aplicados 
 
 ```bash
   python -m spacy download es_core_news_md
-  python -m nltk.downloader all
+  python -m nltk.downloader punkt
 ```
 
 

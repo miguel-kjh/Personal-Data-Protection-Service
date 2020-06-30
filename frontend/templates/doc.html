@@ -20,8 +20,8 @@
           </li>
         </ul>
     </nav>
-    <div class="container anonimizar">
-      <h2>Operación</h2>
+    <div id="operations" class="container anonimizar">
+      <h2>Servicio de protección de Datos</h2>
       <hr/>
       <form id="formId" method = "post" enctype="multipart/form-data" onsubmit="return checkFileExtension();"> 
         <div class="custom-file">
@@ -80,16 +80,23 @@
         <!-- Tab panes -->
         <div class="tab-content">
           <div id="home" class="container tab-pane active"><br>
-            <h3>Información</h3>
             <p class="lead">El objetivo que persigue este proyecto es el de eliminar o reducir al mínimo
             los riesgos de identificación de los titulares de los datos personales en textos. Se trata de una
             herramienta con la que se puede reducir los riesgos de identificación asociados a datos
             personales en diferentes tipos de documentos. Es decir, se trata de un sistema
             cuya entrada sean documentos (docx, pdf, txt, hojas de cálculos…) y la salida será la
             ofuscación/disgregación/anonimización de datos personales, en este caso nombres
-            propios, apellidos y DNI. Se ha desarrollado aplicando técnicas de procesamiento de
-            lenguaje natural, y librerías de Python relacionadas con este ámbito. De la misma forma
-            se han utilizado herramientas aplicadas a la creación de servicios web.</p> 
+            propios, apellidos y DNI.
+            </p>
+            <h3>Anonimización</h3>
+            <p>Proceso general de transformación de dichos datos de manera irrecuperable y a sea borrándolos del texto o 
+              sustituyéndolos por algún conjunto de caracteres.</p>
+            <h3>Ofuscación</h3>
+            <p>La ofuscación se refiere a encubrir el significado de una comunicación haciéndola más confusa y complicada de interpretar, es la transformación de
+            los datos de tal manera que se oculte parte de la información de estos.</p>
+            <h3>Disgregación</h3>
+            <p>Es una técnica muy parecida a la ofuscación pero siguiendo una serie de estándares o procedimientos concretos de ocultación para un tipo
+              datos en específico, estas técnicas están marcadas por la <a href="https://www.aepd.es/es">Agencia Española De Protección De Datos</a>.</p>
           </div>
           <div id="menu1" class="container tab-pane fade"><br>
             <h3>Legislación</h3>

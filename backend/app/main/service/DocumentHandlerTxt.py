@@ -9,6 +9,11 @@ import re
 class DocumentHandlerTxt(DocumentHandler):
 
     def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
+        """  
+        Processes the personal data of a document and modifies the content of the document.
+        :param personalData: PersonalData
+        """
+        
         def updateTxt(regex:str, text:Text) -> Text:
             regexName = re.compile(regex)
             return regexName.sub(lambda match: self.anonymizationFunction(match.group()), text)
@@ -41,6 +46,12 @@ class DocumentHandlerTxt(DocumentHandler):
                 
 
     def extractData(self, personalData: PersonalData = PersonalData.all) -> tuple:
+        """  
+        Extracts personal data from a document.
+        :param personalData: PersonalData
+        :return: tuple(names, DNIs)
+        """
+
         listNames = []
         idCards   = []
         with open(self.path, 'r',encoding='utf8') as file:

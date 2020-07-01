@@ -7,7 +7,3 @@ listOfVectorWords = [
     'sujeto',
     'candidato'
 ]
-
-
-
-lettersOfDni = "TRWAGMYFPDXBNJZSQVHLCKE"

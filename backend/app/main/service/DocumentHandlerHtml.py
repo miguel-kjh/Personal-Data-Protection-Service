@@ -35,6 +35,11 @@ class TokenizerHtml:
         ]
 
     def getToken(self) -> TokenHtml:
+        """
+        Scrolls through the entire tag tree of an html file and returns a token, 
+        which represents the textual information of the document either in paragraphs or tables
+        """
+        
         def giveParentName(label) -> str:
             auxLable = label
             while auxLable.parent.name != '[document]':
@@ -164,7 +169,7 @@ class DocumentHandlerHtml(DocumentHandler):
                         picker.addName(index,token.text[index])
                     except IndexError:
                         continue
-                if personalData != PersonalData.name:
+                if personalData != PersonalData.names:
                     idCards[len(idCards):] = list(
                         itertools.chain.from_iterable(
                             map(

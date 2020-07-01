@@ -91,7 +91,7 @@ class TestDocumentHandler(BaseTestCase):
         self.assertNotEqual(data[0], [])
         self.assertNotEqual(data[1], [])
 
-        data = dh.extractData(PersonalData.name)
+        data = dh.extractData(PersonalData.names)
         self.assertNotEqual(data[0], [])
         self.assertEqual(data[1], [])
 
@@ -106,7 +106,7 @@ class TestDocumentHandler(BaseTestCase):
         self.assertNotEqual(data[0], [])
         self.assertNotEqual(data[1], [])
 
-        data = dh.extractData(PersonalData.name)
+        data = dh.extractData(PersonalData.names)
         self.assertNotEqual(data[0], [])
         self.assertEqual(data[1], [])
 
@@ -121,7 +121,7 @@ class TestDocumentHandler(BaseTestCase):
         self.assertNotEqual(data[0], [])
         self.assertNotEqual(data[1], [])
 
-        data = dh.extractData(PersonalData.name)
+        data = dh.extractData(PersonalData.names)
         self.assertNotEqual(data[0], [])
         self.assertEqual(data[1], [])
 
@@ -136,7 +136,7 @@ class TestDocumentHandler(BaseTestCase):
         self.assertNotEqual(data[0], [])
         self.assertNotEqual(data[1], [])
 
-        data = dh.extractData(PersonalData.name)
+        data = dh.extractData(PersonalData.names)
         self.assertNotEqual(data[0], [])
         self.assertEqual(data[1], [])
 
@@ -150,7 +150,7 @@ class TestDocumentHandler(BaseTestCase):
         self.assertNotEqual(data[0], [])
         self.assertNotEqual(data[1], [])
 
-        data = dh.extractData(PersonalData.name)
+        data = dh.extractData(PersonalData.names)
         self.assertNotEqual(data[0], [])
         self.assertEqual(data[1], [])
 
@@ -165,7 +165,7 @@ class TestDocumentHandler(BaseTestCase):
         self.assertNotEqual(data[0], [])
         self.assertNotEqual(data[1], [])
 
-        data = dh.extractData(PersonalData.name)
+        data = dh.extractData(PersonalData.names)
         self.assertNotEqual(data[0], [])
         self.assertEqual(data[1], [])
 

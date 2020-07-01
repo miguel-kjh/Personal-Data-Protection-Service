@@ -7,6 +7,9 @@ from itertools import chain
 from random import sample 
 
 class DataPickerInTables:
+    """
+    Scans the columns of a table for possible names  
+    """
 
     def __init__(self):
         self.picker = defaultdict(dict)

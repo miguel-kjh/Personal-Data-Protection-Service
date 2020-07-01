@@ -30,6 +30,16 @@ class DocumentHandlerPdf(DocumentHandler):
         }
 
     def getPersonalDataInTables(self, tables:list, listNames:list, idCards: list, lastKey: list, personalData: PersonalData) -> list:
+        """
+        Get personal data in a pdf table.
+        :param tables: list of string
+        :param listNames: list of string 
+        :param idCards: list of string 
+        :param lastKey: list of string 
+        :param personalData: PersonalData
+        :return: list of string
+        """
+
         for table in tables:
             namePicker = DataPickerInTables()
             for index, row in enumerate(table):
@@ -52,7 +62,7 @@ class DocumentHandlerPdf(DocumentHandler):
                         namePicker.addName(row.index(cell), cell)
                     listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
                 
-                if personalData != PersonalData.name:
+                if personalData != PersonalData.names:
                     idCards[len(idCards):] = list(
                             itertools.chain.from_iterable(
                                 map(lambda cell: self.dataSearch.giveIdCards(cell), 
@@ -63,6 +73,14 @@ class DocumentHandlerPdf(DocumentHandler):
             
 
     def getPersonalDataInTexts(self, text: Text, listNames: list, idCards: list, personalData: PersonalData):
+        """
+        Get personal data in a pdf text.
+        :param text: text
+        :param listNames: list of string 
+        :param idCards: list of string 
+        :param personalData: PersonalData
+        :return: list of string
+        """
 
         if personalData != PersonalData.idCards:
             textSplit = text.split('\n')
@@ -70,8 +88,8 @@ class DocumentHandlerPdf(DocumentHandler):
             listNames[len(listNames):] = list(
                 filter(lambda words: words not in textWithContext and self.dataSearch.isName(words), textSplit)
             )
-            listNames[len(listNames):],_ = self.dataSearch.searchPersonalData(' '.join(textWithContext), PersonalData.name)
-        if personalData != PersonalData.name:
+            listNames[len(listNames):],_ = self.dataSearch.searchPersonalData(' '.join(textWithContext), PersonalData.names)
+        if personalData != PersonalData.names:
             _,idCards[len(idCards):] = self.dataSearch.searchPersonalData(' '.join(text), PersonalData.idCards)
 
     def extractData(self, personalData: PersonalData = PersonalData.all) -> tuple:

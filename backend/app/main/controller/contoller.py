@@ -339,7 +339,7 @@ class operationWeb(Resource):
     def get(self):
         typeData = str(request.args['personalData'])
         if typeData == "names":
-            personalData = PersonalData.name
+            personalData = PersonalData.names
         elif typeData == "idCards":
             personalData = PersonalData.idCards
         elif typeData == "all":

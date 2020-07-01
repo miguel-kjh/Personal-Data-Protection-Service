@@ -16,6 +16,12 @@ class PersonalDataSearchByEntities(PersonalDataSearch):
         self.nlp = LanguageBuilder().getlanguage()
 
     def _getNames(self, text:Text):
+        """
+        Gets the names from a text.
+        :param text: Text
+        :return: list of string
+        """
+
         listNames = []
 
         for tokenText in sent_tokenize(text.replace('—', ',') ,language='spanish'):
@@ -28,13 +34,26 @@ class PersonalDataSearchByEntities(PersonalDataSearch):
         return listNames
     
     def _getIdCards(self, text:Text):
+        """
+        Gets the DNIs from a text.
+        :param text: Text
+        :return: list of string
+        """
+
         return [
             idCard.group()
             for idCard in list(filter(lambda x: isDni(x.group()) , re.finditer(self.regexIdCards,text)))
         ]
 
     def searchPersonalData(self, text: Text, personalData:PersonalData = PersonalData.all) -> tuple:
-        if personalData == PersonalData.name:
+        """
+        Obtains personal data from a text.
+        :param text: Text
+        :param personalData: PersonalData
+        :return: tuple(list of string,list of string)
+        """
+
+        if personalData == PersonalData.names:
             return (self._getNames(text), [])
         elif personalData == PersonalData.idCards:
             return ([], self._getIdCards(text))

@@ -42,7 +42,7 @@ class TestSearchTextByEnt(BaseTestCase):
             self.assertEqual(dictionatyOfNames[index], name)
 
     def test_diferents_data_personal(self):
-        dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["simple"], PersonalData.name)
+        dictionatyOfNames,_ = personalDataSearchByEnt.searchPersonalData(textForTest["simple"], PersonalData.names)
         self.assertNotEqual(dictionatyOfNames, [])
         self.assertEqual(len(dictionatyOfNames), 1)
         self.assertEqual(dictionatyOfNames[0], "Miguel")

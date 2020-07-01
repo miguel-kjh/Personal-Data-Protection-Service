@@ -8,6 +8,8 @@ import os
 
 
 class RequestEvaluator:
+    """ Evaluate an html request, according to the characteristics of the service """
+
     def __init__(self, request:Request):
         self.request      = request
         self.filename     = None
@@ -18,9 +20,13 @@ class RequestEvaluator:
         self.personalData = None
     
     def isRequestSuccesfull(self) -> bool:
+        """
+        Assesses whether the request meets the requirements
+        :return: boolean
+        """
         typeData = str(self.request.args['personalData'])
         if typeData == "names":
-            self.personalData = PersonalData.name
+            self.personalData = PersonalData.names
         elif typeData == "idCards":
             self.personalData = PersonalData.idCards
         elif typeData == "all":

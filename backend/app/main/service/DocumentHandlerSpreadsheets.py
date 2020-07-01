@@ -16,6 +16,10 @@ class DocumentHandlerSpreadsheets(DocumentHandler):
         self.selector = ColumnSelectorDataFrame()
 
     def save(self):
+        """
+        Save the contents of the spreadsheet
+        """
+        
         pass
 
 class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
@@ -37,13 +41,14 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
                     countOfName = self.selector.columnSearch(auxdf,self.dataSearch.checkNamesInDB)
                     if countOfName / len(auxdf) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         listNames[len(listNames):] = dfNotNull
-                elif personalData != PersonalData.name:
+                elif personalData != PersonalData.names:
                     idCards[len(idCards):] = list(
                         itertools.chain.from_iterable(map(lambda idCards: self.dataSearch.giveIdCards(idCards),dfNotNull))
                     )
         return listNames,idCards
 
     def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
+        
 
         if not self.anonymizationFunction:
             return
@@ -58,7 +63,7 @@ class DocumentHandlerExcel(DocumentHandlerSpreadsheets):
                     countOfName = self.selector.columnSearch(auxdf,self.dataSearch.checkNamesInDB)
                     if countOfName / len(auxdf) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                         self.sheets[table][typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
-                elif personalData != PersonalData.name:
+                elif personalData != PersonalData.names:
                     idCards = list(
                         itertools.chain.from_iterable(map(lambda idCards: self.dataSearch.giveIdCards(idCards),dfNotNull))
                     )
@@ -89,7 +94,7 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
                 countOfName = self.selector.columnSearch(auxdf,self.dataSearch.checkNamesInDB)
                 if countOfName / len(auxdf) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     listNames[len(listNames):] = dfNotNull
-            elif personalData != PersonalData.name:
+            elif personalData != PersonalData.names:
                 idCards[len(idCards):] = list(
                     itertools.chain.from_iterable(map(lambda idCards: self.dataSearch.giveIdCards(idCards),dfNotNull))
                 )
@@ -108,7 +113,7 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
                 countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
                 if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     self.df[typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
-            elif personalData != PersonalData.name:
+            elif personalData != PersonalData.names:
                 idCards = list(
                     itertools.chain.from_iterable(map(lambda idCards: self.dataSearch.giveIdCards(idCards),dfNotNull))
                 )

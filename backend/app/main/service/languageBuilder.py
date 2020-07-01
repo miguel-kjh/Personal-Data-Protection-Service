@@ -31,6 +31,9 @@ class LanguageBuilder(metaclass=Singleton):
         self.matcher.add("withoutContext", None, patterNotContext)
 
     def defineRulesOfNames(self):
+        """
+        Create the patterns to search for names in the SpaCy search engine
+        """
         names      = [
             {'POS' : 'PROPN', 'OP': '+'},
             {'TEXT': {'REGEX': 'de|del|-|el|los|de todos los'}, 'OP': '?'},
@@ -46,7 +49,11 @@ class LanguageBuilder(metaclass=Singleton):
 
     def semanticSimilarity(self, text: str, textToCompare: str) -> float:
         """
+        Compares the range of semantic similarity between two texts
         Only use this funtion when used a md or lg models
+        :param text: string
+        :param textToCompare: string
+        :retunr: semantic similarity of Float
         """
         if not text.strip(): 
             return 0.0
@@ -73,9 +80,14 @@ class LanguageBuilder(metaclass=Singleton):
             return None
 
     def hasContex(self, text: str) -> bool:
+        """
+        Find out if a text has enough semantic load to consider if it has enough context
+        :param text: string
+        :return: boolean
+        """
         if not text:
             return False
-        doc     = self.nlpRules(text)
+        doc = self.nlpRules(text)
         matches = self.matcher(doc)
         return not ((bool(matches) and matches[-1][2] == len(doc)) 
         or (sum(char.isupper() for char in text.replace(" ",''))+1)/len(text) > MINIMAL_UPPER_CHAR_DENSITY)

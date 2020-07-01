@@ -114,7 +114,6 @@ class ConfidenceMatrixBuilder:
         return self.listOfFalsePositives
 
 
-"""
 class TestPerfomanceTables(BaseTestCase):
     
     def test_tables(self):
@@ -170,7 +169,6 @@ class TestPerfomanceWeb(BaseTestCase):
         print(builder.getData())
 
         builder.saveReport('app/test/result/web_report.csv','app/test/result/web_report.jpg', 'web')
-"""
 
 def test_time_of_Model():
     entModel   = PersonalDataSearchByEntities()

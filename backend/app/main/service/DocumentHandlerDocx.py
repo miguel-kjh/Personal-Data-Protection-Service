@@ -22,6 +22,7 @@ class DocumentHandlerDocx(DocumentHandler):
         self.document = docx.Document(self.path)
 
     def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
+
         def updateDocx(regex:str, text:Text) -> Text:
             regexName = re.compile(regex)
             return regexName.sub(lambda match: self.anonymizationFunction(match.group()), text)
@@ -71,7 +72,7 @@ class DocumentHandlerDocx(DocumentHandler):
                 continue
         self.document.save(self.outfile)
 
-    def extractData(self,personalData=PersonalData.all) -> tuple:
+    def extractData(self, personalData: PersonalData = PersonalData.all) -> tuple:
         lastKey    = []
         listNames  = []
         listIdCard = []
@@ -81,7 +82,7 @@ class DocumentHandlerDocx(DocumentHandler):
                     listNames[len(listNames):],listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text,personalData)
                 elif personalData != PersonalData.idCards and self.dataSearch.isName(block.text):
                     listNames.append(block.text.strip())
-                elif personalData != PersonalData.name:
+                elif personalData != PersonalData.names:
                     _,listIdCard[len(listIdCard):] = self.dataSearch.searchPersonalData(block.text, PersonalData.idCards)
             elif isinstance(block, Table):
                 namePicker = DataPickerInTables()
@@ -113,7 +114,7 @@ class DocumentHandlerDocx(DocumentHandler):
                         for cell in nameRow:
                             namePicker.addName(rowText.index(cell), cell)
                     
-                    if personalData != PersonalData.name:
+                    if personalData != PersonalData.names:
                         listIdCard[len(listIdCard):] = list(
                             itertools.chain.from_iterable(
                                 map(lambda cell: self.dataSearch.giveIdCards(cell), 

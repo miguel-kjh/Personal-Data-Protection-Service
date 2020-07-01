@@ -110,8 +110,8 @@ class DocumentHandlerCsv(DocumentHandlerSpreadsheets):
                 auxdf = dfNotNull
                 if len(dfNotNull) > MAXIMUM_NUMBER_OF_POSSIBLE_NAMES_FOR_A_QUERY:
                     auxdf = sample(list(dfNotNull),round(len(dfNotNull) * SAMPLE_DATA_TO_CHOOSE_NAMES))
-                countOfName = self.selector.columnSearch(dfNotNull,self.dataSearch.checkNamesInDB)
-                if countOfName / len(dfNotNull) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
+                countOfName = self.selector.columnSearch(auxdf,self.dataSearch.checkNamesInDB)
+                if countOfName / len(auxdf) > MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS:
                     self.df[typeColumn.key].replace({str(name): self.anonymizationFunction(str(name)) for name in dfNotNull}, inplace=True)
             elif personalData != PersonalData.names:
                 idCards = list(

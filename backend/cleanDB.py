@@ -3,11 +3,19 @@ import os
 
 
 class ConnectionFileLog:
+    """
+    Class that establishes a connection to the server's database
+    """
+
     def __init__(self):
         self.connection = sqlite3.connect('app/main/flask_File_main.db')
         self.path = 'storageFiles'
 
     def deleteFile(self):
+        """ 
+        Delete the record and allowed files from the database. 
+        """
+
         cursorObj = self.connection.cursor()
         cursorObj.execute("SELECT name from fileLog where isDelete > 0")
         result = cursorObj.fetchall()
@@ -21,12 +29,19 @@ class ConnectionFileLog:
         cursorObj.close()
 
     def updateFile(self):
+        """ 
+        Updates the record of the files, to allow them to be deleted. 
+        """
+
         cursorObj = self.connection.cursor()
         cursorObj.execute("UPDATE fileLog SET isDelete = 1 where isDelete = 0")
         self.connection.commit()
 
     def __del__(self):
-        print("close")
+        """ 
+        Delete the database connection.
+        """
+        
         self.connection.close()
 
 

@@ -114,7 +114,6 @@ class ConfidenceMatrixBuilder:
         return self.listOfFalsePositives
 
 
-
 class TestPerfomanceTables(BaseTestCase):
     
     def test_tables(self):

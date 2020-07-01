@@ -6,10 +6,14 @@ from app.main.service.DocumentHandlerTxt          import DocumentHandlerTxt
 from app.main.service.DocumentHandlerHtml         import DocumentHandlerHtml
 from app.main.service.DocumentHandlerPdf          import DocumentHandlerPdf
 from app.main.service.DocumentHandlerSpreadsheets import DocumentHandlerCsv,DocumentHandlerExcel
-from app.test.fileVariables                       import pathTables,pathTexts,pathWeb
+from app.test.fileVariables                       import pathTables,pathTexts,pathWeb,pathDocuments,nameDocuments
 from app.main.util.anonymizationFunctions         import encode
+from app.main.service.personalDataSearch          import PersonalData
+
 
 import unittest
+import os
+
 
 
 class TestDocumentHandler(BaseTestCase):
@@ -49,7 +53,7 @@ class TestDocumentHandler(BaseTestCase):
         creator = getCreatorDocumentHandler(pathWeb + "1.html",'html',encode)
         self.assertTrue(isinstance(creator.create(), DocumentHandlerHtml))
 
-    def test_handler(self):
+    """def test_handler(self):
         dh = DocumentHandlerPdf(pathTexts + "1.pdf")
         self.assertTrue(len(dh.extractData()) > 0)
 
@@ -78,7 +82,96 @@ class TestDocumentHandler(BaseTestCase):
         self.assertTrue(len(dh.extractData()) > 0)
 
         dh = DocumentHandlerExcel(pathTables + "1.xls", encode)
-        self.assertTrue(len(dh.extractData()) > 0)
+        self.assertTrue(len(dh.extractData()) > 0)"""
+
+    def test_txt(self):
+        dh = DocumentHandlerTxt(os.path.join(pathDocuments, nameDocuments + ".txt") ,encode)
+        data = dh.extractData()
+        self.assertTrue(len(data), 2)
+        self.assertNotEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.names)
+        self.assertNotEqual(data[0], [])
+        self.assertEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.idCards)
+        self.assertEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+    def test_pdf(self):
+        dh = DocumentHandlerPdf(os.path.join(pathDocuments, nameDocuments + ".pdf") ,encode)
+        data = dh.extractData()
+        self.assertTrue(len(data), 2)
+        self.assertNotEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.names)
+        self.assertNotEqual(data[0], [])
+        self.assertEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.idCards)
+        self.assertEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+    
+    def test_docx(self):
+        dh = DocumentHandlerDocx(os.path.join(pathDocuments, nameDocuments + ".docx") ,encode)
+        data = dh.extractData()
+        self.assertTrue(len(data), 2)
+        self.assertNotEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.names)
+        self.assertNotEqual(data[0], [])
+        self.assertEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.idCards)
+        self.assertEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+    def test_execel_csv(self):
+        dh = DocumentHandlerExcel(os.path.join(pathDocuments, nameDocuments + ".xls"))
+        data = dh.extractData()
+        self.assertTrue(len(data), 2)
+        self.assertNotEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.names)
+        self.assertNotEqual(data[0], [])
+        self.assertEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.idCards)
+        self.assertEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+        dh = DocumentHandlerCsv(os.path.join(pathDocuments, nameDocuments + ".csv") ,encode)
+        data = dh.extractData()
+        self.assertTrue(len(data), 2)
+        self.assertNotEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.names)
+        self.assertNotEqual(data[0], [])
+        self.assertEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.idCards)
+        self.assertEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+    def test_html(self):
+        dh = DocumentHandlerHtml(os.path.join(pathDocuments, nameDocuments + ".html"))
+        data = dh.extractData()
+        self.assertTrue(len(data), 2)
+        self.assertNotEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.names)
+        self.assertNotEqual(data[0], [])
+        self.assertEqual(data[1], [])
+
+        data = dh.extractData(PersonalData.idCards)
+        self.assertEqual(data[0], [])
+        self.assertNotEqual(data[1], [])
 
 if __name__ == "__main__":
     unittest.main()

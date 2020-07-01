@@ -1,5 +1,4 @@
 from app.main.util.envNames          import ALLOWED_EXTENSIONS
-from app.main.util.semanticWordLists import lettersOfDni
 
 import uuid
 
@@ -32,6 +31,12 @@ def giveFileNameUnique(fileType: str) -> str:
     return str(uuid.uuid4()).replace(".", "") + "." + fileType
 
 def itemIterator(parent):
+    """
+    Browse the elements of a docx document
+    :param parent: a python-docx Document
+    :yield: a python-docx object (Paragraph or Table)
+    """
+
     if isinstance(parent, _Document):
         parent_elm = parent.element.body
     elif isinstance(parent, _Cell):
@@ -46,7 +51,12 @@ def itemIterator(parent):
         elif isinstance(child, CT_Tbl):
             yield Table(child, parent)
 
-def readPdf(path:str) -> Text:
+def readPdf(path:str) -> tuple:
+    """
+    Read a pdf iterating about the tables and texts
+    :param path: file path
+    :yield: tuple(text, list of tables)
+    """
     try:
         with pdfplumber.open(path) as pdf:
             for page in pdf.pages:
@@ -79,7 +89,13 @@ def readPdf(path:str) -> Text:
     except Exception:
         return
 
+lettersOfDni = "TRWAGMYFPDXBNJZSQVHLCKE"
 def isDni(dni:str) -> bool:
+    """
+    Find out if the entry string is an DNI or not
+    :param dni: string
+    :return: boolean
+    """
     number = ''.join(filter(str.isdigit, dni))
     if not number or lettersOfDni[int(number) % 23] != dni[-1].upper():
         return False
@@ -87,6 +103,11 @@ def isDni(dni:str) -> bool:
     return True
 
 def normalizeUnicode(string: str) -> str:
+    """
+    Normalizes a string to a unicode by skipping the 'ñ'
+    :param string: string
+    :return: normalize string
+    """
     letersÑ = list(filter(lambda x: string[x].lower() == 'ñ', range(0,len(string))))
     if not letersÑ:
         return unidecode(string)
@@ -96,16 +117,22 @@ def normalizeUnicode(string: str) -> str:
 
 MAX_NAME_OF_QUERY = 4000
 def generateWordsAsString(words:list) -> str:
-        if len(words) < MAX_NAME_OF_QUERY:
-            yield "('" + '\',\''.join(words) + "')"
-            return
-        
-        intial = 0
-        for numberRange in range(MAX_NAME_OF_QUERY,len(words),MAX_NAME_OF_QUERY):
-            yield "('" + '\',\''.join(words[intial:numberRange]) + "')"
-            intial = numberRange
+    """
+    Converts a maximum number of words in a list into a string by 
+    separating them by commas and with parentheses.
+    :param: list of string
+    :yield: string
+    """
+    if len(words) < MAX_NAME_OF_QUERY:
+        yield "('" + '\',\''.join(words) + "')"
+        return
     
-        yield "('" + '\',\''.join(words[intial:]) + "')"
+    intial = 0
+    for numberRange in range(MAX_NAME_OF_QUERY,len(words),MAX_NAME_OF_QUERY):
+        yield "('" + '\',\''.join(words[intial:numberRange]) + "')"
+        intial = numberRange
+
+    yield "('" + '\',\''.join(words[intial:]) + "')"
 
 def replaceUnnecessaryCharacters(text:str) -> str:
     return re.sub(r'\(|\)|\[|\]|\|', '', text)

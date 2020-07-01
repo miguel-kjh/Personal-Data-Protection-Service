@@ -1,13 +1,19 @@
-from app.main.service.DocumentHandler import DocumentHandler
-from app.main.service.languageBuilder import LanguageBuilder
-from app.main.util.heuristicMeasures  import MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+from app.main.service.personalDataSearch import PersonalData
+from app.main.service.DocumentHandler    import DocumentHandler
+from app.main.service.languageBuilder    import LanguageBuilder
+from app.main.util.heuristicMeasures     import MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 
 from typing import Text
 import re
 
 class DocumentHandlerTxt(DocumentHandler):
 
-    def documentsProcessing(self):
+    def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
+        """  
+        Processes the personal data of a document and modifies the content of the document.
+        :param personalData: PersonalData
+        """
+        
         def updateTxt(regex:str, text:Text) -> Text:
             regexName = re.compile(regex)
             return regexName.sub(lambda match: self.anonymizationFunction(match.group()), text)
@@ -19,7 +25,7 @@ class DocumentHandlerTxt(DocumentHandler):
             data              = []
             fileText          = str(file.read())
             maxLength         = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-            listNames,idCards = self.extractData()
+            listNames,idCards = self.extractData(personalData)
             listNames = list(set(listNames))
             listNames.sort(
                     key     = lambda value: len(value),
@@ -39,14 +45,20 @@ class DocumentHandlerTxt(DocumentHandler):
 
                 
 
-    def extractData(self) -> tuple:
+    def extractData(self, personalData: PersonalData = PersonalData.all) -> tuple:
+        """  
+        Extracts personal data from a document.
+        :param personalData: PersonalData
+        :return: tuple(names, DNIs)
+        """
+
         listNames = []
         idCards   = []
         with open(self.path, 'r',encoding='utf8') as file:
             for line in file:
                 line = line[0:len(line)-1]
                 if LanguageBuilder().hasContex(line):
-                    listNames[len(listNames):],idCards[len(idCards):] = self.dataSearch.searchPersonalData(line)
-                elif self.dataSearch.isName(line):
+                    listNames[len(listNames):],idCards[len(idCards):] = self.dataSearch.searchPersonalData(line,personalData)
+                elif personalData != PersonalData.idCards and self.dataSearch.isName(line):
                     listNames.append(line)
         return listNames,idCards

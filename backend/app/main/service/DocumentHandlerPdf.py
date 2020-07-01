@@ -1,10 +1,11 @@
-from app.main.service.DocumentHandler import DocumentHandler
-from app.main.util.dataPickerInTables import DataPickerInTables
-from app.main.util.fileUtils          import readPdf
-from app.main.util.semanticWordLists  import listOfVectorWords
-from app.main.util.heuristicMeasures  import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-from app.main.service.languageBuilder import LanguageBuilder
-import app.main.service.pdf_redactor  as pdf_redactor
+from app.main.service.personalDataSearch import PersonalData
+from app.main.service.DocumentHandler    import DocumentHandler
+from app.main.util.dataPickerInTables    import DataPickerInTables
+from app.main.util.fileUtils             import readPdf
+from app.main.util.semanticWordLists     import listOfVectorWords
+from app.main.util.heuristicMeasures     import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
+from app.main.service.languageBuilder    import LanguageBuilder
+import app.main.service.pdf_redactor     as pdf_redactor
 
 
 from datetime import datetime
@@ -28,11 +29,21 @@ class DocumentHandlerPdf(DocumentHandler):
             "DEFAULT": [lambda value: None],
         }
 
-    def getPersonalDataInTables(self, tables:list, listNames:list, idCards: list, lastKey) -> list:
+    def getPersonalDataInTables(self, tables:list, listNames:list, idCards: list, lastKey: list, personalData: PersonalData) -> list:
+        """
+        Get personal data in a pdf table.
+        :param tables: list of string
+        :param listNames: list of string 
+        :param idCards: list of string 
+        :param lastKey: list of string 
+        :param personalData: PersonalData
+        :return: list of string
+        """
+
         for table in tables:
             namePicker = DataPickerInTables()
             for index, row in enumerate(table):
-                if index == 0:
+                if personalData != PersonalData.idCards and index == 0:
                     lables = list(
                         filter(lambda cell: list(filter(lambda x: LanguageBuilder().semanticSimilarity(cell,x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,listOfVectorWords)), row)
                     )
@@ -44,43 +55,53 @@ class DocumentHandlerPdf(DocumentHandler):
                         lastKey = key
                         namePicker.addIndexesColumn(key)
                         continue
-
-                nameRow = list(filter(lambda cell: namePicker.isColumnName(row.index(cell)), row))
-                for cell in nameRow:
-                    namePicker.addName(row.index(cell), cell)
-
-                idCards[len(idCards):] = list(
-                        itertools.chain.from_iterable(
-                            map(lambda cell: self.dataSearch.giveIdCards(cell), 
-                            filter(lambda cell: cell not in nameRow, row))
-                        )
-                    )
                 
-            listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)  
+                nameRow = list(filter(lambda cell: namePicker.isColumnName(row.index(cell)), row))
+                if personalData != PersonalData.idCards:
+                    for cell in nameRow:
+                        namePicker.addName(row.index(cell), cell)
+                    listNames[len(listNames):] = namePicker.getAllNames(self.dataSearch.checkNamesInDB,MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS)
+                
+                if personalData != PersonalData.names:
+                    idCards[len(idCards):] = list(
+                            itertools.chain.from_iterable(
+                                map(lambda cell: self.dataSearch.giveIdCards(cell), 
+                                filter(lambda cell: cell not in nameRow, row))
+                            )
+                        )        
         return lastKey    
             
 
-    def getPersonalDataInTexts(self, text: Text, listNames: list, idCards: list):
+    def getPersonalDataInTexts(self, text: Text, listNames: list, idCards: list, personalData: PersonalData):
+        """
+        Get personal data in a pdf text.
+        :param text: text
+        :param listNames: list of string 
+        :param idCards: list of string 
+        :param personalData: PersonalData
+        :return: list of string
+        """
 
-        textSplit          = text.split('\n')
-        textWithContext    = list(filter(lambda sent: LanguageBuilder().hasContex(sent), textSplit))
+        if personalData != PersonalData.idCards:
+            textSplit = text.split('\n')
+            textWithContext = list(filter(lambda sent: LanguageBuilder().hasContex(sent), textSplit))
+            listNames[len(listNames):] = list(
+                filter(lambda words: words not in textWithContext and self.dataSearch.isName(words), textSplit)
+            )
+            listNames[len(listNames):],_ = self.dataSearch.searchPersonalData(' '.join(textWithContext), PersonalData.names)
+        if personalData != PersonalData.names:
+            _,idCards[len(idCards):] = self.dataSearch.searchPersonalData(' '.join(text), PersonalData.idCards)
 
-        listNames[len(listNames):] = list(
-            filter(lambda words: words not in textWithContext and self.dataSearch.isName(words), textSplit)
-        )
-        
-        listNames[len(listNames):],idCards[len(idCards):] = self.dataSearch.searchPersonalData(' '.join(textWithContext))
-
-    def extractData(self) -> tuple:
+    def extractData(self, personalData: PersonalData = PersonalData.all) -> tuple:
         listNames = []
         idCards   = []
         lastKey   = []
         for text,tables in readPdf(self.path):
-            lastKey = self.getPersonalDataInTables(tables,listNames,idCards,lastKey)
-            self.getPersonalDataInTexts(text,listNames,idCards)
+            lastKey = self.getPersonalDataInTables(tables,listNames,idCards,lastKey,personalData)
+            self.getPersonalDataInTexts(text,listNames,idCards,personalData)
         return listNames,idCards
 
-    def documentsProcessing(self):
+    def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
         def updatePdf(regex:str):
             self.options.content_filters = [
                 (
@@ -95,7 +116,7 @@ class DocumentHandlerPdf(DocumentHandler):
             return
         
         maxLength = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
-        listNames,idCards = self.extractData()
+        listNames,idCards = self.extractData(personalData)
         if not listNames and not idCards:
             pdf_redactor.redactor(self.options, self.path, self.outfile)
             return
@@ -104,7 +125,7 @@ class DocumentHandlerPdf(DocumentHandler):
                 key     = lambda value: len(value),
                 reverse = True
             )
-        data                              = []
+        data = []
         data[len(data):],data[len(data):] = listNames,idCards
         if len(data) > maxLength:
             intial = 0

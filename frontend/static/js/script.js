@@ -1,4 +1,4 @@
-const server     = "http://192.168.1.63:5000";
+const server     = "http://127.0.0.1:5000";
 const fileFormat = /^(txt|pdf|xls|docx|xlsx|xlsm|csv)$/;
 const urlRegex   = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
 let id = ""
@@ -14,43 +14,74 @@ $(document).ready(function () {
     $("#getDocumentButton").hide();
     $("#getUrlButton").hide();
 
+    function getTypeOfPersonalData() {
+        /**
+         * Gets the data type from the checkbox 
+         * returns String
+         */
 
-    function getUrlServer() {
+        if ($('#names').is(":checked") && $('#idCards').is(":checked")) {
+            return "all";
+        }
+        if($('#names').is(":checked")) return "names";
+        if($('#idCards').is(":checked")) return "idCards";
+        return null;
+    }
+
+    function getUrlServer(personalData) {
+        /**
+         * Obtains the type of operation to be carried out 
+         * return String
+         */
+
         let url = "";
         switch ($("#sel").val()) {
             case "1":
-                url = server+'/search/file/extract-data/json-file';
+                url = server+'/search/file/extract-data/json-file?personalData='+personalData;
                 break;
             case "2":
-                url = server+'/search/file/encode';
+                url = server+'/search/file/encode?personalData='+personalData;
                 break;
             case "3":
-                url = server+'/search/file/extract-data/csv';
+                url = server+'/search/file/extract-data/csv?personalData='+personalData;
                 break;
             case "4":
-                url =  server+'/search/file/disintegration';
+                url = server+'/search/file/disintegration?personalData='+personalData;
                 break;
             case "5":
-                url =  server+'/search/file/obfuscation';
+                url = server+'/search/file/obfuscation?personalData='+personalData;
                 break;
         }
         return url;
     }
 
     $(".custom-file-input").on("change", function() {
+        // Analyzes the file path and displays only its name in the form
+
         let fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
 
     function createModalError(jqXHR,exception) {
+        /**
+         * Creates a window to display the error
+         */
+
         error = getError(jqXHR,exception);
         $('#titleModalError').html("OOps!!, algo salio mal ⛔️ ");
-        $('.modal-body').html(error.msg);
+        $('.modal-body').html(
+            "<p>" + error.msg + "</p>" + 
+            "<p>Código de Error: " + error.code +  "</p>" 
+        );
         $('#modalError').modal('show');
     }
 
 
     $("#getDocumentButton").on('click', function () {
+        /**
+         * Send an ajax request to download the file just created on the server. 
+         * Due to type conflicts, if the file is json, its request must be evaluated separately
+         */
         
         if (fileType == "json") {
             $.ajax({
@@ -104,6 +135,11 @@ $(document).ready(function () {
 
 
     $("#getUrlButton").on('click', function () {
+        /**
+         * Send an ajax request to download the html file just created on the server. 
+         * Due to type conflicts, if the file is json, csv or html, its request must be evaluated separately
+         */
+
         if (fileTypeUrl == "json") {
             $.ajax({
                 url: server+'/search/file/download?id='+idUrl,
@@ -177,6 +213,7 @@ $(document).ready(function () {
 
 
     $("#formId").submit(function(e) {
+        // Send an ajax request to analyze the sent document.
 
         e.preventDefault(); 
     
@@ -184,10 +221,18 @@ $(document).ready(function () {
             return;
         }
 
+        let personalData = getTypeOfPersonalData();
+        if (personalData == null) {
+            $('#alert').text("* Elige uno de los tipos de datos presentados");
+            return;
+        } else {
+            $('#alert').text("");
+        }
+
         $("#spinner").show();
         $('.file_upload').prop('disabled', true);
 
-        let url  = getUrlServer();
+        let url  = getUrlServer(personalData);
         let formData = new FormData(this);
     
         $.ajax({
@@ -215,17 +260,26 @@ $(document).ready(function () {
 
 
     $("#form_web").submit(function(e) {
+        // Send an ajax request to analyze the html document sent.
 
         e.preventDefault(); 
-        if (!validateForm()) {
+        if (!validateUrlForm()) {
             return;
+        }
+
+        let personalData = getTypeOfPersonalData();
+        if (personalData == null) {
+            $('#alert').text("* Elige uno de los tipos de datos presentados");
+            return;
+        } else {
+            $('#alert').text("");
         }
 
         $("#spinner_web").show();
         $('#html_upload').prop('disabled', true);
 
-        let url  = server+'/search/file/operation-web?url='+$("#url_web").val()+"&op="+$("#op").val();
-        console.log(url);
+        let url  = server + '/search/file/operation-web?url=' +
+        $("#url_web").val() + "&op=" + $("#op").val() + "&personalData=" + personalData;
         $.ajax({
             type: "GET",
             url: url,
@@ -239,14 +293,18 @@ $(document).ready(function () {
             error: function(jqXHR,exception){
                 createModalError(jqXHR,exception);
                 $("#spinner_web").hide();
+                $('#html_upload').prop('disabled', false);
             }
         });
     });
 
-
 });
 
-function validateForm() {
+function validateUrlForm() {
+    /**
+     * Validate the form to send web pages
+     */
+    
     let web = $("#url_web").val();
     if (web.match(urlRegex)) {
         $('#url_web').removeClass('error');
@@ -258,6 +316,10 @@ function validateForm() {
 }
 
 function checkFileExtension() {
+    /**
+     * Analyzes the extension of the file
+     */
+
     let ext = $("#customFile").val().split('.').pop();
     if (ext.match(fileFormat)) {
         $('#alert').text("");
@@ -269,6 +331,11 @@ function checkFileExtension() {
 }
 
 function getError(jqXHR,exception){
+    /**
+     * Analyzes the error in the request
+     * returns error code and message
+     */
+    
     let error = {"code":-1, "msg":""} ;
     if (jqXHR.status === 0) {
         error.msg = 'No estas concetado al servidor.\nVerifica tu conexión.';

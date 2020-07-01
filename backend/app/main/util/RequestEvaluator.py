@@ -2,11 +2,14 @@ from flask import Request
 from werkzeug.utils import secure_filename
 from app.main.util.fileUtils import giveFileNameUnique, giveTypeOfFile, allowedFile
 from app.main.util.envNames import ALLOWED_EXTENSIONS,UPLOAD_FOLDER
+from app.main.service.personalDataSearch import PersonalData
 
 import os
 
 
 class RequestEvaluator:
+    """ Evaluate an html request, according to the characteristics of the service """
+
     def __init__(self, request:Request):
         self.request      = request
         self.filename     = None
@@ -14,8 +17,25 @@ class RequestEvaluator:
         self.success      = False
         self.error        = None
         self.filetype     = ""
+        self.personalData = None
     
     def isRequestSuccesfull(self) -> bool:
+        """
+        Assesses whether the request meets the requirements
+        :return: boolean
+        """
+        typeData = str(self.request.args['personalData'])
+        if typeData == "names":
+            self.personalData = PersonalData.names
+        elif typeData == "idCards":
+            self.personalData = PersonalData.idCards
+        elif typeData == "all":
+            self.personalData = PersonalData.all
+        else:
+            self.error = "type of personal data incorrect"
+            self.success = False
+            return self.success
+        
         if 'file' not in self.request.files:
             self.error = "No file part"
             return self.success

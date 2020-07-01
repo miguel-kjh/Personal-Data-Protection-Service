@@ -1,6 +1,8 @@
 import unittest
 from app.test.base import BaseTestCase
 from app.main.service.personalDataSearchByRules import PersonalDataSearchByRules
+from app.main.service.personalDataSearch import PersonalData
+
 
 textForTest = {
     "simple": "Miguel estuvo aquí hace dos minutos",
@@ -37,6 +39,19 @@ class TestSearchTextByRul(BaseTestCase):
         self.assertEqual(len(dictionatyOfNames), len(names))
         for index, name in enumerate(names):
             self.assertEqual(dictionatyOfNames[index], name)
+
+    def test_diferents_data_personal(self):
+        dictionatyOfNames,_ = personalDataSearchByRul.searchPersonalData(textForTest["simple"], PersonalData.names)
+        self.assertNotEqual(dictionatyOfNames, [])
+        self.assertEqual(len(dictionatyOfNames), 1)
+        self.assertEqual(dictionatyOfNames[0], "Miguel")
+        dictionatyOfNames,_ = personalDataSearchByRul.searchPersonalData(textForTest["simple"], PersonalData.idCards)
+        self.assertEqual(dictionatyOfNames, [])
+        dictionatyOfNames,idCards = personalDataSearchByRul.searchPersonalData("43294881A", PersonalData.idCards)
+        self.assertNotEqual(idCards, [])
+        self.assertEqual(len(dictionatyOfNames), 0)
+        self.assertEqual(len(idCards), 1)
+        self.assertEqual(idCards[0], "43294881A")
 
 
 if __name__ == '__main__':

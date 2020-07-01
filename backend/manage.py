@@ -22,12 +22,16 @@ manager.add_command('db', MigrateCommand)
 
 @app.after_request
 def after_request(response):
+    """
+    Allows response resources to be shared with the given source.
+    """
     response.headers.add('Access-Control-Allow-Origin', '*')
     return response
 
 
 @manager.command
 def run():
+    """Run the application."""
     app.run()
 
 

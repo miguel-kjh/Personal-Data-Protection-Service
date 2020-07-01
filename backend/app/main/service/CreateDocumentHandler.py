@@ -10,6 +10,16 @@ from abc import ABC, abstractmethod
 
 
 def getCreatorDocumentHandler(filename: str, typeFile: str, destiny: str = "", anonymizationFunction = None, isUrl:bool = False):
+    """  
+    Analyzes the file and returns a suitable object CreatorDocumentHandler according to its characteristics.
+
+    :param filename: file path
+    :param typeFile: type of file
+    :param destiny: destination file path
+    :param anonymizationFunction: data encryption function
+    :param isUrl: whether or not it's a url
+    :return: CreatorDocumentHandler
+    """
     if isUrl:
         return CreatorDocumentHandlerHtml(filename, destiny,anonymizationFunction, isUrl)
 
@@ -38,6 +48,9 @@ class CreatorDocumentHandler(ABC):
 
     @abstractmethod
     def create(self):
+        """
+        Creates a suitable HandlerDocument object.
+        """
         pass
 
 

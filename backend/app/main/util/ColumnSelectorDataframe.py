@@ -11,8 +11,17 @@ class typeOfColumn:
         self.isName = isName
 
 class ColumnSelectorDataFrame:
+    """  
+    Class for detecting columns of possible names
+    """
 
     def getPossibleColumnsNames(self, df: pd.DataFrame) -> typeOfColumn:
+        """  
+        You get the possible columns containing any name or surname
+        :param df: pandas DataFrame
+        :return: typeOfColumn
+        """
+
         for key, typeColumn in zip(df.keys(), df.dtypes):
             if typeColumn == object:
                 listOfWordSemantics = list(
@@ -25,7 +34,13 @@ class ColumnSelectorDataFrame:
                     yield typeOfColumn(key,True)
                 yield typeOfColumn(key,False)
 
-    def columnSearch(self, df: pd.DataFrame, comparateFuntion: classmethod) -> int:
-        return len(comparateFuntion(list(df)))
+    def columnSearch(self, df: pd.DataFrame, compareFunction: classmethod) -> int:
+        """  
+        Searches in a column for the number of cells that comply with a certain procedure or characteristic
+        :param df: DataFrame
+        :paran compareFunction: Function
+        :return: int
+        """
+        return len(compareFunction(list(df)))
 
     

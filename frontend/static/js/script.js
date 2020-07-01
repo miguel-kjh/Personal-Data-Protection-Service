@@ -15,6 +15,11 @@ $(document).ready(function () {
     $("#getUrlButton").hide();
 
     function getTypeOfPersonalData() {
+        /**
+         * Gets the data type from the checkbox 
+         * returns String
+         */
+
         if ($('#names').is(":checked") && $('#idCards').is(":checked")) {
             return "all";
         }
@@ -24,6 +29,11 @@ $(document).ready(function () {
     }
 
     function getUrlServer(personalData) {
+        /**
+         * Obtains the type of operation to be carried out 
+         * return String
+         */
+
         let url = "";
         switch ($("#sel").val()) {
             case "1":
@@ -46,11 +56,17 @@ $(document).ready(function () {
     }
 
     $(".custom-file-input").on("change", function() {
+        // Analyzes the file path and displays only its name in the form
+
         let fileName = $(this).val().split("\\").pop();
         $(this).siblings(".custom-file-label").addClass("selected").html(fileName);
     });
 
     function createModalError(jqXHR,exception) {
+        /**
+         * Creates a window to display the error
+         */
+
         error = getError(jqXHR,exception);
         $('#titleModalError').html("OOps!!, algo salio mal ⛔️ ");
         $('.modal-body').html(
@@ -62,6 +78,10 @@ $(document).ready(function () {
 
 
     $("#getDocumentButton").on('click', function () {
+        /**
+         * Send an ajax request to download the file just created on the server. 
+         * Due to type conflicts, if the file is json, its request must be evaluated separately
+         */
         
         if (fileType == "json") {
             $.ajax({
@@ -115,6 +135,11 @@ $(document).ready(function () {
 
 
     $("#getUrlButton").on('click', function () {
+        /**
+         * Send an ajax request to download the html file just created on the server. 
+         * Due to type conflicts, if the file is json, csv or html, its request must be evaluated separately
+         */
+
         if (fileTypeUrl == "json") {
             $.ajax({
                 url: server+'/search/file/download?id='+idUrl,
@@ -188,6 +213,7 @@ $(document).ready(function () {
 
 
     $("#formId").submit(function(e) {
+        // Send an ajax request to analyze the sent document.
 
         e.preventDefault(); 
     
@@ -234,9 +260,10 @@ $(document).ready(function () {
 
 
     $("#form_web").submit(function(e) {
+        // Send an ajax request to analyze the html document sent.
 
         e.preventDefault(); 
-        if (!validateForm()) {
+        if (!validateUrlForm()) {
             return;
         }
 
@@ -273,7 +300,11 @@ $(document).ready(function () {
 
 });
 
-function validateForm() {
+function validateUrlForm() {
+    /**
+     * Validate the form to send web pages
+     */
+    
     let web = $("#url_web").val();
     if (web.match(urlRegex)) {
         $('#url_web').removeClass('error');
@@ -285,6 +316,10 @@ function validateForm() {
 }
 
 function checkFileExtension() {
+    /**
+     * Analyzes the extension of the file
+     */
+
     let ext = $("#customFile").val().split('.').pop();
     if (ext.match(fileFormat)) {
         $('#alert').text("");
@@ -296,6 +331,11 @@ function checkFileExtension() {
 }
 
 function getError(jqXHR,exception){
+    /**
+     * Analyzes the error in the request
+     * returns error code and message
+     */
+    
     let error = {"code":-1, "msg":""} ;
     if (jqXHR.status === 0) {
         error.msg = 'No estas concetado al servidor.\nVerifica tu conexión.';

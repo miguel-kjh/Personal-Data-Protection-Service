@@ -36,6 +36,16 @@ class Version(Resource):
         return {"version": VERSION}
 
 def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOperation:str, personalData: PersonalData):
+    """ 
+    Records the documents in the database and processes them.
+
+    :param evaluator: The RequestEvaluator object with the information about the request
+    :param function: the function to process the data
+    :param nameOperation: String to indicate the name of the operation performed
+    :param personalData: The type of data to search for
+    :return: A dictionary with document id and document type
+    """
+    
     publicId = saveLog(
                 {
                     'name'    : evaluator.fakeFilename,
@@ -65,35 +75,47 @@ def registerOperation(evaluator: RequestEvaluator, function:classmethod, nameOpe
     return {"id":publicId, "fileType":evaluator.filetype}
 
 @api.route("/file/encode")
+@api.param('personalData', 'type of personal data to be extracted from the document')
 class Anonimization(Resource):
 
-    @api.doc('return a file with names encoded')
+    @api.doc(
+        'returns an id that indicates to the file sent with \
+        the anonymized data in the database and the type of the file'
+    )
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
-            return registerOperation(evaluator,encode, "anom",evaluator.personalData)
+            return registerOperation(evaluator,encode, "anonymized",evaluator.personalData)
         else:
             return evaluator.giveResponse(), 400
 
 @api.route("/file/disintegration")
+@api.param('personalData', 'type of personal data to be extracted from the document')
 class Disintegration(Resource):
 
-    @api.doc('return a file with names encoded')
+    @api.doc(
+        'returns an id that indicates to the file sent with \
+        the disintegrated data in the database and the type of the file'
+    )
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
-            return registerOperation(evaluator,disintegration,"dis",evaluator.personalData)
+            return registerOperation(evaluator,disintegration,"disintegrated",evaluator.personalData)
         else:
             return evaluator.giveResponse(), 400
 
 @api.route("/file/obfuscation")
+@api.param('personalData', 'type of personal data to be extracted from the document')
 class Obfuscation(Resource):
 
-    @api.doc('return a file with names encoded')
+    @api.doc(
+        'returns an id that indicates to the file sent with \
+        the obfuscated data in the database and the type of the file'
+    )
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
-            return registerOperation(evaluator,dataObfuscation,"ofus", evaluator.personalData)
+            return registerOperation(evaluator,dataObfuscation,"obfuscated", evaluator.personalData)
         else:
             return evaluator.giveResponse(), 400
 
@@ -101,7 +123,7 @@ class Obfuscation(Resource):
 @api.route('/file/extract-data/json')
 @api.param('personalData', 'type of personal data to be extracted from the document')
 class extractDataJson(Resource):
-    @api.doc('give a list of name in the document')
+    @api.doc('returns a json object with the requested data')
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
@@ -130,8 +152,10 @@ class extractDataJson(Resource):
             return evaluator.giveResponse(), 400
 
 @api.route('/file/extract-data/json-file')
+@api.param('personalData', 'type of personal data to be extracted from the document')
 class extractDataJsonFile(Resource):
-    @api.doc('return a json file with all data found')
+
+    @api.doc('returns a json file with the requested data')
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
@@ -166,8 +190,10 @@ class extractDataJsonFile(Resource):
 
 
 @api.route('/file/extract-data/csv')
+@api.param('personalData', 'type of personal data to be extracted from the document')
 class extractDataCsv(Resource):
-    @api.doc('return a csv files with all data founded')
+
+    @api.doc('returns a csv file with the requested data')
     def post(self):
         evaluator = RequestEvaluator(request)
         if evaluator.isRequestSuccesfull():
@@ -204,7 +230,8 @@ class extractDataCsv(Resource):
 @api.route('/file/download')
 @api.param('id', 'public id for a document')
 class getDocument(Resource):
-    @api.doc('get documento for download')
+
+    @api.doc('return a document using your public id')
     def get(self):
         publicId  = str(request.args['id'])
         docuemnt  = getByPublicId(publicId)
@@ -304,6 +331,11 @@ class operationWeb(Resource):
                 "error"   : "bad url"
             }, 500
 
+    
+    @api.doc(
+        'depending on the sent parameters it performs some of the \
+        allowed operations of the service for a web page in html format'
+    )
     def get(self):
         typeData = str(request.args['personalData'])
         if typeData == "names":

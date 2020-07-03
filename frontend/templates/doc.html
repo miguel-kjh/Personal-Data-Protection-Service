@@ -23,19 +23,23 @@
     <div id="operations" class="container anonimizar">
       <h2>Servicio de protección de Datos</h2>
       <hr/>
-      <form id="formId" method = "post" enctype="multipart/form-data" onsubmit="return checkFileExtension();"> 
-        <div class="custom-file">
-          <input type="file" name="file" class="custom-file-input" id="customFile"/>
-          <label class="custom-file-label" for="customFile">Choose file</label>
-        </div>
-        <div>
-          <select id="sel" name="cars" class="custom-select">
-              <option value="1" selected>Extraer datos en formato json</option>
-              <option value="2">Anonimización</option>
-              <option value="3">Extraer datos en archivo csv</option>
-              <option value="4">Disgregación</option>
-              <option value="5">Ofuscación</option>
-          </select>
+      <form id="formId" method = "post" enctype="multipart/form-data" onsubmit="return checkFileExtension();">
+        <div class="row">
+          <div class="col-xl-9">
+            <div class="custom-file">
+              <input type="file" name="file" class="custom-file-input" id="customFile"/>
+              <label class="custom-file-label" for="customFile">Choose file</label>
+            </div>
+          </div>
+          <div class="col-xl-3">
+              <select id="sel" name="cars" class="custom-select">
+                  <option value="1" selected>Extraer datos en formato json</option>
+                  <option value="2">Anonimización</option>
+                  <option value="3">Extraer datos en archivo csv</option>
+                  <option value="4">Disgregación</option>
+                  <option value="5">Ofuscación</option>
+              </select>
+          </div>
         </div>
         <button type="submit" class="btn btn-primary file_upload" >
           Upload
@@ -49,7 +53,7 @@
       <p id="alert"></p>
       <div class="card">
         <div class="card-header">
-          Elige el tipo de datos que quieres
+          Eliga el tipo de dato a procesar
         </div>
         <div class="card-body">
           <div class="custom-control custom-switch">

@@ -94,7 +94,7 @@ class DocumentHandlerHtml(DocumentHandler):
         super().__init__(path, outfile=outfile, anonymizationFunction=anonymizationFunction)
         if isUrl:
             http = urllib3.PoolManager()
-            req  = http.request('GET', self.path)
+            req  = http.request('POST', self.path)
             self.soup = BeautifulSoup(req.data, "lxml")
         else:
             with open(self.path, "r", encoding="utf8") as f:

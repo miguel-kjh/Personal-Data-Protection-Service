@@ -65,10 +65,6 @@ body {
   font-weight: bold;
 }
 
-#sel{
-  margin-top: 1%;
-}
-
 .error {
   border: solid 2px #FF0000;  
 }
@@ -76,6 +72,10 @@ body {
 @media only screen and (max-width: 950px) {
   #operations {
     margin-top: 25%;
+  }
+
+  #sel{
+    margin-top: 1%;
   }
 
   .links{

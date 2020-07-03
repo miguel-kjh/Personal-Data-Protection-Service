@@ -312,7 +312,6 @@ class operationWeb(Resource):
             isUrl=True
         )
         try:
-            print(personalData)
             dh = creator.create()
             dh.documentsProcessing(personalData)
             publicId = saveLog(

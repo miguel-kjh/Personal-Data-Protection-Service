@@ -64,6 +64,13 @@ Tambien se propone una propuesta de frontend para que el usuario interactue con 
   Figura 3: Información, Legislación y ayuda al usuario.
 </p>
 
+<p align="center">
+  <img src="media/responsive.png" alt="legislación">
+</p>
+<p align="center">
+  Figura 4: Frontend en un móvil.
+</p>
+
 ## Ejecución
 
 Para ejecutar el proyecto se necesita tener instalado Python3.6, debido a que algunas dependencias no van bien con las recientes actualizaciones de Python al menos en el momento del desarrollo de este software.

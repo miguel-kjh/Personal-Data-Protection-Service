@@ -133,6 +133,7 @@ Los comandos anteriores sirven para ejecutar y desplegar tanto el backend como e
   gunicorn --bind ip_de_la_máquina:5000 manage:app --timeout 300 &  # Abre la API a internet
   gunicorn --bind ip_de_la_máquina:5001 run:app & # Abre el frontend a internet
 ```
+Por último hay que cambiar una variable global en el fichero [script.js](./Personal-Data-Protection-Service/frontend/static/js/script.js)., la variable **server** marca la dirección donde está implementada la API, tan solo habría que sustituirla por la dirección correspondiente.
 
 ## Demo
 Se ha diseñado una demo de una posible aplicación del servicio, se puede probarla desde el siguiente [enlace](http://fibonation.ddns.net:5001/).

@@ -113,15 +113,14 @@ class ConfidenceMatrixBuilder:
     def getListOfFalsePositive(self):
         return self.listOfFalsePositives
 
-
 class TestPerfomanceTables(BaseTestCase):
-    
+
     def test_tables(self):
         iteration = 11
         builder   = ConfidenceMatrixBuilder()
         print("\n")
         for index in range(1,iteration):
-            with open(pathTables + "%s.json" %(index)) as file:
+            with open(pathTables + "%s.json" %(index),  encoding='utf-8') as file:
                 data = json.load(file)
             creator        = getCreatorDocumentHandler(pathTables + "%s.xls" %(index),'xls')
             dh             = creator.create()
@@ -148,7 +147,7 @@ class TestPerfomanceTexts(BaseTestCase):
             #print(pathTexts + "%s.txt" %(index), ":", len(listNames), "names")
             builder.countHinst(listNames,data['names'],"text%s" %(index))
         print(builder.getData())
-        
+
         builder.saveReport('app/test/result/text_report.csv','app/test/result/text_report.jpg', 'text')
 
 class TestPerfomanceWeb(BaseTestCase):
@@ -157,7 +156,7 @@ class TestPerfomanceWeb(BaseTestCase):
         builder   = ConfidenceMatrixBuilder()
         print("\n")
         for index in range(1,iteration):
-            with open(pathWeb + "%s.json" %(index)) as file:
+            with open(pathWeb + "%s.json" %(index),  encoding='utf-8') as file:
                 data = json.load(file)
 
             creator        = getCreatorDocumentHandler(pathWeb + "%s.html" %(index),'html')
@@ -185,7 +184,7 @@ def test_time_of_Model():
         rules_len   = len(data[0]) + len(data[1])
 
         return [ent_times,ent_len,rules_times,rules_len, len(word_tokenize(text))]
-        
+
     with open(pathTimes, "r", encoding='latin-1') as file:
         texts = file.read()
     texts = re.sub('<.*>','lineSplit',texts)
@@ -213,7 +212,6 @@ class TestOfTimesModel(BaseTestCase):
         pass
 
 
-       
 
 
 if __name__ == '__main__':

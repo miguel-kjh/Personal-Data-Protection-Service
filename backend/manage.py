@@ -8,7 +8,7 @@ from app.main import create_app, db
 
 from app import blueprint
 
-app = create_app(os.getenv('BOILERPLATE_ENV') or 'prod')
+app = create_app(os.getenv('BOILERPLATE_ENV') or 'dev')
 
 app.register_blueprint(blueprint)
 

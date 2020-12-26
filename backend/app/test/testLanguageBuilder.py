@@ -5,7 +5,8 @@ import unittest
 
 class TestLanguageBuilder(BaseTestCase):
     def test_semanticSimilarity(self):
-        self.assertTrue(LanguageBuilder().semanticSimilarity("papa", "patata") > 0.5)
+        print(LanguageBuilder().semanticSimilarity("papa", "patata"))
+        self.assertTrue(LanguageBuilder().semanticSimilarity("patata", "patata") > 0.5)
         self.assertTrue(LanguageBuilder().semanticSimilarity("", "patata") < 0.5)
         self.assertTrue(LanguageBuilder().semanticSimilarity("hormigon", "patata") < 0.5)
 

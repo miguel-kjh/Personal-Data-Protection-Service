@@ -16,9 +16,10 @@ class Singleton(type):
 
 class LanguageBuilder(metaclass=Singleton):
     def __init__(self):
-        self.nlp            = spacy.load("es_core_news_md")
-        self.nlpRules       = spacy.load("es_core_news_md", disable=["parser","ner"])
-        self.vectorialSpace = spacy.load("es_core_news_md", disable=["tagger","parser","ner"])
+        model = "es_core_news_md"
+        self.nlp            = spacy.load(model)
+        self.nlpRules       = spacy.load(model, disable=["parser","ner"])
+        self.vectorialSpace = spacy.load(model, disable=["tagger","parser","ner"])
         print("models load")
 
 

@@ -132,6 +132,7 @@ class TestDocumentHandler(BaseTestCase):
     def test_execel_csv(self):
         dh = DocumentHandlerExcel(os.path.join(pathDocuments, nameDocuments + ".xls"))
         data = dh.extractData()
+        print(data)
         self.assertTrue(len(data), 2)
         self.assertNotEqual(data[0], [])
         self.assertNotEqual(data[1], [])

@@ -26,7 +26,7 @@ class ColumnSelectorDataFrame:
             if typeColumn == object:
                 listOfWordSemantics = list(
                         filter(
-                                lambda x: LanguageBuilder().semanticSimilarity(key, x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
+                                lambda x: LanguageBuilder().semanticSimilarity(key.lower(), x) > MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,
                                 listOfVectorWords
                             )
                     )
@@ -42,5 +42,3 @@ class ColumnSelectorDataFrame:
         :return: int
         """
         return len(compareFunction(list(df)))
-
-    

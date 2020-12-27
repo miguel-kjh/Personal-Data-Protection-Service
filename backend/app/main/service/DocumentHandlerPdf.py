@@ -5,12 +5,10 @@ from app.main.util.fileUtils             import readPdf
 from app.main.util.semanticWordLists     import listOfVectorWords
 from app.main.util.heuristicMeasures     import MEASURE_FOR_TEXTS_WITHOUT_CONTEXTS, MEASURE_TO_COLUMN_KEY_REFERS_TO_NAMES,MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
 from app.main.service.languageBuilder    import LanguageBuilder
-import app.main.service.pdf_redactor     as pdf_redactor
+from app.main.service.PdfModifierService import PdfModifierService
 
 
-from datetime import datetime
 from typing   import Text
-import re
 import itertools
     
 
@@ -18,16 +16,7 @@ class DocumentHandlerPdf(DocumentHandler):
 
     def __init__(self, path: str, outfile: str = "", anonymizationFunction = None):
         super().__init__(path, outfile=outfile, anonymizationFunction = anonymizationFunction)
-        self.options                  = pdf_redactor.RedactorOptions()
-        self.options.xmp_filters      = [lambda xml: None]
-        self.options.metadata_filters = {
-            "Title": [lambda value: value],
-
-            "Producer": [lambda value: value],
-            "CreationDate": [lambda value: datetime.utcnow()],
-
-            "DEFAULT": [lambda value: None],
-        }
+        self.pdfService = PdfModifierService()
 
     def getPersonalDataInTables(self, tables:list, listNames:list, idCards: list, lastKey: list, personalData: PersonalData) -> list:
         """
@@ -102,38 +91,23 @@ class DocumentHandlerPdf(DocumentHandler):
         return listNames,idCards
 
     def documentsProcessing(self, personalData: PersonalData = PersonalData.all):
-        def updatePdf(regex:str):
-            self.options.content_filters = [
-                (
-                    re.compile(regex),
-                    lambda m: self.anonymizationFunction(m.group())
-                )
-            ]
-            pdf_redactor.redactor(self.options, self.path, self.outfile)
-            self.path = self.outfile
 
         if not self.anonymizationFunction:
             return
         
-        maxLength = MAXIMUM_NUMBER_OF_ELEMENTS_IN_A_REGEX
         listNames,idCards = self.extractData(personalData)
         if not listNames and not idCards:
-            pdf_redactor.redactor(self.options, self.path, self.outfile)
+            self.outfile = self.path
             return
+
         listNames = list(set(listNames))
+        idCards   = list(set(idCards))
         listNames.sort(
                 key     = lambda value: len(value),
                 reverse = True
             )
         data = []
         data[len(data):],data[len(data):] = listNames,idCards
-        if len(data) > maxLength:
-            intial = 0
-            for numberRange in range(maxLength,len(data),maxLength):
-                updatePdf('|'.join(data[intial:numberRange]))
-                intial = numberRange
-            updatePdf('|'.join(data[intial:]))
-        else:
-            updatePdf('|'.join(data))
-        
-        
+        replace = list(map(lambda string: self.anonymizationFunction(string), data))
+
+        self.pdfService.modifiedPdf(self.path, self.outfile, data, replace)

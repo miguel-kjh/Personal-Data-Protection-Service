@@ -58,6 +58,11 @@ cover
 #config file
 backend/config.py
 
+#backend file
+backend/.idea
+backend/.vscode
+backend/__pycache__
+
 # Django stuff
 .log
 local_settings.py

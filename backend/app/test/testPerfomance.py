@@ -150,6 +150,7 @@ class TestPerfomanceTexts(BaseTestCase):
 
         builder.saveReport('app/test/result/text_report.csv','app/test/result/text_report.jpg', 'text')
 
+@unittest.skip
 class TestPerfomanceWeb(BaseTestCase):
     def test_web(self):
         iteration = 11

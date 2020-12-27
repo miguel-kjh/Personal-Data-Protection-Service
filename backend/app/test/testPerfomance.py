@@ -206,12 +206,10 @@ def test_time_of_Model():
     df = pd.DataFrame(mesures)
     df.to_excel('app/test/result/times_output.xlsx')
 
+@unittest.skip
 class TestOfTimesModel(BaseTestCase):
     def test_time_of_Model(self):
-        #test_time_of_Model()
-        pass
-
-
+        test_time_of_Model()
 
 
 if __name__ == '__main__':

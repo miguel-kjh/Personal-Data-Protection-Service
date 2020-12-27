@@ -53,7 +53,8 @@ class TestDocumentHandler(BaseTestCase):
         creator = getCreatorDocumentHandler(pathWeb + "1.html",'html',encode)
         self.assertTrue(isinstance(creator.create(), DocumentHandlerHtml))
 
-    """def test_handler(self):
+    @unittest.skip
+    def test_handler(self):
         dh = DocumentHandlerPdf(pathTexts + "1.pdf")
         self.assertTrue(len(dh.extractData()) > 0)
 
@@ -82,7 +83,7 @@ class TestDocumentHandler(BaseTestCase):
         self.assertTrue(len(dh.extractData()) > 0)
 
         dh = DocumentHandlerExcel(pathTables + "1.xls", encode)
-        self.assertTrue(len(dh.extractData()) > 0)"""
+        self.assertTrue(len(dh.extractData()) > 0)
 
     def test_txt(self):
         dh = DocumentHandlerTxt(os.path.join(pathDocuments, nameDocuments + ".txt") ,encode)

@@ -30,7 +30,6 @@ class ColumnSelectorDataFrame:
                                 listOfVectorWords
                             )
                     )
-                print(listOfWordSemantics)
                 if listOfWordSemantics:
                     yield typeOfColumn(key,True)
                 yield typeOfColumn(key,False)

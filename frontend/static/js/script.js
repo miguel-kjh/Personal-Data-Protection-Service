@@ -1,4 +1,4 @@
-const server     = "http://127.0.0.1:5000";
+const server     = "http://185.47.13.9:5000/";
 const fileFormat = /^(txt|pdf|xls|docx|xlsx|xlsm|csv)$/;
 const urlRegex   = /^(http:\/\/www\.|https:\/\/www\.|http:\/\/|https:\/\/)?[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/;
 let id = ""

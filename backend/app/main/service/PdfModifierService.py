@@ -65,7 +65,6 @@ class PdfModifierService:
                     with open(destinationFile, 'wb') as file:
                         for chunk in r:
                             file.write(chunk)
-                    print(f"Result file saved as \"{destinationFile}\" file.")
                 else:
                     raise RuntimeError(f"Request error: {response.status_code} {response.reason}")
             else:

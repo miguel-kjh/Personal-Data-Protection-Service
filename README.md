@@ -1,90 +1,86 @@
 ![Version](https://img.shields.io/badge/version-1.2-brightgreen.svg?style=flat-square)
 
-## Autor
+## Author 
 Miguel Ángel Medina Ramírez <br>
-Correo: miguel.medina108@alu.ulpgc.es
 
-# Servicio de Protección de datos personales
-Se trata de un servicio web dedicado a la extracción y la modificación de datos personales. Tras la ley de orgánica de protección de datos de 2018, los datos que comprometan la identidad de personas físicas en textos pueden vulnerar su derecho de privacidad e intimidad, por ello es necesario una serie de procesos para tratar los datos sin poner en riesgo a sus titulares. Estos procesos de anonimización/ofuscación/disgregación son transformaciones que se realizan a los datos que consisten en la modificación total o parcial de los mismos,de tal forma que nadie los pueda reconocer o que únicamente el poseedor de los datos pueda reconocerlos. Este servicio implementa una serie de operaciones para tratar documentos web, hojas de cálculo, pdf, word y de texto plano con el objetivo de localizar,extraer y operar con estos datos. Nos centramos únicamente en nombres, apellidos y carnés de identidad debido a que son los datos personales más comprometidos de forma inmediata, sin embargo las técnicas utilizadas son extrapolables a cualquier otro tipo de dato.
+# Personal data Protection Service
+It is a web service dedicated to the extraction and modification of personal data. After the organic data protection law of 2018, data that compromises the identity of natural persons in texts may violate their right to privacy and intimacy, therefore a series of processes is necessary to treat the data without putting their users at risk. Headlines. These anonymization / obfuscation / disintegration processes are transformations that are carried out to the data that consist in the total or partial modification of the same, in such a way that no one can recognize them or that only the owner of the data can recognize them. This service implements a series of operations to process web documents, spreadsheets, pdf, word and plain text in order to locate, extract and operate with this data. We focus only on names, surnames and identity cards because they are the most immediately compromised personal data, however the techniques used can be extrapolated to any other type of data. 
 
 ## API REST
-- **/search/version:** Devuelve mediante GET la version actual del software.
+- **/search/version:** Returns by GET the current version of the software.
 
-- **/search/file/encode:** Se encarga de recoger ficheros mediante POST y de devolver
-otra versión de ellos con los datos personales anonimizados.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
+- **/search/file/encode:** It is responsible for collecting files via POST and returning
+another version of them with anonymized personal data. You receive through the query string the type of data that you have to locate in the document.
 
-- **/search/file/disintegration:** Se encarga de recoger ficheros mediante POST y de
-devolver otra versión de ellos con los datos personales transformados mediante un
-proceso de disgregación.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
+- **/search/file/disintegration:** It is responsible for collecting files through POST and
+return another version of them with the personal data transformed through a
+disaggregation process. It receives through the query string the type of data that it has to locate in the document.
 
-- **/search/file/obfuscation:** Se encarga de recoger ficheros mediante POST y de devolver otra versión de ellos con los datos personales transformados mediante un
-proceso de ofuscación.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
+- **/search/file/obfuscation:** It is responsible for collecting files via POST and returning another version of them with the personal data transformed by means of a
+obfuscation process. It receives through the query string the type of data that it has to locate in the document.
 
-- **/search/file/extract-data/json-file:** Se encarga de recoger ficheros mediante POST y
-de devolver un fichero json con los datos personales encontrados.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
+- **/search/file/extract-data/json-file:** It is responsible for collecting files through POST and
+to return a json file with the personal data found. It receives through the query string the type of data that it has to locate in the document.
 
-- **/search/file/extract-data/json:** Se encarga de recoger ficheros mediante POST y de
-devolver un objeto json con los datos personales encontrados.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
+- **/search/file/extract-data/json:** It is responsible for collecting files through POST and
+return a json object with the personal data found. It receives through the query string the type of data that it has to locate in the document.
 
-- **/search/file/extract-data/csv:** Se encarga de recoger ficheros mediante POST y de
-devolver un fichero csv con los datos personales.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
+- **/search/file/extract-data/csv:** It is responsible for collecting files via POST and
+return a csv file with the personal data. It receives through the query string the type of data that it has to locate in the document.
 
-- **/search/file/operation-web:** Se encarga mediante GET de recoger una URL y un
-tipo de operación de transformación o extracción de datos, y de devolver un archivo
-json o csv con los datos o el archivo html con las entidades transformadas.Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento.
+- **/search/file/operation-web:** It is in charge of collecting a URL and a
+type of data transformation or extraction operation, and of returning a file
+json or csv with the data or the html file with the transformed entities. It receives through the query string the type of data that it has to locate in the document.
 
-- **/search/file/tagger-html:** El último endpoint se encarga de recoger ficheros html
-mediante POST y de devolverlos, pero marcados con los datos etiquetados. Recibe mediante la cadena de consulta el tipo de dato que tiene que localizar en el documento. Este
-recurso está para tener una representación visual de la bondad del sistema en la
-localización de los datos.
+- **/search/file/tagger-html:** The last endpoint is responsible for collecting html files
+via POST and returning them, but marked with the tagged data. It receives through the query string the type of data that it has to locate in the document. This resource is to have a visual representation of the goodness of the system in locating the data. 
 
 ## Frontend
 
-Tambien se propone una propuesta de frontend para que el usuario interactue con la API mediante una interfaz web.
-
+A frontend proposal is also proposed for the user to interact with the API through a web interface. 
 
 <p align="center">
   <img src="media/send_doc.png" alt="documentos">
 </p>
 <p align="center">
-  Figura 1: Subir documentos al servicio.
+  Figure 1: Upload documents. 
 </p>
 
 <p align="center">
-  <img src="media/send_web.png" alt="url">
+  <img src="media/send_web.png" alt="url"
 </p>
 <p align="center">
-  Figura 2: Enviar una URL al servicio.
+  Figure 2: Submit a URL to the service. 
 </p>
 
 <p align="center">
   <img src="media/download.png" alt="url">
 </p>
 <p align="center">
-  Figura 3: Realizar alguna operación.
+  Figure 3: Perform some operation. 
 </p>
 
 <p align="center">
   <img src="media/info.png" alt="legislación">
 </p>
 <p align="center">
-  Figura 4: Información, Legislación y ayuda al usuario.
+  Figure 4: Information, Legislation and user help.
 </p>
 
 <p align="center">
   <img src="media/responsive.png" alt="legislación">
 </p>
 <p align="center">
-  Figura 5: Frontend en un móvil.
+  Figure 5: Frontend on a mobile. 
 </p>
 
-## Ejecución
+## Execution
 
-Para ejecutar el proyecto se necesita tener instalado Python3.6, debido a que algunas dependencias no van bien con las recientes actualizaciones de Python al menos en el momento del desarrollo de este software.
+To run the project you need to have Python3.6 installed, because some dependencies do not go well with the recent Python updates at least at the time of development of this software.
 
-### Instalar Dependencias
+### Install Dependencies
 
-Ya sea en un entorno virtual o no, lo primero que se tiene que hacer es instalar las dependencias del archivo *requirements.txt*. Se puede hacer con pip o cualquier otro gestor de paquetes.
+Whether in a virtual environment or not, the first thing to do is install the dependencies of the * requirements.txt * file. It can be done with pip or any other package manager. 
 
 ```bash
   git clone https://github.com/miguel-kjh/NameSearcher-WebService
@@ -92,7 +88,7 @@ Ya sea en un entorno virtual o no, lo primero que se tiene que hacer es instalar
   pip install -r requirements.txt
 ```
 
-Este proyecto utiliza modelos de inteligencia artificial y algoritmos aplicados al procesamiento de lenguaje natural, por ello hay que descargarlos desde las dependencias de SpaCy y NLTK.
+This project uses artificial intelligence models and algorithms applied to natural language processing, therefore they must be downloaded from the SpaCy and NLTK dependencies.
 
 ```bash
   python -m spacy download es_core_news_md
@@ -100,9 +96,9 @@ Este proyecto utiliza modelos de inteligencia artificial y algoritmos aplicados 
 ```
 
 
-### Ejecutar el servicio para Windows, Mac o Linux
+### Run the service for Windows, Mac or Linux
 
-Por defecto se abre en el puerto 5000.
+By default it opens on port 5000. 
 
 ```bash
   python backend/manage.py run  # Ejecuta el servicio
@@ -110,33 +106,34 @@ Por defecto se abre en el puerto 5000.
   python backend/cleanDB.py     # Limpia la BD
 ```
 
-### Migrar la base de datos
+### Migrate the database 
 
 ```bash
   python backend/manage.py db migrate --message 'new schema'
   python backend/manage.py db upgrade
 ```
 
-### Ejecutar el frontend para Windows, Mac o Linux
+### Run the frontend for Windows, Mac or Linux
 
-Por defecto se abre en el puerto 5001.
+By default it opens on port 5001. 
 
 ```bash
   python frontend/run.py  # Ejecuta el frontend
 ```
 
-## Usar gunicorn para abrir el servicio en producción
-Los comandos anteriores sirven para ejecutar y desplegar tanto el backend como el frontend desde el servidor que nos ofrece **Flask**, sin embargo este servidor no está optimizado para un entorno en producción. Por contra se recomiendo utilizar **Gunicorn**.
-**Gunicorn** es una herramienta que nos ofrece un entorno en producción para servidores web en python, además de que ya viene con las dependencias del proyecto.
+## Use gunicorn to open the service in production
+The previous commands are used to execute and deploy both the backend and the frontend from the server that ** Flask ** offers us, however this server is not optimized for a production environment. By cons it is recommended to use **Gunicorn**.
+**Gunicorn** is a tool that offers us a production environment for web servers in python, in addition to the fact that it already comes with the project dependencies.
 
 ```bash
   gunicorn --bind ip_de_la_máquina:5000 manage:app --timeout 300 &  # Abre la API a internet
   gunicorn --bind ip_de_la_máquina:5001 run:app & # Abre el frontend a internet
 ```
-Por último hay que cambiar una variable global en el fichero [script.js](./frontend/static/js/script.js), la variable **server** marca la dirección donde está implementada la API, tan solo habría que sustituirla por la dirección correspondiente.
+
+Finally, you have to change a global variable in the file [script.js](./frontend/static/js/script.js), the **server** variable marks the address where the API is implemented, you just have to replace it with the corresponding address. 
 
 ## Demo
-Se ha diseñado una demo de una posible aplicación del servicio, se puede probarla desde el siguiente [enlace](http://185.47.13.9:5001/).
+A demo of a possible service application has been designed, you can try it from the following [link](http://185.47.13.9:5001/).
 
 ## License
 Licensed under the Apache License, Version 2.0. Copyright 2019 Miguel Ángel Medina Ramírez.

@@ -33,7 +33,7 @@ pdfminer3==2018.12.3.0
 pdfplumber==0.5.18
 pdfrw==0.4
 pyparsing==2.3.1
-PyPDF2==1.26.0
+PyPDF2==1.27.5
 pytest==5.1.2
 python-docx==0.8.10
 spacy==2.1.8
